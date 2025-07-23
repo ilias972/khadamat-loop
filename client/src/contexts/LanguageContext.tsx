@@ -30,11 +30,14 @@ const translations = {
     "hero.search_placeholder": "Que recherchez-vous ? (ex: plombier, électricien...)",
     "hero.search_button": "Rechercher",
     "hero.location": "Casablanca",
+    "hero.city_placeholder": "Ville (ex: Casablanca, Rabat...)",
+    "hero.provider_placeholder": "Rechercher un prestataire spécifique (optionnel)",
     
     // Services
-    "services.title": "Nos Services Populaires",
-    "services.subtitle": "Découvrez notre large gamme de services professionnels disponibles partout au Maroc",
+    "services.title": "Nos services populaires",
+    "services.subtitle": "Découvrez notre large gamme de services professionnels disponibles dans tout le Maroc",
     "services.explore": "Explorer",
+    "services.popular_in": "Services populaires à",
     
     // Providers
     "providers.title": "Prestataires Vérifiés",
@@ -55,7 +58,14 @@ const translations = {
     // Club Pro
     "club_pro.title": "Rejoignez l'Élite des Prestataires",
     "club_pro.subtitle": "Accédez à des fonctionnalités premium et augmentez votre visibilité avec notre programme Club Pro vérifié",
+    "club_pro.home_subtitle": "Accédez aux projets de grandes ampleurs et bénéficiez d'avantages exclusifs pour seulement 50 DH/mois.",
     "club_pro.cta": "Devenir Club Pro",
+    "club_pro.join_cta": "Devenir Club Pro - 50 DH/mois",
+    "club_pro.badge_benefit": "Badge Club Pro pour se démarquer",
+    "club_pro.priority_benefit": "Priorité dans les résultats de recherche",
+    "club_pro.support_benefit": "Support dédié aux prestataires Club Pro",
+    "club_pro.exclusive_access": "🏆 ACCÈS EXCLUSIF",
+    "club_pro.large_projects": "Projets de grandes ampleurs réservés aux Club Pro",
     "club_pro.verification.title": "Vérification Complète",
     "club_pro.verification.desc": "Documents professionnels vérifiés : patente, RC, assurance et reconnaissance faciale",
     "club_pro.visibility.title": "Visibilité Premium",
@@ -71,6 +81,10 @@ const translations = {
     "sos.fire": "Pompiers/SAMU",
     "sos.gendarmerie": "Gendarmerie",
     "sos.call_now": "Appeler Maintenant",
+    
+    // Testimonials
+    "testimonials.title": "Ce que disent nos utilisateurs",
+    "testimonials.subtitle": "Des milliers de clients satisfaits nous font confiance",
     
     // Newsletter
     "newsletter.title": "Restez Informé des Nouveautés",
@@ -128,11 +142,18 @@ const translations = {
     "hero.search_placeholder": "ماذا تبحث عن؟ (مثل: سباك، كهربائي...)",
     "hero.search_button": "بحث",
     "hero.location": "الدار البيضاء",
+    "hero.city_placeholder": "المدينة (مثل: الدار البيضاء، الرباط...)",
+    "hero.provider_placeholder": "البحث عن مقدم خدمة محدد (اختياري)",
     
     // Services
     "services.title": "خدماتنا الشائعة",
     "services.subtitle": "اكتشف مجموعتنا الواسعة من الخدمات المهنية المتاحة في جميع أنحاء المغرب",
-    "services.explore": "استكشف",
+    "services.explore": "استكشف جميع الخدمات",
+    "services.popular_in": "الخدمات الشائعة في",
+    
+    // Testimonials
+    "testimonials.title": "ماذا يقول عملاؤنا",
+    "testimonials.subtitle": "آلاف العملاء الراضين يثقون بنا",
     
     // Providers
     "providers.title": "مقدمو خدمات معتمدون",
@@ -153,7 +174,14 @@ const translations = {
     // Club Pro
     "club_pro.title": "انضم إلى نخبة مقدمي الخدمات",
     "club_pro.subtitle": "احصل على ميزات مميزة وزد من ظهورك مع برنامج نادي المحترفين المعتمد",
+    "club_pro.home_subtitle": "احصل على المشاريع الكبيرة واستفد من المزايا الحصرية مقابل 50 درهم فقط شهرياً.",
     "club_pro.cta": "أصبح محترف نادي",
+    "club_pro.join_cta": "انضم لنادي المحترفين - 50 درهم/شهر",
+    "club_pro.badge_benefit": "شارة نادي المحترفين للتميز",
+    "club_pro.priority_benefit": "الأولوية في نتائج البحث",
+    "club_pro.support_benefit": "دعم مخصص لمقدمي خدمات نادي المحترفين",
+    "club_pro.exclusive_access": "🏆 وصول حصري",
+    "club_pro.large_projects": "المشاريع الكبيرة حصرية لنادي المحترفين",
     "club_pro.verification.title": "التحقق الكامل",
     "club_pro.verification.desc": "المستندات المهنية المعتمدة: البراءة، السجل التجاري، التأمين والتعرف على الوجه",
     "club_pro.visibility.title": "ظهور مميز",

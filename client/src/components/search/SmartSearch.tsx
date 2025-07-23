@@ -40,9 +40,9 @@ export default function SmartSearch({
   ];
 
   return (
-    <div className={`max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
-      <div className="flex items-center space-x-3">
-        {/* Service Search - Required */}
+    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-6 mb-12 ${className}`}>
+      {/* First row: Service and City */}
+      <div className="flex items-center space-x-4 mb-4">
         <div className="flex items-center space-x-3 px-4 flex-1">
           <Search className="w-6 h-6 text-gray-400" />
           <input 
@@ -54,29 +54,16 @@ export default function SmartSearch({
           />
         </div>
         
-        {/* Provider Search - Optional */}
-        <div className="flex items-center space-x-2 px-3 border-l border-gray-200">
-          <input 
-            className="w-48 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
-            placeholder="Prestataire (optionnel)"
-            value={provider}
-            onChange={(e) => setProvider(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-        </div>
-        
-        {/* City Selector */}
-        <div className="relative">
-          <select
+        {/* City Input with Suggestions */}
+        <div className="relative flex-1 max-w-xs">
+          <input
+            className="w-full py-4 px-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-orange-300"
+            placeholder={t("hero.city_placeholder")}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 pr-10 text-gray-700 focus:outline-none focus:border-orange-300 cursor-pointer"
-          >
-            {cities.map((city) => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            onKeyPress={handleKeyPress}
+          />
+          <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
         </div>
         
         <button 
@@ -86,6 +73,18 @@ export default function SmartSearch({
           <Search className="w-5 h-5" />
           <span>{t("hero.search_button")}</span>
         </button>
+      </div>
+      
+      {/* Second row: Provider Search - Optional */}
+      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl">
+        <Search className="w-5 h-5 text-gray-400" />
+        <input 
+          className="flex-1 py-2 text-base placeholder-gray-400 bg-transparent border-none focus:outline-none"
+          placeholder={t("hero.provider_placeholder")}
+          value={provider}
+          onChange={(e) => setProvider(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
       </div>
       
       {/* Suggestions rapides */}

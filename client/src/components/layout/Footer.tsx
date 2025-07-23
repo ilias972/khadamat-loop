@@ -16,7 +16,7 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-orange-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {/* Brand Column */}
           <div>
             <div className="mb-6">
@@ -40,18 +40,7 @@ export default function Footer() {
             </div>
           </div>
           
-          {/* Services Column */}
-          <div>
-            <h4 className="text-lg font-bold mb-6">{t("footer.services")}</h4>
-            <ul className="space-y-3">
-              <li><Link href="/services" className="text-gray-300 hover:text-orange-400 transition-colors">Plomberie</Link></li>
-              <li><Link href="/services" className="text-gray-300 hover:text-orange-400 transition-colors">Électricité</Link></li>
-              <li><Link href="/services" className="text-gray-300 hover:text-orange-400 transition-colors">Ménage</Link></li>
-              <li><Link href="/services" className="text-gray-300 hover:text-orange-400 transition-colors">Jardinage</Link></li>
-              <li><Link href="/services" className="text-gray-300 hover:text-orange-400 transition-colors">Peinture</Link></li>
-              <li><Link href="/sos" className="text-gray-300 hover:text-orange-400 transition-colors">Service SOS</Link></li>
-            </ul>
-          </div>
+
           
           {/* Company Column */}
           <div>

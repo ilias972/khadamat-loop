@@ -71,10 +71,10 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Services populaires à <span className="text-orange-500" id="user-city">Casablanca</span>
+              {t("services.popular_in")} <span className="text-orange-500" id="user-city">{t("hero.location")}</span>
             </h2>
             <p className="text-xl text-gray-600">
-              Les services les plus demandés dans votre ville
+              {t("services.subtitle")}
             </p>
           </div>
           
@@ -112,7 +112,7 @@ export default function Index() {
           {/* Bouton voir plus */}
           <div className="text-center mt-12">
             <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
-              Voir tous les services
+              {t("services.explore")}
             </button>
           </div>
         </div>
@@ -169,11 +169,11 @@ export default function Index() {
               </div>
               
               <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Rejoignez l'élite des prestataires
+                {t("club_pro.title")}
               </h2>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Accédez aux <strong>projets de grandes ampleurs</strong> et bénéficiez d'avantages exclusifs pour seulement 50 DH/mois.
+                {t("club_pro.home_subtitle")}
               </p>
               
               <div className="space-y-4 mb-8">
@@ -181,21 +181,21 @@ export default function Index() {
                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">✓</span>
                   </div>
-                  <span className="font-medium text-gray-800">Badge Club Pro pour se démarquer</span>
+                  <span className="font-medium text-gray-800">{t("club_pro.badge_benefit")}</span>
                 </div>
                 
                 <div className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl">
                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Search className="w-4 h-4 text-white" />
                   </div>
-                  <span className="font-medium text-gray-800">Priorité dans les résultats de recherche</span>
+                  <span className="font-medium text-gray-800">{t("club_pro.priority_benefit")}</span>
                 </div>
                 
                 <div className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl">
                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Headphones className="w-4 h-4 text-white" />
                   </div>
-                  <span className="font-medium text-gray-800">Support dédié aux prestataires Club Pro</span>
+                  <span className="font-medium text-gray-800">{t("club_pro.support_benefit")}</span>
                 </div>
                 
                 {/* Avantage principal - mis en évidence */}
@@ -204,14 +204,14 @@ export default function Index() {
                     <Building className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <span className="font-bold text-orange-800 block">🏆 ACCÈS EXCLUSIF</span>
-                    <span className="font-medium text-gray-800">Projets de grandes ampleurs réservés aux Club Pro</span>
+                    <span className="font-bold text-orange-800 block">{t("club_pro.exclusive_access")}</span>
+                    <span className="font-medium text-gray-800">{t("club_pro.large_projects")}</span>
                   </div>
                 </div>
               </div>
               
               <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
-                Devenir Club Pro - 50 DH/mois
+                {t("club_pro.join_cta")}
               </button>
             </div>
             
@@ -241,10 +241,10 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Ce que disent nos utilisateurs
+              {t("testimonials.title")}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Des milliers de clients satisfaits nous font confiance
+              {t("testimonials.subtitle")}
             </p>
           </div>
           
