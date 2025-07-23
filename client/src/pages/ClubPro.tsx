@@ -57,7 +57,6 @@ export default function ClubPro() {
       <section className="bg-gradient-to-br from-orange-500 to-orange-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="inline-flex items-center space-x-3 rtl:space-x-reverse bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8">
-            <Crown className="w-6 h-6 text-yellow-300" />
             <span className="font-bold text-lg">{t("nav.club_pro")}</span>
           </div>
           
