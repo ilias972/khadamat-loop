@@ -34,43 +34,36 @@ export default function SmartSearch({
   };
 
   return (
-    <div className={`max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-2 mb-12 ${className}`}>
+    <div className={`max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
       <div className="flex items-center space-x-4">
-        {/* Recherche service */}
-        <div className="flex-1 flex items-center space-x-3 px-6">
+        <div className="flex items-center space-x-3 px-4 flex-1">
           <Search className="w-6 h-6 text-gray-400" />
           <input 
             className="flex-1 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
-            placeholder="Que recherchez-vous ?"
+            placeholder="Rechercher un service (ex: plombier à Casablanca)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={handleKeyPress}
           />
         </div>
         
-        {/* Séparateur */}
-        <div className="w-px h-8 bg-gray-200"></div>
-        
-        {/* Recherche ville */}
-        <div className="flex items-center space-x-3 px-6">
-          <MapPin className="w-5 h-5 text-gray-400" />
-          <input 
-            className="w-40 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
-            placeholder="Choisissez votre ville"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            onKeyPress={handleKeyPress}
-            onFocus={(e) => e.target.placeholder = ''}
-            onBlur={(e) => e.target.placeholder = 'Choisissez votre ville'}
-          />
-        </div>
-        
         <button 
           onClick={handleSearch}
-          className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105"
+          className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 flex items-center space-x-2"
         >
-          Rechercher
+          <Search className="w-5 h-5" />
+          <span>Rechercher</span>
         </button>
+      </div>
+      
+      {/* Suggestions rapides */}
+      <div className="flex flex-wrap gap-2 mt-4 px-4">
+        <span className="text-sm text-gray-500">Suggestions :</span>
+        {['Plombier Casablanca', 'Ménage Rabat', 'Électricien Marrakech', 'Jardinage Fès'].map((suggestion, index) => (
+          <button key={index} className="text-sm bg-orange-50 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-100 transition-colors">
+            {suggestion}
+          </button>
+        ))}
       </div>
     </div>
   );

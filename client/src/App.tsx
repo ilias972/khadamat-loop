@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileTabBar from "@/components/layout/MobileTabBar";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 // Pages
 import Index from "@/pages/Index";
@@ -26,6 +27,7 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <ScrollToTop />
       <Header />
       <main className="pb-20 md:pb-0">
         <Switch>

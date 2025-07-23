@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Globe } from "lucide-react";
+import LanguageToggle from "@/components/ui/LanguageToggle";
 
 export default function Header() {
   const { t, language, toggleLanguage } = useLanguage();
@@ -49,18 +49,7 @@ export default function Header() {
             🚨 SOS 24/7
           </Link>
           
-          {/* Sélecteur de langue */}
-          <div className="flex items-center space-x-2 px-3 py-2 border border-gray-200 rounded-lg hover:border-orange-300 transition-colors">
-            <Globe className="w-4 h-4 text-gray-500" />
-            <select 
-              className="bg-transparent text-sm text-gray-700 focus:outline-none"
-              value={language}
-              onChange={(e) => toggleLanguage()}
-            >
-              <option value="fr">FR</option>
-              <option value="ar">AR</option>
-            </select>
-          </div>
+          <LanguageToggle />
           
           {/* Connexion avec même animation */}
           <Link href="/login">

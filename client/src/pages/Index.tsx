@@ -5,7 +5,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle } from "lucide-react";
+import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star } from "lucide-react";
 import type { Service, ProviderWithUser } from "@shared/schema";
 
 export default function Index() {
@@ -18,7 +18,7 @@ export default function Index() {
 
   // Fetch Club Pro providers
   const { data: providers, isLoading: providersLoading } = useQuery<ProviderWithUser[]>({
-    queryKey: ["/api/providers", { clubPro: true }],
+    queryKey: ["/api/providers?clubPro=true"],
   });
 
 
@@ -215,10 +215,10 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Témoignages */}
-      <section className="py-16 bg-white">
+      {/* Section avis utilisateurs */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Ce que disent nos utilisateurs
             </h2>
@@ -227,24 +227,106 @@ export default function Index() {
             </p>
           </div>
           
-          {providersLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-white rounded-3xl h-80 animate-pulse"></div>
-              ))}
+          {/* Grid des avis */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Fatima El Mansouri",
+                city: "Casablanca",
+                service: "Ménage",
+                rating: 5,
+                comment: "Service impeccable ! La femme de ménage était ponctuelle et très professionnelle. Je recommande vivement Khadamat.",
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616c9c8a6c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                date: "Il y a 2 jours"
+              },
+              {
+                name: "Mohamed Benali",
+                city: "Rabat", 
+                service: "Plomberie",
+                rating: 5,
+                comment: "Problème de fuite résolu en 30 minutes. Le plombier était compétent et le prix très raisonnable. Excellent service !",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                date: "Il y a 5 jours"
+              },
+              {
+                name: "Aicha Zerouali",
+                city: "Marrakech",
+                service: "Jardinage", 
+                rating: 5,
+                comment: "Mon jardin n'a jamais été aussi beau ! L'équipe de jardinage était soigneuse et a respecté tous mes souhaits.",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                date: "Il y a 1 semaine"
+              },
+              {
+                name: "Omar Tazi",
+                city: "Fès",
+                service: "Électricité",
+                rating: 5,
+                comment: "Installation électrique parfaite. L'électricien était très professionnel et a expliqué chaque étape. Service au top !",
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                date: "Il y a 3 jours"
+              }
+            ].map((review, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                {/* Header de l'avis */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <img 
+                      src={review.avatar} 
+                      alt={review.name}
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-orange-100"
+                    />
+                    <div>
+                      <h4 className="font-bold text-gray-900">{review.name}</h4>
+                      <p className="text-sm text-gray-500">{review.city}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Badge service */}
+                  <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-full text-xs font-medium">
+                    {review.service}
+                  </span>
+                </div>
+                
+                {/* Étoiles */}
+                <div className="flex items-center space-x-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-200'}`} />
+                  ))}
+                  <span className="text-sm text-gray-500 ml-2">{review.date}</span>
+                </div>
+                
+                {/* Commentaire */}
+                <p className="text-gray-600 leading-relaxed text-sm italic">
+                  "{review.comment}"
+                </p>
+                
+                {/* Badge vérifié */}
+                <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-100">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-xs text-green-600 font-medium">Avis vérifié</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Statistiques globales */}
+          <div className="text-center mt-12 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <div className="text-3xl font-bold text-orange-500 mb-2">4.9★</div>
+                <div className="text-gray-600">Note moyenne</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-orange-500 mb-2">12,547</div>
+                <div className="text-gray-600">Avis clients</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-orange-500 mb-2">98%</div>
+                <div className="text-gray-600">Satisfaction</div>
+              </div>
             </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {providers?.slice(0, 3).map((provider) => (
-                <ProviderCard 
-                  key={provider.id} 
-                  provider={provider}
-                  onContact={() => console.log("Contact provider:", provider.user.firstName)}
-                  onToggleFavorite={() => console.log("Toggle favorite:", provider.id)}
-                />
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 

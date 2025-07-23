@@ -1,0 +1,393 @@
+MODIFICATIONS À IMPLÉMENTER
+1. BARRE DE RECHERCHE UNIFIÉE
+Remplace la barre de recherche séparée par une barre unifiée :
+
+jsx
+// pages/Index.tsx - Barre de recherche unifiée
+<div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12">
+  <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-3 px-4 flex-1">
+      <Search className="w-6 h-6 text-gray-400" />
+      <input 
+        className="flex-1 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
+        placeholder="Rechercher un service (ex: plombier à Casablanca)"
+      />
+    </div>
+    
+    <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 flex items-center space-x-2">
+      <Search className="w-5 h-5" />
+      <span>Rechercher</span>
+    </button>
+  </div>
+  
+  {/* Suggestions rapides */}
+  <div className="flex flex-wrap gap-2 mt-4 px-4">
+    <span className="text-sm text-gray-500">Suggestions :</span>
+    {['Plombier Casablanca', 'Ménage Rabat', 'Électricien Marrakech', 'Jardinage Fès'].map((suggestion, index) => (
+      <button key={index} className="text-sm bg-orange-50 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-100 transition-colors">
+        {suggestion}
+      </button>
+    ))}
+  </div>
+</div>
+2. SÉLECTEUR DE LANGUE FLUIDE
+Remplace le sélecteur dropdown par un toggle moderne :
+
+jsx
+// components/LanguageToggle.tsx - Nouveau composant
+const LanguageToggle = () => {
+  const [isArabic, setIsArabic] = useState(false);
+  
+  return (
+    <div className="flex items-center space-x-2">
+      <span className={`text-sm font-medium transition-colors ${!isArabic ? 'text-orange-500' : 'text-gray-400'}`}>
+        FR
+      </span>
+      
+      <button 
+        onClick={() => setIsArabic(!isArabic)}
+        className={`relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none ${
+          isArabic ? 'bg-orange-500' : 'bg-gray-300'
+        }`}
+      >
+        <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${
+          isArabic ? 'right-0.5' : 'left-0.5'
+        }`} />
+      </button>
+      
+      <span className={`text-sm font-medium transition-colors ${isArabic ? 'text-orange-500' : 'text-gray-400'}`}>
+        AR
+      </span>
+    </div>
+  );
+};
+
+// Dans Header.tsx - remplace le sélecteur
+<div className="flex items-center space-x-4">
+  <a href="/sos" className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md border border-red-400">
+    🚨 SOS 24/7
+  </a>
+  
+  <LanguageToggle />
+  
+  <button className="px-4 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105">
+    Connexion
+  </button>
+</div>
+3. SECTION AVIS UTILISATEURS
+Ajoute cette section après "Ce que disent nos utilisateurs" :
+
+jsx
+// pages/Index.tsx - Section avis après le titre
+<section className="py-16 bg-gray-50">
+  <div className="max-w-7xl mx-auto px-4">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Ce que disent nos utilisateurs
+      </h2>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        Des milliers de clients satisfaits nous font confiance
+      </p>
+    </div>
+    
+    {/* Grid des avis */}
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {[
+        {
+          name: "Fatima El Mansouri",
+          city: "Casablanca",
+          service: "Ménage",
+          rating: 5,
+          comment: "Service impeccable ! La femme de ménage était ponctuelle et très professionnelle. Je recommande vivement Khadamat.",
+          avatar: "/avatars/fatima.jpg",
+          date: "Il y a 2 jours"
+        },
+        {
+          name: "Mohamed Benali",
+          city: "Rabat", 
+          service: "Plomberie",
+          rating: 5,
+          comment: "Problème de fuite résolu en 30 minutes. Le plombier était compétent et le prix très raisonnable. Excellent service !",
+          avatar: "/avatars/mohamed.jpg",
+          date: "Il y a 5 jours"
+        },
+        {
+          name: "Aicha Zerouali",
+          city: "Marrakech",
+          service: "Jardinage", 
+          rating: 5,
+          comment: "Mon jardin n'a jamais été aussi beau ! L'équipe de jardinage était soigneuse et a respecté tous mes souhaits.",
+          avatar: "/avatars/aicha.jpg",
+          date: "Il y a 1 semaine"
+        },
+        {
+          name: "Omar Tazi",
+          city: "Fès",
+          service: "Électricité",
+          rating: 5,
+          comment: "Installation électrique parfaite. L'électricien était très professionnel et a expliqué chaque étape. Service au top !",
+          avatar: "/avatars/omar.jpg",
+          date: "Il y a 3 jours"
+        }
+      ].map((review, index) => (
+        <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          {/* Header de l'avis */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <img 
+                src={review.avatar} 
+                alt={review.name}
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-orange-100"
+              />
+              <div>
+                <h4 className="font-bold text-gray-900">{review.name}</h4>
+                <p className="text-sm text-gray-500">{review.city}</p>
+              </div>
+            </div>
+            
+            {/* Badge service */}
+            <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-full text-xs font-medium">
+              {review.service}
+            </span>
+          </div>
+          
+          {/* Étoiles */}
+          <div className="flex items-center space-x-1 mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-200'}`} />
+            ))}
+            <span className="text-sm text-gray-500 ml-2">{review.date}</span>
+          </div>
+          
+          {/* Commentaire */}
+          <p className="text-gray-600 leading-relaxed text-sm italic">
+            "{review.comment}"
+          </p>
+          
+          {/* Badge vérifié */}
+          <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-100">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            <span className="text-xs text-green-600 font-medium">Avis vérifié</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    {/* Statistiques globales */}
+    <div className="text-center mt-12 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
+      <div className="grid grid-cols-3 gap-8">
+        <div>
+          <div className="text-3xl font-bold text-orange-500 mb-2">4.9★</div>
+          <div className="text-gray-600">Note moyenne</div>
+        </div>
+        <div>
+          <div className="text-3xl font-bold text-orange-500 mb-2">12,547</div>
+          <div className="text-gray-600">Avis clients</div>
+        </div>
+        <div>
+          <div className="text-3xl font-bold text-orange-500 mb-2">98%</div>
+          <div className="text-gray-600">Satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+4. NAVIGATION - SCROLL TO TOP
+Ajoute ce composant et cette logique pour le scroll automatique :
+
+jsx
+// components/ScrollToTop.tsx
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }, [pathname]);
+
+  return null;
+};
+
+// Dans App.tsx - ajoute le composant
+import ScrollToTop from './components/ScrollToTop';
+
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <Routes>
+        {/* Tes routes */}
+      </Routes>
+    </Router>
+  );
+}
+5. TOUTES LES ROUTES - Configuration complète
+Crée le fichier de routes complet :
+
+jsx
+// App.tsx - Routes complètes
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
+
+// Pages principales
+import Index from './pages/Index';
+import Register from './pages/Register';
+import RegisterClient from './pages/RegisterClient';
+import RegisterProvider from './pages/RegisterProvider';
+import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+
+// Pages services
+import BecomeProvider from './pages/BecomeProvider';
+import Project from './pages/Project';
+import Providers from './pages/Providers';
+import ProviderDetail from './pages/ProviderDetail';
+import Search from './pages/Search';
+
+// Pages premium
+import ClubPro from './pages/ClubPro';
+import ClubProRegister from './pages/ClubProRegister';
+
+// Pages institutionnelles
+import SOS from './pages/SOS';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Support from './pages/Support';
+
+// Pages légales
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import FAQ from './pages/FAQ';
+
+// Pages corporate
+import Careers from './pages/Careers';
+import Press from './pages/Press';
+import Partners from './pages/Partners';
+
+// Pages d'erreur
+import NotFound from './pages/NotFound';
+
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <div className="App">
+        <Routes>
+          {/* Pages principales */}
+          <Route path="/" element={<Index />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/register/client" element={<RegisterClient />} />
+          <Route path="/register/provider" element={<RegisterProvider />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* Services */}
+          <Route path="/become-provider" element={<BecomeProvider />} />
+          <Route path="/project" element={<Project />} />
+          <Route path="/providers" element={<Providers />} />
+          <Route path="/provider/:id" element={<ProviderDetail />} />
+          <Route path="/search" element={<Search />} />
+
+          {/* Club Pro */}
+          <Route path="/club-pro" element={<ClubPro />} />
+          <Route path="/club-pro/register" element={<ClubProRegister />} />
+
+          {/* Service d'urgence */}
+          <Route path="/sos" element={<SOS />} />
+
+          {/* Pages institutionnelles */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/support" element={<Support />} />
+
+          {/* Pages légales */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/faq" element={<FAQ />} />
+
+          {/* Corporate */}
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/partners" element={<Partners />} />
+
+          {/* Services par catégorie */}
+          <Route path="/services/plomberie" element={<ServiceCategory category="plomberie" />} />
+          <Route path="/services/electricite" element={<ServiceCategory category="electricite" />} />
+          <Route path="/services/menage" element={<ServiceCategory category="menage" />} />
+          <Route path="/services/jardinage" element={<ServiceCategory category="jardinage" />} />
+          <Route path="/services/peinture" element={<ServiceCategory category="peinture" />} />
+
+          {/* Dashboard utilisateur */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/history" element={<History />} />
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+6. COMPOSANT DE NAVIGATION AVEC LIENS
+Met à jour tous les liens dans les composants :
+
+jsx
+// components/Header.tsx - Navigation avec vrais liens
+import { Link, useLocation } from 'react-router-dom';
+
+const Header = () => {
+  const location = useLocation();
+  
+  return (
+    <header className="fixed top-0 w-full z-50 glassmorphism border-b border-orange-100">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="w-8 h-8 gradient-orange rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">K</span>
+          </div>
+          <span className="text-xl font-bold text-gray-900">Khadamat</span>
+        </Link>
+        
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center space-x-2">
+          <Link 
+            to="/" 
+            className={`px-4 py-2 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105 ${
+              location.pathname === '/' ? 'text-orange-500 bg-orange-50' : 'text-gray-700 hover:text-orange-500'
+            }`}
+          >
+            Accueil
+          </Link>
+          <Link 
+            to="/club-pro" 
+            className={`px-4 py-2 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105 ${
+              location.pathname.includes('/club-pro') ? 'text-orange-500 bg-orange-50' : 'text-gray-700 hover:text-orange-500'
+            }`}
+          >
+            Club Pro
+          </Link>
+          <Link 
+            to="/project" 
+            className={`px-4 py-2 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105 ${
+              location.pathname === '/project' ? 'text-orange-500 bg-orange-50' : 'text-gray-700 hover:text-orange-500'
+            }`}
+          >
+            Projet
+          </Link>
+        </nav>
+        
+        {/* Actions */}
+        <div className="flex items-center space-x-4">
+          <Link to="/sos" className="bg-red-500 hover:bg-red-600 text-white px-4
