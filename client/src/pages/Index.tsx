@@ -5,7 +5,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star } from "lucide-react";
+import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building } from "lucide-react";
 import type { Service, ProviderWithUser } from "@shared/schema";
 
 export default function Index() {
@@ -173,20 +173,41 @@ export default function Index() {
               </h2>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Obtenez plus de visibilité, zéro commission et un badge de confiance pour seulement 50 DH/mois.
+                Accédez aux <strong>projets de grandes ampleurs</strong> et bénéficiez d'avantages exclusifs pour seulement 50 DH/mois.
               </p>
               
               <div className="space-y-4 mb-8">
-                {[
-                  '✅ Badge "Vérifié" sur votre profil',
-                  '✅ Priorité dans les résultats',
-                  '✅ 0% de commission',
-                  '✅ Support prioritaire 24/7'
-                ].map((benefit, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <span className="text-lg">{benefit}</span>
+                <div className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-sm">✓</span>
                   </div>
-                ))}
+                  <span className="font-medium text-gray-800">Badge Club Pro pour se démarquer</span>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Search className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800">Priorité dans les résultats de recherche</span>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Headphones className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800">Support dédié aux prestataires Club Pro</span>
+                </div>
+                
+                {/* Avantage principal - mis en évidence */}
+                <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-yellow-400/20 to-orange-300/20 rounded-xl border-2 border-yellow-300/50">
+                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Building className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-orange-800 block">🏆 ACCÈS EXCLUSIF</span>
+                    <span className="font-medium text-gray-800">Projets de grandes ampleurs réservés aux Club Pro</span>
+                  </div>
+                </div>
               </div>
               
               <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">

@@ -193,37 +193,44 @@ export default function ClubPro() {
           <div className="mt-12">
             <h4 className="text-lg font-semibold text-gray-900 mb-6">Moyens de paiement acceptés</h4>
             <div className="flex flex-wrap justify-center items-center gap-6">
-              <div className="flex items-center space-x-2 bg-red-50 px-4 py-2 rounded-lg">
-                <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">inwi</span>
+              {/* inwi money */}
+              <div className="flex items-center space-x-3 bg-red-50 px-4 py-3 rounded-lg hover:bg-red-100 transition-colors">
+                <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center shadow-md">
+                  <span className="text-white text-sm font-bold">inwi</span>
                 </div>
-                <span className="font-medium text-gray-700">inwi money</span>
+                <span className="font-semibold text-gray-700">inwi money</span>
               </div>
               
-              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
-                <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">iam</span>
+              {/* Maroc Telecom */}
+              <div className="flex items-center space-x-3 bg-blue-50 px-4 py-3 rounded-lg hover:bg-blue-100 transition-colors">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                  <span className="text-white text-xs font-bold">MT</span>
                 </div>
-                <span className="font-medium text-gray-700">MT Cash</span>
+                <span className="font-semibold text-gray-700">MT Cash</span>
               </div>
               
-              <div className="flex items-center space-x-2 bg-orange-50 px-4 py-2 rounded-lg">
-                <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
+              {/* Orange Money */}
+              <div className="flex items-center space-x-3 bg-orange-50 px-4 py-3 rounded-lg hover:bg-orange-100 transition-colors">
+                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
                   <span className="text-white text-xs font-bold">📱</span>
                 </div>
-                <span className="font-medium text-gray-700">Orange Money</span>
+                <span className="font-semibold text-gray-700">Orange Money</span>
               </div>
               
-              <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg">
-                <CreditCard className="w-8 h-8 text-green-500" />
-                <span className="font-medium text-gray-700">Carte bancaire</span>
-              </div>
-              
-              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
-                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">PP</span>
+              {/* PayPal avec logo amélioré */}
+              <div className="flex items-center space-x-3 bg-blue-50 px-4 py-3 rounded-lg hover:bg-blue-100 transition-colors">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a9.124 9.124 0 0 1-.478 1.634c-.99 4.945-4.24 6.674-8.424 6.674h-2.13c-.524 0-.968.382-1.05.9L7.076 21.337"/>
+                  </svg>
                 </div>
-                <span className="font-medium text-gray-700">PayPal</span>
+                <span className="font-semibold text-gray-700">PayPal</span>
+              </div>
+              
+              {/* Carte bancaire */}
+              <div className="flex items-center space-x-3 bg-green-50 px-4 py-3 rounded-lg hover:bg-green-100 transition-colors">
+                <CreditCard className="w-10 h-10 text-green-600" />
+                <span className="font-semibold text-gray-700">Carte bancaire</span>
               </div>
             </div>
           </div>

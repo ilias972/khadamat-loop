@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 
 interface SmartSearchProps {
-  onSearch?: (query: string, location: string) => void;
+  onSearch?: (query: string, location: string, provider?: string) => void;
   placeholder?: string;
   defaultLocation?: string;
   className?: string;
@@ -20,10 +20,11 @@ export default function SmartSearch({
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState(defaultLocation);
+  const [provider, setProvider] = useState("");
 
   const handleSearch = () => {
     if (onSearch) {
-      onSearch(query, location);
+      onSearch(query, location, provider);
     }
   };
 
@@ -39,8 +40,9 @@ export default function SmartSearch({
   ];
 
   return (
-    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
-      <div className="flex items-center space-x-4">
+    <div className={`max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
+      <div className="flex items-center space-x-3">
+        {/* Service Search - Required */}
         <div className="flex items-center space-x-3 px-4 flex-1">
           <Search className="w-6 h-6 text-gray-400" />
           <input 
@@ -48,6 +50,17 @@ export default function SmartSearch({
             placeholder={t("hero.search_placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+        </div>
+        
+        {/* Provider Search - Optional */}
+        <div className="flex items-center space-x-2 px-3 border-l border-gray-200">
+          <input 
+            className="w-48 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
+            placeholder="Prestataire (optionnel)"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
             onKeyPress={handleKeyPress}
           />
         </div>
