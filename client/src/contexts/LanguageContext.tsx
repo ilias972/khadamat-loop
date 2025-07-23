@@ -12,9 +12,11 @@ interface LanguageContextType {
 const translations = {
   fr: {
     // Navigation
+    "nav.home": "Accueil",
     "nav.services": "Services",
     "nav.providers": "Prestataires",
     "nav.club_pro": "Club Pro",
+    "nav.project": "Projets",
     "nav.support": "Support",
     "nav.login": "Connexion",
     "nav.register": "Inscription",
@@ -108,9 +110,11 @@ const translations = {
   },
   ar: {
     // Navigation
+    "nav.home": "الرئيسية",
     "nav.services": "الخدمات",
     "nav.providers": "مقدمو الخدمات",
     "nav.club_pro": "نادي المحترفين",
+    "nav.project": "المشاريع",
     "nav.support": "الدعم",
     "nav.login": "تسجيل الدخول",
     "nav.register": "التسجيل",

@@ -155,7 +155,7 @@ export default function ClubPro() {
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-orange-500 font-bold text-sm">✓</span>
                 </div>
-                <span className="font-medium">Badge "Club Pro" orange et blanc sur votre profil</span>
+                <span className="font-medium">Badge Club Pro pour se démarquer</span>
               </div>
               
               <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
@@ -169,7 +169,7 @@ export default function ClubPro() {
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                   <Headphones className="w-4 h-4 text-orange-500" />
                 </div>
-                <span className="font-medium">Support dédié aux adhérents Club Pro</span>
+                <span className="font-medium">Support dédié aux prestataires Club Pro</span>
               </div>
               
               {/* Avantage principal - mis en évidence */}

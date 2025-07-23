@@ -9,9 +9,9 @@ export default function MobileTabBar() {
   const navItems = [
     { icon: Home, label: t("mobile.home"), href: "/" },
     { icon: Search, label: t("mobile.search"), href: "/services" },
-    { icon: Plus, label: t("mobile.post"), href: "/register" },
-    { icon: MessageCircle, label: t("mobile.messages"), href: "/contact" },
-    { icon: User, label: t("mobile.profile"), href: "/login" },
+    { icon: Plus, label: t("mobile.post"), href: "/post-service" },
+    { icon: MessageCircle, label: t("mobile.messages"), href: "/messages" },
+    { icon: User, label: t("mobile.profile"), href: "/profile" },
   ];
 
   return (

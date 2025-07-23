@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 
 interface SmartSearchProps {
   onSearch?: (query: string, location: string) => void;
@@ -33,18 +33,37 @@ export default function SmartSearch({
     }
   };
 
+  const cities = [
+    "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", 
+    "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan"
+  ];
+
   return (
-    <div className={`max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
+    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-3 mb-12 ${className}`}>
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-3 px-4 flex-1">
           <Search className="w-6 h-6 text-gray-400" />
           <input 
             className="flex-1 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
-            placeholder="Rechercher un service (ex: plombier à Casablanca)"
+            placeholder={t("hero.search_placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={handleKeyPress}
           />
+        </div>
+        
+        {/* City Selector */}
+        <div className="relative">
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 pr-10 text-gray-700 focus:outline-none focus:border-orange-300 cursor-pointer"
+          >
+            {cities.map((city) => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
         </div>
         
         <button 
@@ -52,7 +71,7 @@ export default function SmartSearch({
           className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 flex items-center space-x-2"
         >
           <Search className="w-5 h-5" />
-          <span>Rechercher</span>
+          <span>{t("hero.search_button")}</span>
         </button>
       </div>
       

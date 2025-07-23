@@ -17,7 +17,7 @@ export default function LanguageToggle() {
         }`}
       >
         <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${
-          isArabic ? 'right-0.5' : 'left-0.5'
+          isArabic ? 'left-0.5' : 'right-0.5'
         }`} />
       </button>
       

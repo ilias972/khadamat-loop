@@ -22,6 +22,9 @@ import Register from "@/pages/Register";
 import Login from "@/pages/Login";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Profile from "@/pages/Profile";
+import Messages from "@/pages/Messages";
+import PostService from "@/pages/PostService";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -41,6 +44,9 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/messages" component={Messages} />
+          <Route path="/post-service" component={PostService} />
           <Route component={NotFound} />
         </Switch>
       </main>

@@ -1,0 +1,47 @@
+# 🚀 PROMPT - MODIFICATIONS DERNIÈRES DEMANDES KHADAMAT
+
+**Contexte :** Appliquer uniquement les 7 modifications spécifiques demandées dans le dernier message.
+
+---
+
+## **MODIFICATIONS À APPLIQUER**
+
+### **1. GÉNÉRALISER AVANTAGES CLUB PRO**
+**DIRECTIVE :** Utilise les mêmes avantages Club Pro de la page dédiée dans TOUT le site :
+- Badge Club Pro pour se démarquer
+- Priorité dans les résultats de recherche  
+- Support dédié aux prestataires Club Pro
+- Accès aux projets de grandes ampleurs (le plus important)
+
+Applique dans : page d'accueil, cartes prestataires, page devenir prestataire, toutes mentions Club Pro.
+
+### **2. BARRE DE RECHERCHE - AJOUTER VILLE**
+**DIRECTIVE :** À côté de la barre de recherche service actuelle, ajoute un sélecteur déroulant pour choisir la ville avec les options : Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kénitra, Tétouan.
+
+### **3. FOOTER - NOM SITE EN BLANC**
+**DIRECTIVE :** Change la couleur du nom "Khadamat" dans le footer de noir vers blanc pour être cohérent avec les autres textes.
+
+### **4. PAGE CLUB PRO - CORRIGER FORMULATION**
+**DIRECTIVE :** Dans les avantages Club Pro, remplace "Badge Club Pro orange et blanc sur votre profil" par une formulation plus simple comme "Badge Club Pro pour se démarquer".
+
+### **5. CORRIGER "SUPPORT CLIENT"**
+**DIRECTIVE :** Remplace "Support client prioritaire" par "Support dédié aux prestataires Club Pro" car le Club Pro s'adresse aux prestataires, pas aux clients.
+
+### **6. ACTIVER TRADUCTION ARABE**
+**DIRECTIVE :** Le système de traduction ne fonctionne pas. Rends le site réellement bilingue :
+- Quand utilisateur clique sur AR : tout le contenu passe en arabe (sauf "Khadamat")
+- Traduis tous les textes : navigation, boutons, placeholders, avis, etc.
+- Active le mode RTL pour l'arabe
+
+### **7. CORRIGER BOUTON TRADUCTION**
+**DIRECTIVE :** Le toggle de langue est inversé. Quand utilisateur clique pour passer en arabe :
+- Le curseur doit aller vers AR 
+- AR doit devenir orange (actif)
+- FR doit devenir gris (inactif)
+- Le site doit réellement changer de langue
+
+**Actuellement c'est inversé : on clique sur arabe mais le bouton indique qu'on est en français.**
+
+---
+
+**RÉSUMÉ :** 7 corrections précises à appliquer pour finaliser ces fonctionnalités spécifiques.
