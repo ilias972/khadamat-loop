@@ -1,13 +1,12 @@
-import { useState } from "react";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Star, Tag, Rocket, Shield, CheckCircle, ArrowRight, Users, TrendingUp, Award } from "lucide-react";
+import { Crown, Star, Tag, Rocket, Shield, CheckCircle, ArrowRight, Users, TrendingUp, Award, CreditCard } from "lucide-react";
 
 export default function ClubPro() {
   const { t } = useLanguage();
-  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "yearly">("monthly");
 
   const features = [
     {
@@ -50,25 +49,7 @@ export default function ClubPro() {
     },
   ];
 
-  const plans = [
-    {
-      id: "monthly",
-      name: "Mensuel",
-      price: "299",
-      period: "/mois",
-      description: "Parfait pour commencer",
-      popular: false,
-    },
-    {
-      id: "yearly",
-      name: "Annuel",
-      price: "2990",
-      period: "/an",
-      originalPrice: "3588",
-      description: "2 mois offerts",
-      popular: true,
-    },
-  ];
+
 
   return (
     <div className="min-h-screen pt-20">
@@ -148,108 +129,89 @@ export default function ClubPro() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Choisissez Votre Plan
-            </h2>
-            <p className="text-xl text-gray-600">
-              Des tarifs transparents, sans engagement
-            </p>
-          </div>
-
-          {/* Plan Toggle */}
-          <div className="flex items-center justify-center mb-12">
-            <div className="bg-white rounded-xl p-2 shadow-lg">
-              <button
-                onClick={() => setSelectedPlan("monthly")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  selectedPlan === "monthly"
-                    ? "gradient-orange text-white shadow-md"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Mensuel
-              </button>
-              <button
-                onClick={() => setSelectedPlan("yearly")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all relative ${
-                  selectedPlan === "yearly"
-                    ? "gradient-orange text-white shadow-md"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Annuel
-                <Badge className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1">
-                  -17%
-                </Badge>
-              </button>
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">
+            Un seul abonnement, tous les avantages
+          </h2>
+          
+          <p className="text-xl text-gray-600 mb-12">
+            Rejoignez le Club Pro et boostez votre activité
+          </p>
+          
+          {/* Carte d'abonnement unique */}
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-2xl transform hover:scale-105 transition-all duration-300 max-w-md mx-auto">
+            <div className="bg-white/20 rounded-2xl p-6 mb-6">
+              <h3 className="text-2xl font-bold mb-2">Club Pro</h3>
+              <div className="text-5xl font-bold mb-2">50 DH</div>
+              <div className="text-orange-100">par mois</div>
+              <div className="text-sm text-orange-100 mt-2">
+                💍 Engagement 1 an
+              </div>
             </div>
+            
+            {/* Avantages */}
+            <div className="space-y-3 mb-8 text-left">
+              <div className="flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-white" />
+                <span>Badge "Vérifié" sur votre profil</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-white" />
+                <span>Priorité dans les résultats de recherche</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-white" />
+                <span>0% de commission sur les services</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-white" />
+                <span>Support prioritaire 24/7</span>
+              </div>
+            </div>
+            
+            <button className="w-full bg-white text-orange-500 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors">
+              Rejoindre maintenant
+            </button>
           </div>
-
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-2 gap-8">
-            {plans.map((plan) => (
-              <Card
-                key={plan.id}
-                className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl ${
-                  plan.popular
-                    ? "ring-2 ring-orange-500 shadow-xl scale-105"
-                    : "hover:shadow-lg"
-                } ${selectedPlan === plan.id ? "ring-2 ring-orange-400" : ""}`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 left-0 right-0 gradient-orange text-white text-center py-2 text-sm font-semibold">
-                    ⭐ Plus Populaire
-                  </div>
-                )}
-                
-                <CardHeader className={`text-center ${plan.popular ? "pt-12" : "pt-8"}`}>
-                  <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
-                    {plan.name}
-                  </CardTitle>
-                  <div className="mb-4">
-                    <div className="flex items-baseline justify-center space-x-2">
-                      <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                      <span className="text-xl text-gray-600">DH</span>
-                      <span className="text-gray-500">{plan.period}</span>
-                    </div>
-                    {plan.originalPrice && (
-                      <div className="text-sm text-gray-500 mt-2">
-                        <span className="line-through">{plan.originalPrice} DH/an</span>
-                        <span className="text-green-600 font-semibold ml-2">Économisez 598 DH</span>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-gray-600">{plan.description}</p>
-                </CardHeader>
-                
-                <CardContent className="px-8 pb-8">
-                  <Button
-                    className={`w-full py-4 text-lg font-semibold rounded-xl transition-all ${
-                      plan.popular
-                        ? "gradient-orange text-white border-0 hover:shadow-lg"
-                        : "border-2 border-orange-500 text-orange-600 hover:bg-orange-50"
-                    }`}
-                    onClick={() => console.log("Subscribe to", plan.name)}
-                  >
-                    {plan.popular ? "Commencer Maintenant" : "Choisir ce Plan"}
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-8">
-            <p className="text-gray-600 mb-4">
-              <Shield className="w-4 h-4 inline mr-2" />
-              Annulation possible à tout moment • Support client 24/7
-            </p>
-            <p className="text-sm text-gray-500">
-              * Prix en dirhams marocains, TVA incluse
-            </p>
+          
+          {/* Moyens de paiement */}
+          <div className="mt-12">
+            <h4 className="text-lg font-semibold text-gray-900 mb-6">Moyens de paiement acceptés</h4>
+            <div className="flex flex-wrap justify-center items-center gap-6">
+              <div className="flex items-center space-x-2 bg-red-50 px-4 py-2 rounded-lg">
+                <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">inwi</span>
+                </div>
+                <span className="font-medium text-gray-700">inwi money</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
+                <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">iam</span>
+                </div>
+                <span className="font-medium text-gray-700">MT Cash</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 bg-orange-50 px-4 py-2 rounded-lg">
+                <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">📱</span>
+                </div>
+                <span className="font-medium text-gray-700">Orange Money</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg">
+                <CreditCard className="w-8 h-8 text-green-500" />
+                <span className="font-medium text-gray-700">Carte bancaire</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">PP</span>
+                </div>
+                <span className="font-medium text-gray-700">PayPal</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

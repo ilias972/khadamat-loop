@@ -18,20 +18,12 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6 rtl:space-x-reverse">
             <Link 
-              href="/services" 
+              href="/" 
               className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/services" ? "text-orange-500" : ""
+                location === "/" ? "text-orange-500" : ""
               }`}
             >
-              {t("nav.services")}
-            </Link>
-            <Link 
-              href="/providers" 
-              className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/providers" ? "text-orange-500" : ""
-              }`}
-            >
-              {t("nav.providers")}
+              Accueil
             </Link>
             <Link 
               href="/club-pro" 
@@ -39,15 +31,23 @@ export default function Header() {
                 location === "/club-pro" ? "text-orange-500" : ""
               }`}
             >
-              {t("nav.club_pro")}
+              Club Pro
             </Link>
             <Link 
-              href="/sos" 
+              href="/project" 
               className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/sos" ? "text-orange-500" : ""
+                location === "/project" ? "text-orange-500" : ""
               }`}
             >
-              SOS
+              Projet
+            </Link>
+            
+            {/* Bouton SOS avec design rouge voyant */}
+            <Link 
+              href="/sos" 
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg border-2 border-red-200 animate-pulse"
+            >
+              🚨 SOS 24/7
             </Link>
           </nav>
         </div>

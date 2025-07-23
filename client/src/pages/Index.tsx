@@ -3,10 +3,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import SmartSearch from "@/components/search/SmartSearch";
 import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
-import ChatInterface from "@/components/messaging/ChatInterface";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Tag, Rocket, Shield } from "lucide-react";
+import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb } from "lucide-react";
 import type { Service, ProviderWithUser } from "@shared/schema";
 
 export default function Index() {
@@ -22,34 +21,7 @@ export default function Index() {
     queryKey: ["/api/providers", { clubPro: true }],
   });
 
-  // Mock data for chat demo
-  const mockContact = {
-    id: 1,
-    name: "Ahmed Benali",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    isOnline: true,
-  };
 
-  const mockMessages = [
-    {
-      id: 1,
-      text: "Bonjour ! J'ai bien reçu votre demande pour l'installation électrique. Je peux passer demain matin.",
-      isSent: false,
-      timestamp: "10:30",
-    },
-    {
-      id: 2,
-      text: "Parfait ! À quelle heure exactement ?",
-      isSent: true,
-      timestamp: "10:32",
-    },
-    {
-      id: 3,
-      text: "Entre 9h et 10h si ça vous convient. J'apporte tout le matériel nécessaire.",
-      isSent: false,
-      timestamp: "10:33",
-    },
-  ];
 
   const popularCategories = [
     "Plomberie",
@@ -94,37 +66,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Service Categories */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              {t("services.title")}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t("services.subtitle")}
-            </p>
-          </div>
-          
-          {servicesLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-2xl h-64 animate-pulse"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {services?.map((service) => (
-                <ServiceCard 
-                  key={service.id} 
-                  service={service}
-                  onClick={() => console.log("Navigate to service:", service.name)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+
 
       {/* Featured Providers */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
@@ -159,45 +101,86 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Chat Interface Demo */}
-      <section className="py-16 bg-white">
+      {/* Newsletter Section */}
+      <section className="py-16 bg-gradient-to-br from-orange-50 to-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                {t("chat.title")}
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                {t("chat.subtitle")}
-              </p>
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="w-20 h-20 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-8">
+              <Mail className="w-10 h-10 text-white" />
+            </div>
+            
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              Restez informé avec notre newsletter
+            </h2>
+            
+            <p className="text-xl text-gray-600 mb-12">
+              Inscrivez-vous gratuitement et ne manquez aucune actualité de Khadamat
+            </p>
+            
+            {/* Formulaire newsletter */}
+            <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-2 mb-12">
+              <div className="flex items-center space-x-3">
+                <input 
+                  type="email"
+                  className="flex-1 px-6 py-4 text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl"
+                  placeholder="Votre email"
+                />
+                <button className="gradient-orange text-white px-6 py-4 rounded-xl font-semibold transition-all hover:scale-105">
+                  S'inscrire
+                </button>
+              </div>
+            </div>
+            
+            {/* Avantages */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Ce que vous recevrez :</h3>
               
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="w-8 h-8 gradient-orange rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-white" />
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bell className="w-4 h-4 text-orange-500" />
                   </div>
-                  <span className="text-gray-700 font-medium">{t("chat.features.realtime")}</span>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Actualités du site</h4>
+                    <p className="text-gray-600 text-sm">Nouvelles fonctionnalités et mises à jour</p>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="w-8 h-8 gradient-orange rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-white" />
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <MapPin className="w-4 h-4 text-orange-500" />
                   </div>
-                  <span className="text-gray-700 font-medium">{t("chat.features.calls")}</span>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Prestataires locaux</h4>
+                    <p className="text-gray-600 text-sm">Nouveaux prestataires dans votre région</p>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="w-8 h-8 gradient-orange rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-white" />
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <Tag className="w-4 h-4 text-orange-500" />
                   </div>
-                  <span className="text-gray-700 font-medium">{t("chat.features.files")}</span>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Offres exclusives</h4>
+                    <p className="text-gray-600 text-sm">Réductions et promotions spéciales</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <Lightbulb className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Conseils utiles</h4>
+                    <p className="text-gray-600 text-sm">Astuces et guides pratiques</p>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <ChatInterface 
-              contact={mockContact}
-              messages={mockMessages}
-              onSendMessage={(message) => console.log("Send message:", message)}
-            />
+            <p className="text-sm text-gray-500 mt-6">
+              📧 Pas de spam, désabonnement en un clic
+            </p>
           </div>
         </div>
       </section>

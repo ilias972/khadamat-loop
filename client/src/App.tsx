@@ -15,6 +15,7 @@ import Index from "@/pages/Index";
 import Services from "@/pages/Services";
 import Providers from "@/pages/Providers";
 import ClubPro from "@/pages/ClubPro";
+import Project from "@/pages/Project";
 import SOS from "@/pages/SOS";
 import Register from "@/pages/Register";
 import Login from "@/pages/Login";
@@ -32,6 +33,7 @@ function Router() {
           <Route path="/services" component={Services} />
           <Route path="/providers" component={Providers} />
           <Route path="/club-pro" component={ClubPro} />
+          <Route path="/project" component={Project} />
           <Route path="/sos" component={SOS} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
