@@ -1,96 +1,79 @@
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import Logo from "@/components/ui/Logo";
-import { Button } from "@/components/ui/button";
+import { Globe } from "lucide-react";
 
 export default function Header() {
   const { t, language, toggleLanguage } = useLanguage();
   const [location] = useLocation();
 
   return (
-    <header className="fixed top-0 w-full z-50 glassmorphism bg-white/80 border-b border-orange-100">
+    <header className="fixed top-0 w-full z-50 glassmorphism border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-8 rtl:space-x-reverse">
-          <Link href="/">
-            <Logo />
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6 rtl:space-x-reverse">
-            <Link 
-              href="/" 
-              className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/" ? "text-orange-500" : ""
-              }`}
-            >
-              Accueil
-            </Link>
-            <Link 
-              href="/club-pro" 
-              className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/club-pro" ? "text-orange-500" : ""
-              }`}
-            >
-              Club Pro
-            </Link>
-            <Link 
-              href="/project" 
-              className={`text-gray-700 hover:text-orange-500 transition-colors font-medium ${
-                location === "/project" ? "text-orange-500" : ""
-              }`}
-            >
-              Projet
-            </Link>
-            
-            {/* Bouton SOS avec design rouge voyant */}
-            <Link 
-              href="/sos" 
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg border-2 border-red-200 animate-pulse"
-            >
-              🚨 SOS 24/7
-            </Link>
-          </nav>
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 gradient-orange rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">K</span>
+          </div>
+          <span className="text-xl font-bold text-gray-900">Khadamat</span>
         </div>
         
-        <div className="flex items-center space-x-4 rtl:space-x-reverse">
-          {/* Language Toggle */}
-          <div className="hidden md:flex items-center space-x-2 rtl:space-x-reverse bg-gray-100 rounded-lg p-1">
-            <button 
-              onClick={toggleLanguage}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                language === "fr" 
-                  ? "bg-white text-gray-900 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              FR
-            </button>
-            <button 
-              onClick={toggleLanguage}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                language === "ar" 
-                  ? "bg-white text-gray-900 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              AR
-            </button>
-          </div>
-          
-          <Link href="/login">
-            <Button 
-              variant="ghost" 
-              className="text-gray-700 hover:text-orange-500 transition-colors font-medium hidden md:inline-flex"
-            >
-              {t("nav.login")}
-            </Button>
+        {/* Navigation centrale - TOUS ALIGNÉS */}
+        <nav className="hidden md:flex items-center space-x-2">
+          <Link 
+            href="/" 
+            className="px-4 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105"
+          >
+            Accueil
+          </Link>
+          <Link 
+            href="/club-pro" 
+            className="px-4 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105"
+          >
+            Club Pro
+          </Link>
+          <Link 
+            href="/project" 
+            className="px-4 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105"
+          >
+            Projet
+          </Link>
+        </nav>
+        
+        {/* Actions droite - TOUS ALIGNÉS */}
+        <div className="flex items-center space-x-4">
+          {/* Bouton SOS à gauche (sans clignotement) */}
+          <Link 
+            href="/sos" 
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md border border-red-400"
+          >
+            🚨 SOS 24/7
           </Link>
           
-          {/* CTA Button */}
+          {/* Sélecteur de langue */}
+          <div className="flex items-center space-x-2 px-3 py-2 border border-gray-200 rounded-lg hover:border-orange-300 transition-colors">
+            <Globe className="w-4 h-4 text-gray-500" />
+            <select 
+              className="bg-transparent text-sm text-gray-700 focus:outline-none"
+              value={language}
+              onChange={(e) => toggleLanguage()}
+            >
+              <option value="fr">FR</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+          
+          {/* Connexion avec même animation */}
+          <Link href="/login">
+            <button className="px-4 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105">
+              Connexion
+            </button>
+          </Link>
+          
+          {/* Bouton CTA */}
           <Link href="/register">
-            <Button className="gradient-orange text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl border-0">
-              {t("common.join")}
-            </Button>
+            <button className="gradient-orange text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md">
+              S'inscrire
+            </button>
           </Link>
         </div>
       </div>

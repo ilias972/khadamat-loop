@@ -151,3 +151,40 @@
 .animate-bounce-subtle {
   animation: bounceSubtle 2s infinite;
 }
+
+/* CSS ANIMATIONS SUPPLÉMENTAIRES */
+@layer utilities {
+  /* Animation hover pour les boutons navigation */
+  .nav-button-hover {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .nav-button-hover:hover {
+    @apply shadow-md transform scale-105;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+  }
+  
+  /* Animation pour les services populaires */
+  .service-card {
+    @apply relative overflow-hidden;
+  }
+  
+  .service-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 transition-opacity duration-300;
+  }
+  
+  .service-card:hover::before {
+    @apply opacity-5;
+  }
+  
+  /* Animation géolocalisation */
+  .location-pulse {
+    animation: locationPulse 2s infinite;
+  }
+  
+  @keyframes locationPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+}

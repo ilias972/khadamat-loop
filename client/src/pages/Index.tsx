@@ -5,7 +5,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb } from "lucide-react";
+import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle } from "lucide-react";
 import type { Service, ProviderWithUser } from "@shared/schema";
 
 export default function Index() {
@@ -66,17 +66,164 @@ export default function Index() {
         </div>
       </section>
 
-
-
-      {/* Featured Providers */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
+      {/* Services populaires - Nouvelle section après recherche */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              {t("providers.title")}
+              Services populaires à <span className="text-orange-500" id="user-city">Casablanca</span>
+            </h2>
+            <p className="text-xl text-gray-600">
+              Les services les plus demandés dans votre ville
+            </p>
+          </div>
+          
+          {/* Grid des services populaires */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {[
+              { name: 'Plomberie', icon: '🔧', count: '156 pros', popular: true },
+              { name: 'Ménage', icon: '🧽', count: '89 pros', popular: true },
+              { name: 'Électricité', icon: '⚡', count: '134 pros', popular: false },
+              { name: 'Jardinage', icon: '🌱', count: '67 pros', popular: false },
+              { name: 'Peinture', icon: '🎨', count: '92 pros', popular: true },
+              { name: 'Réparation', icon: '🔨', count: '78 pros', popular: false },
+            ].map((service, index) => (
+              <div key={index} className="group cursor-pointer relative">
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
+                  {/* Badge populaire */}
+                  {service.popular && (
+                    <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                      🔥 TOP
+                    </div>
+                  )}
+                  
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
+                    {service.icon}
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                    {service.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{service.count}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Bouton voir plus */}
+          <div className="text-center mt-12">
+            <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
+              Voir tous les services
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Comment ça marche */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Comment ça marche ?</h2>
+            <p className="text-xl text-gray-600">Trouvez le bon prestataire en 3 étapes simples</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-20 h-20 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Search className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">1. Recherchez</h3>
+              <p className="text-gray-600">Décrivez votre besoin et votre localisation</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <User className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">2. Comparez</h3>
+              <p className="text-gray-600">Consultez les profils et avis des prestataires</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <MessageCircle className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Contactez</h3>
+              <p className="text-gray-600">Échangez directement et planifiez votre service</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Présentation Club Pro (REMONTÉ) */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-12 h-12 gradient-orange rounded-xl flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-white" />
+                </div>
+                <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-semibold">
+                  Club Pro
+                </span>
+              </div>
+              
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                Rejoignez l'élite des prestataires
+              </h2>
+              
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Obtenez plus de visibilité, zéro commission et un badge de confiance pour seulement 50 DH/mois.
+              </p>
+              
+              <div className="space-y-4 mb-8">
+                {[
+                  '✅ Badge "Vérifié" sur votre profil',
+                  '✅ Priorité dans les résultats',
+                  '✅ 0% de commission',
+                  '✅ Support prioritaire 24/7'
+                ].map((benefit, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <span className="text-lg">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
+                Devenir Club Pro - 50 DH/mois
+              </button>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-white rounded-3xl p-8 shadow-2xl">
+                <div className="gradient-orange text-white p-6 rounded-2xl mb-6">
+                  <h3 className="text-2xl font-bold mb-2">Ahmed B.</h3>
+                  <p className="text-orange-100">Plombier Club Pro</p>
+                </div>
+                <p className="text-gray-600 italic">
+                  "Depuis que j'ai rejoint le Club Pro, j'ai 3x plus de clients. Le badge vérifié fait toute la différence !"
+                </p>
+                <div className="flex items-center mt-4">
+                  <div className="flex text-yellow-400">
+                    ⭐⭐⭐⭐⭐
+                  </div>
+                  <span className="ml-2 text-gray-600">4.9/5 (127 avis)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Témoignages */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Ce que disent nos utilisateurs
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t("providers.subtitle")}
+              Des milliers de clients satisfaits nous font confiance
             </p>
           </div>
           
@@ -185,92 +332,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Club Pro Section */}
-      <section className="py-16 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center space-x-3 rtl:space-x-reverse bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-6">
-              <Crown className="w-6 h-6 text-yellow-300" />
-              <span className="font-bold text-lg">{t("nav.club_pro")}</span>
-            </div>
-            
-            <h2 className="text-4xl font-bold mb-6">
-              {t("club_pro.title")}
-            </h2>
-            <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
-              {t("club_pro.subtitle")}
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Tag className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">{t("club_pro.verification.title")}</h3>
-              <p className="text-orange-100 leading-relaxed">
-                {t("club_pro.verification.desc")}
-              </p>
-            </div>
-            
-            <div className="text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Rocket className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">{t("club_pro.visibility.title")}</h3>
-              <p className="text-orange-100 leading-relaxed">
-                {t("club_pro.visibility.desc")}
-              </p>
-            </div>
-            
-            <div className="text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">{t("club_pro.trust.title")}</h3>
-              <p className="text-orange-100 leading-relaxed">
-                {t("club_pro.trust.desc")}
-              </p>
-            </div>
-          </div>
-          
-          <div className="text-center mt-12">
-            <Button className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 transition-all transform hover:scale-105 shadow-lg">
-              {t("club_pro.cta")}
-            </Button>
-          </div>
-        </div>
-      </section>
 
-      {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            {t("newsletter.title")}
-          </h2>
-          <p className="text-xl text-orange-100 mb-8 leading-relaxed">
-            {t("newsletter.subtitle")}
-          </p>
-          
-          <div className="max-w-lg mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-2">
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <input 
-                type="email" 
-                className="flex-1 px-6 py-4 bg-transparent text-white placeholder-orange-200 border-none focus:outline-none"
-                placeholder={t("newsletter.placeholder")}
-              />
-              <Button className="bg-white text-orange-600 px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 transition-all">
-                {t("newsletter.subscribe")}
-              </Button>
-            </div>
-          </div>
-          
-          <p className="text-sm text-orange-200 mt-4">
-            <Shield className="w-4 h-4 inline mr-2" />
-            {t("newsletter.privacy")}
-          </p>
-        </div>
-      </section>
     </div>
   );
 }
