@@ -150,6 +150,47 @@ const translations = {
     "cities.rabat": "Rabat",
     "cities.marrakech": "Marrakech",
     
+    // Navigation mobile
+    "nav.messages": "Messages",
+    "nav.profile": "Profil",
+    
+    // Header
+    "header.register": "Inscription",
+    "header.login": "Connexion",
+    "header.language": "Langue",
+    "header.sos": "SOS",
+    "header.sos_alert": "Service SOS activé - Aide d'urgence en cours",
+    
+    // Messages page
+    "messages.badge": "Messages",
+    "messages.title": "Mes Conversations",
+    "messages.description": "Communiquez directement avec les prestataires",
+    "messages.conversations": "Conversations",
+    "messages.no_conversations": "Aucune conversation",
+    "messages.start_conversation": "Commencez une conversation",
+    "messages.last_message_1": "Le devis sera prêt demain",
+    "messages.last_message_2": "Parfait, je confirme pour jeudi",
+    "messages.last_message_3": "Photos envoyées",
+    
+    // Profile page
+    "profile.stats.projects": "Projets",
+    "profile.stats.rating": "Note",
+    "profile.stats.favorites": "Favoris",
+    "profile.verified": "Vérifié",
+    "profile.member_since": "Membre depuis",
+    "profile.account_settings": "Paramètres du compte",
+    "profile.menu.edit_profile": "Modifier le profil",
+    "profile.menu.edit_profile_desc": "Informations personnelles et photo",
+    "profile.menu.verification": "Vérification",
+    "profile.menu.verification_desc": "Vérifiez votre identité",
+    "profile.menu.payments": "Paiements",
+    "profile.menu.payments_desc": "Moyens de paiement et facturation",
+    "profile.menu.settings": "Paramètres",
+    "profile.menu.settings_desc": "Notifications et préférences",
+    
+    // Common
+    "common.configure": "Configurer",
+    
     // SOS
     "sos.title": "Service SOS 24/7",
     "sos.subtitle": "Urgences ? Nous Sommes Là !",
@@ -345,6 +386,47 @@ const translations = {
     "cities.casablanca": "الدار البيضاء",
     "cities.rabat": "الرباط",
     "cities.marrakech": "مراكش",
+    
+    // Navigation mobile
+    "nav.messages": "الرسائل",
+    "nav.profile": "الملف الشخصي",
+    
+    // Header
+    "header.register": "التسجيل",
+    "header.login": "تسجيل الدخول",
+    "header.language": "اللغة",
+    "header.sos": "طوارئ",
+    "header.sos_alert": "تم تفعيل خدمة الطوارئ - المساعدة العاجلة قيد التقدم",
+    
+    // Messages page
+    "messages.badge": "الرسائل",
+    "messages.title": "محادثاتي",
+    "messages.description": "تواصل مباشرة مع مقدمي الخدمات",
+    "messages.conversations": "المحادثات",
+    "messages.no_conversations": "لا توجد محادثات",
+    "messages.start_conversation": "ابدأ محادثة",
+    "messages.last_message_1": "العرض سيكون جاهزاً غداً",
+    "messages.last_message_2": "ممتاز، أؤكد ليوم الخميس",
+    "messages.last_message_3": "تم إرسال الصور",
+    
+    // Profile page
+    "profile.stats.projects": "المشاريع",
+    "profile.stats.rating": "التقييم",
+    "profile.stats.favorites": "المفضلة",
+    "profile.verified": "موثق",
+    "profile.member_since": "عضو منذ",
+    "profile.account_settings": "إعدادات الحساب",
+    "profile.menu.edit_profile": "تعديل الملف الشخصي",
+    "profile.menu.edit_profile_desc": "المعلومات الشخصية والصورة",
+    "profile.menu.verification": "التوثيق",
+    "profile.menu.verification_desc": "تحقق من هويتك",
+    "profile.menu.payments": "المدفوعات",
+    "profile.menu.payments_desc": "وسائل الدفع والفواتير",
+    "profile.menu.settings": "الإعدادات",
+    "profile.menu.settings_desc": "الإشعارات والتفضيلات",
+    
+    // Common
+    "common.configure": "تكوين",
     
     // SOS
     "sos.title": "خدمة الطوارئ 24/7",

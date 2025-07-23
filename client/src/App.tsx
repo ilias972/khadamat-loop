@@ -8,6 +8,8 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 // Layout components
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MobileHeader from "@/components/layout/MobileHeader";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import MobileTabBar from "@/components/layout/MobileTabBar";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 
@@ -32,6 +34,7 @@ function Router() {
     <div className="min-h-screen bg-gray-50">
       <ScrollToTop />
       <Header />
+      <MobileHeader />
       <main className="pb-20 md:pb-0">
         <Switch>
           <Route path="/" component={Index} />
@@ -51,7 +54,7 @@ function Router() {
         </Switch>
       </main>
       <Footer />
-      <MobileTabBar />
+      <MobileBottomNav />
     </div>
   );
 }

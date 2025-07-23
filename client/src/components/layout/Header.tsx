@@ -8,7 +8,7 @@ export default function Header() {
   const [location] = useLocation();
 
   return (
-    <header className="fixed top-0 w-full z-50 glassmorphism border-b border-orange-100">
+    <header className="fixed top-0 w-full z-50 glassmorphism border-b border-orange-100 hidden md:block">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
