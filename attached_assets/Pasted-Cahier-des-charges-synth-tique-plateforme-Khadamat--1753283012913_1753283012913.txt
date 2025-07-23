@@ -1,0 +1,57 @@
+Cahier des charges synthétique - plateforme Khadamat
+=====================================================
+
+Ce document résume la structure et les fonctionnalités présentes dans le code actuel afin de pouvoir recréer le site.
+
+1. **Architecture générale**
+   - Frontend SPA en **React 18** avec **TypeScript** et **Vite**.
+   - Backend **Express** intégré au projet (port unique en développement).
+   - Styling via **Tailwind CSS** et composant UI Radix.
+   - Gestion d’état principale via le Context API.
+   - Système bilingue **Français / Arabe** (RTL pris en charge) dans `contexts/LanguageContext.tsx`.
+
+2. **Types d’utilisateurs**
+   - **Clients** : réservent des services et publient des projets.
+   - **Prestataires** : répondent aux demandes et gèrent leur profil.
+   - **Club Pro** : abonnement premium pour les prestataires vérifiés.
+   - Inscription en quatre étapes avec vérification d’identité (CIN/passeport et reconnaissance faciale).
+
+3. **Pages principales** (`client/pages`)
+   - `/` Accueil (`Index.tsx`) avec recherche intelligente et sections de services.
+   - `/register` Inscription unifiée, redirige vers `/register/client` ou `/register/provider`.
+   - `/login` Connexion utilisateur et `/forgot-password` récupération de mot de passe.
+   - `/become-provider` Processus détaillé pour devenir prestataire.
+   - `/project` Publication d’un projet client.
+   - `/providers` Liste des prestataires et `/provider/:id` fiche détaillée avec messagerie.
+   - `/club-pro` Présentation du programme Club Pro et `/club-pro/register` inscription.
+   - `/sos` Service d’urgence 24/7 avec numéros officiels.
+   - `/search` Résultats filtrés d’une recherche.
+   - `/about`, `/contact`, `/support` pages institutionnelles.
+   - Pages légales : `/terms`, `/privacy`, `/faq`.
+   - Pages corporate : `/careers`, `/press`, `/partners`.
+   - Route de secours `*` affichant `NotFound`.
+
+4. **Composants et fonctionnalités clés**
+   - **Header**, **Footer** et **MobileTabBar** pour la navigation.
+   - **SmartSearch** (autocomplete, suggestions et géolocalisation).
+   - **Messaging** temps réel avec propositions, appels audio/vidéo et historique.
+   - **FavoritesSystem** pour enregistrer des prestataires favoris.
+   - **NotificationSystem** et **Newsletter** (inscription simple).
+   - **QuickActionsPanel** pour l’accès rapide sur mobile.
+
+5. **Backend et API**
+   - Serveur Express dans `server/index.ts` avec routes exemples `/api/ping` et `/api/demo`.
+   - Types partagés dans `shared/api.ts`.
+
+6. **Déploiement et outils**
+   - Commandes principales :
+     - `npm run dev` pour le mode développement.
+     - `npm run build` suivi de `npm start` pour la production.
+   - Tests via `npm test` (Vitest).
+   - Configurations supplémentaires disponibles dans `package.json` et `vite.config.ts`.
+
+7. **Fonctionnalités avancées** (définies dans le cahier des charges complet)
+   - Paiement sécurisé par escrow pour les transactions.
+   - Programme Club Pro payant avec vérification des documents (patente, RC, assurance, ICE).
+   - Système de notation et d’évaluations bidirectionnelles.
+   - Service SOS intégrant les numéros de la police (19), pompiers/SAMU (15) et gendarmerie (177) avec géolocalisation.

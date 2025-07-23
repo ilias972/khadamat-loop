@@ -1,0 +1,247 @@
+Palette de couleurs optimisée
+css
+/* Couleurs principales */
+:root {
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-200: #fed7aa;
+  --orange-300: #fdba74;
+  --orange-400: #fb923c;
+  --orange-500: #f97316; /* Orange principal */
+  --orange-600: #ea580c;
+  --orange-700: #c2410c;
+  --orange-800: #9a3412;
+  --orange-900: #7c2d12;
+  
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-900: #111827;
+}
+🚀 Améliorations Design Style Replit
+1. Header moderne avec glassmorphism
+jsx
+// Style Replit : header flottant avec effet verre
+<header className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/80 border-b border-orange-100">
+  <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="flex items-center space-x-8">
+      <Logo className="text-orange-500" />
+      <nav className="hidden md:flex space-x-6">
+        <NavLink className="text-gray-700 hover:text-orange-500 transition-colors font-medium" />
+      </nav>
+    </div>
+    
+    {/* Bouton CTA style Replit */}
+    <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg">
+      Rejoindre Khadamat
+    </button>
+  </div>
+</header>
+2. Hero Section avec gradients modernes
+jsx
+<section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-20 pb-16">
+  {/* Pattern background style Replit */}
+  <div className="absolute inset-0 opacity-5">
+    <div className="absolute inset-0" style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+    }} />
+  </div>
+  
+  <div className="relative max-w-7xl mx-auto px-4 text-center">
+    <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+      Trouvez le bon
+      <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+        {" "}prestataire
+      </span>
+    </h1>
+    
+    {/* Barre de recherche style Replit */}
+    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-2">
+      <div className="flex items-center space-x-4">
+        <input 
+          className="flex-1 px-6 py-4 text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl"
+          placeholder="Que recherchez-vous ?"
+        />
+        <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold transition-all">
+          Rechercher
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+3. Cards de services avec hover effects
+jsx
+<div className="grid md:grid-cols-3 gap-8">
+  {services.map(service => (
+    <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
+      <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+        <Icon className="w-8 h-8 text-white" />
+      </div>
+      
+      <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
+        {service.title}
+      </h3>
+      
+      <p className="text-gray-600 mb-6 leading-relaxed">
+        {service.description}
+      </p>
+      
+      <button className="text-orange-500 font-semibold hover:text-orange-600 transition-colors flex items-center space-x-2">
+        <span>En savoir plus</span>
+        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+      </button>
+    </div>
+  ))}
+</div>
+4. Navigation mobile style Replit
+jsx
+<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
+  <div className="flex justify-around">
+    {navItems.map(item => (
+      <button className="flex flex-col items-center space-y-1 py-2 px-3 rounded-xl hover:bg-orange-50 transition-colors">
+        <Icon className={`w-6 h-6 ${isActive ? 'text-orange-500' : 'text-gray-400'}`} />
+        <span className={`text-xs font-medium ${isActive ? 'text-orange-500' : 'text-gray-500'}`}>
+          {item.label}
+        </span>
+      </button>
+    ))}
+  </div>
+</div>
+5. Profils prestataires avec design premium
+jsx
+<div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+  {/* Badge Club Pro */}
+  {provider.isClubPro && (
+    <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 text-sm font-semibold">
+      ⭐ Club Pro Vérifié
+    </div>
+  )}
+  
+  <div className="p-8">
+    <div className="flex items-start space-x-6">
+      <div className="relative">
+        <img 
+          src={provider.avatar} 
+          className="w-20 h-20 rounded-2xl object-cover ring-4 ring-orange-100" 
+        />
+        {provider.isOnline && (
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+        )}
+      </div>
+      
+      <div className="flex-1">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          {provider.name}
+        </h3>
+        
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="flex items-center space-x-1">
+            <Star className="w-5 h-5 text-yellow-400 fill-current" />
+            <span className="font-semibold text-gray-900">{provider.rating}</span>
+            <span className="text-gray-500">({provider.reviews} avis)</span>
+          </div>
+          
+          <div className="flex items-center space-x-1 text-gray-500">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">{provider.location}</span>
+          </div>
+        </div>
+        
+        {/* Tags de spécialités */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {provider.specialties.map(specialty => (
+            <span className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
+              {specialty}
+            </span>
+          ))}
+        </div>
+        
+        <div className="flex space-x-3">
+          <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-xl font-semibold transition-all">
+            Contacter
+          </button>
+          <button className="p-3 border-2 border-gray-200 hover:border-orange-300 rounded-xl transition-colors">
+            <Heart className="w-5 h-5 text-gray-400 hover:text-orange-500" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+6. Messages en temps réel style moderne
+jsx
+<div className="flex flex-col h-96 bg-white rounded-2xl shadow-lg border border-gray-100">
+  {/* Header de chat */}
+  <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white rounded-t-2xl">
+    <div className="flex items-center space-x-3">
+      <img src={contact.avatar} className="w-10 h-10 rounded-full" />
+      <div>
+        <h4 className="font-semibold text-gray-900">{contact.name}</h4>
+        <span className="text-sm text-green-500">En ligne</span>
+      </div>
+    </div>
+    
+    <div className="flex space-x-2">
+      <button className="p-2 hover:bg-orange-100 rounded-lg transition-colors">
+        <Phone className="w-5 h-5 text-orange-500" />
+      </button>
+      <button className="p-2 hover:bg-orange-100 rounded-lg transition-colors">
+        <Video className="w-5 h-5 text-orange-500" />
+      </button>
+    </div>
+  </div>
+  
+  {/* Messages avec animations */}
+  <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+    {messages.map(message => (
+      <div className={`flex ${message.isSent ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+        <div className={`max-w-xs px-4 py-3 rounded-2xl ${
+          message.isSent 
+            ? 'bg-orange-500 text-white rounded-br-md' 
+            : 'bg-gray-100 text-gray-900 rounded-bl-md'
+        }`}>
+          <p className="text-sm">{message.text}</p>
+          <span className="text-xs opacity-75 mt-1 block">
+            {message.timestamp}
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+7. Footer moderne et engageant
+jsx
+<footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-orange-900 text-white">
+  <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="grid md:grid-cols-4 gap-8">
+      <div>
+        <Logo className="text-white mb-6" />
+        <p className="text-gray-300 mb-6 leading-relaxed">
+          La plateforme qui connecte les clients aux meilleurs prestataires du Maroc.
+        </p>
+        
+        {/* Réseaux sociaux avec hover effects */}
+        <div className="flex space-x-4">
+          {socialLinks.map(social => (
+            <a href={social.url} className="w-10 h-10 bg-white/10 hover:bg-orange-500 rounded-full flex items-center justify-center transition-all hover:scale-110">
+              <social.icon className="w-5 h-5" />
+            </a>
+          ))}
+        </div>
+      </div>
+      
+      {/* Autres colonnes avec style cohérent */}
+    </div>
+    
+    <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+      <p>&copy; 2024 Khadamat. Tous droits réservés.</p>
+    </div>
+  </div>
+</footer>
+✨ Éléments UX Style Replit
+Micro-interactions : Ajoutez des animations subtiles sur les hover et clicks
+Loading states : Utilisez des skeletons orange/blancs pendant le chargement
+Toast notifications : Notifications élégantes avec fond blanc et accent orange
+Empty states : Illustrations sympathiques avec call-to-actions orange
+Progressive disclosure : Révélez l'information progressivement
+Ces améliorations donneront à votre plateforme Khadamat un look moderne, professionnel et distinctif tout en conservant l'efficacité fonctionnelle que Replit privilégie !
