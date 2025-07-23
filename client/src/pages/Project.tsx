@@ -26,22 +26,22 @@ import {
   Search
 } from "lucide-react";
 
-const projectSchema = z.object({
-  title: z.string().min(5, "Titre trop court (minimum 5 caractères)"),
-  description: z.string().min(20, "Description trop courte (minimum 20 caractères)"),
-  category: z.string().min(1, "Catégorie requise"),
-  budget: z.string().min(1, "Budget requis"),
-  location: z.string().min(1, "Localisation requise"),
-  deadline: z.string().min(1, "Délai requis"),
-  skills: z.string().optional(),
-});
-
-type ProjectFormData = z.infer<typeof projectSchema>;
-
 export default function Project() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const projectSchema = z.object({
+    title: z.string().min(5, "Titre trop court (minimum 5 caractères)"),
+    description: z.string().min(20, "Description trop courte (minimum 20 caractères)"),
+    category: z.string().min(1, "Catégorie requise"),
+    budget: z.string().min(1, "Budget requis"),
+    location: z.string().min(1, "Localisation requise"),
+    deadline: z.string().min(1, "Délai requis"),
+    skills: z.string().optional(),
+  });
+
+  type ProjectFormData = z.infer<typeof projectSchema>;
 
   const {
     register,
@@ -62,16 +62,16 @@ export default function Project() {
     },
     onSuccess: () => {
       toast({
-        title: "Projet publié !",
-        description: "Votre projet a été publié avec succès. Les prestataires vont recevoir des notifications.",
+        title: t("project.toast.success_title"),
+        description: t("project.toast.success_description"),
       });
       reset();
       setSelectedCategory("");
     },
     onError: (error: any) => {
       toast({
-        title: "Erreur de publication",
-        description: error.message || "Une erreur s'est produite lors de la publication.",
+        title: t("project.toast.error_title"),
+        description: error.message || t("project.toast.error_description"),
         variant: "destructive",
       });
     },
@@ -82,46 +82,46 @@ export default function Project() {
   };
 
   const categories = [
-    "Plomberie",
-    "Électricité", 
-    "Ménage",
-    "Jardinage",
-    "Peinture",
-    "Réparation",
-    "Installation",
-    "Nettoyage",
-    "Déménagement",
-    "Autre"
+    t("services.plumbing"),
+    t("services.electricity"), 
+    t("services.cleaning"),
+    t("services.gardening"),
+    t("services.painting"),
+    t("services.repair"),
+    t("services.installation"),
+    t("services.deep_cleaning"),
+    t("services.moving"),
+    t("project.form.other")
   ];
 
   const budgetRanges = [
-    "Moins de 500 DH",
-    "500 - 1000 DH", 
-    "1000 - 2000 DH",
-    "2000 - 5000 DH",
-    "Plus de 5000 DH",
-    "À négocier"
+    t("project.budget.under_500"),
+    t("project.budget.500_1000"), 
+    t("project.budget.1000_2000"),
+    t("project.budget.2000_5000"),
+    t("project.budget.over_5000"),
+    t("project.budget.negotiable")
   ];
 
   const recentProjects = [
     {
-      title: "Installation climatisation",
-      budget: "2500 DH",
-      location: "Casablanca",
+      title: t("project.examples.ac_installation"),
+      budget: "2500 " + t("common.currency"),
+      location: t("cities.casablanca"),
       proposals: 8,
       status: "active"
     },
     {
-      title: "Rénovation salle de bain",
-      budget: "15000 DH", 
-      location: "Rabat",
+      title: t("project.examples.bathroom_renovation"),
+      budget: "15000 " + t("common.currency"), 
+      location: t("cities.rabat"),
       proposals: 12,
       status: "completed"
     },
     {
-      title: "Jardinage et entretien",
-      budget: "800 DH",
-      location: "Marrakech", 
+      title: t("project.examples.gardening"),
+      budget: "800 " + t("common.currency"),
+      location: t("cities.marrakech"), 
       proposals: 5,
       status: "active"
     }
@@ -133,19 +133,18 @@ export default function Project() {
       <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-16 pattern-bg">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <Badge variant="secondary" className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full mb-6">
-            Publier un Projet
+            {t("project.hero.badge")}
           </Badge>
           
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Trouvez le
+            {t("project.hero.find_the")}
             <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-              {" "}Prestataire Idéal
+              {" "}{t("project.hero.ideal_provider")}
             </span>
           </h1>
           
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Décrivez votre projet et recevez des propositions de prestataires qualifiés. 
-            Comparez les offres et choisissez le meilleur professionnel pour vos besoins.
+            {t("project.hero.description")}
           </p>
         </div>
       </section>
@@ -160,7 +159,7 @@ export default function Project() {
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
                     <Plus className="w-6 h-6 mr-3 text-orange-500" />
-                    Publier un Nouveau Projet
+                    {t("project.form.title")}
                   </CardTitle>
                 </CardHeader>
                 
@@ -168,11 +167,11 @@ export default function Project() {
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Title */}
                     <div className="space-y-2">
-                      <Label htmlFor="title">Titre du Projet *</Label>
+                      <Label htmlFor="title">{t("project.form.project_title")} *</Label>
                       <Input
                         id="title"
                         {...register("title")}
-                        placeholder="Ex: Installation électrique dans salon"
+                        placeholder={t("project.form.title_placeholder")}
                       />
                       {errors.title && (
                         <p className="text-red-500 text-sm">{errors.title.message}</p>
@@ -182,13 +181,13 @@ export default function Project() {
                     {/* Category & Budget */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="category">Catégorie *</Label>
+                        <Label htmlFor="category">{t("project.form.category")} *</Label>
                         <Select onValueChange={(value) => {
                           setValue("category", value);
                           setSelectedCategory(value);
                         }}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Choisir une catégorie" />
+                            <SelectValue placeholder={t("project.form.category_placeholder")} />
                           </SelectTrigger>
                           <SelectContent>
                             {categories.map((category) => (
@@ -204,10 +203,10 @@ export default function Project() {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="budget">Budget *</Label>
+                        <Label htmlFor="budget">{t("project.form.budget")} *</Label>
                         <Select onValueChange={(value) => setValue("budget", value)}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner le budget" />
+                            <SelectValue placeholder={t("project.form.budget_placeholder")} />
                           </SelectTrigger>
                           <SelectContent>
                             {budgetRanges.map((range) => (
@@ -226,11 +225,11 @@ export default function Project() {
                     {/* Location & Deadline */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="location">Localisation *</Label>
+                        <Label htmlFor="location">{t("project.form.location")} *</Label>
                         <Input
                           id="location"
                           {...register("location")}
-                          placeholder="Ex: Casablanca, Maarif"
+                          placeholder={t("project.form.location_placeholder")}
                         />
                         {errors.location && (
                           <p className="text-red-500 text-sm">{errors.location.message}</p>
@@ -238,11 +237,11 @@ export default function Project() {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="deadline">Délai souhaité *</Label>
+                        <Label htmlFor="deadline">{t("project.form.deadline")} *</Label>
                         <Input
                           id="deadline"
                           {...register("deadline")}
-                          placeholder="Ex: Dans la semaine, Urgent"
+                          placeholder={t("project.form.deadline_placeholder")}
                         />
                         {errors.deadline && (
                           <p className="text-red-500 text-sm">{errors.deadline.message}</p>
@@ -252,12 +251,12 @@ export default function Project() {
 
                     {/* Description */}
                     <div className="space-y-2">
-                      <Label htmlFor="description">Description détaillée *</Label>
+                      <Label htmlFor="description">{t("project.form.description")} *</Label>
                       <Textarea
                         id="description"
                         {...register("description")}
                         rows={6}
-                        placeholder="Décrivez votre projet en détail : travaux à effectuer, contraintes, matériel fourni ou non..."
+                        placeholder={t("project.form.description_placeholder")}
                         className="resize-none"
                       />
                       {errors.description && (
@@ -267,11 +266,11 @@ export default function Project() {
 
                     {/* Skills */}
                     <div className="space-y-2">
-                      <Label htmlFor="skills">Compétences recherchées</Label>
+                      <Label htmlFor="skills">{t("project.form.skills")}</Label>
                       <Input
                         id="skills"
                         {...register("skills")}
-                        placeholder="Ex: Électricien certifié, expérience domotique"
+                        placeholder={t("project.form.skills_placeholder")}
                       />
                     </div>
 
@@ -282,11 +281,11 @@ export default function Project() {
                       className="w-full gradient-orange text-white py-3 font-semibold rounded-xl border-0 flex items-center justify-center space-x-2"
                     >
                       {projectMutation.isPending ? (
-                        <span>Publication...</span>
+                        <span>{t("project.form.publishing")}</span>
                       ) : (
                         <>
                           <FileText className="w-5 h-5" />
-                          <span>Publier le Projet</span>
+                          <span>{t("project.form.publish_button")}</span>
                         </>
                       )}
                     </Button>
@@ -301,7 +300,7 @@ export default function Project() {
               <Card className="border-0 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900">
-                    Comment ça marche ?
+                    {t("project.how_it_works.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -311,8 +310,8 @@ export default function Project() {
                         1
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Publiez votre projet</h4>
-                        <p className="text-gray-600 text-sm">Décrivez vos besoins en détail</p>
+                        <h4 className="font-semibold text-gray-900">{t("project.how_it_works.step1_title")}</h4>
+                        <p className="text-gray-600 text-sm">{t("project.how_it_works.step1_desc")}</p>
                       </div>
                     </div>
                     
@@ -321,8 +320,8 @@ export default function Project() {
                         2
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Recevez des propositions</h4>
-                        <p className="text-gray-600 text-sm">Les prestataires vous contactent</p>
+                        <h4 className="font-semibold text-gray-900">{t("project.how_it_works.step2_title")}</h4>
+                        <p className="text-gray-600 text-sm">{t("project.how_it_works.step2_desc")}</p>
                       </div>
                     </div>
                     
@@ -331,8 +330,8 @@ export default function Project() {
                         3
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Choisissez le meilleur</h4>
-                        <p className="text-gray-600 text-sm">Comparez et sélectionnez</p>
+                        <h4 className="font-semibold text-gray-900">{t("project.how_it_works.step3_title")}</h4>
+                        <p className="text-gray-600 text-sm">{t("project.how_it_works.step3_desc")}</p>
                       </div>
                     </div>
                   </div>
@@ -344,7 +343,7 @@ export default function Project() {
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
                     <Search className="w-5 h-5 mr-2 text-orange-500" />
-                    Projets Récents
+                    {t("project.recent.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -354,7 +353,7 @@ export default function Project() {
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-semibold text-gray-900 text-sm">{project.title}</h4>
                           <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
-                            {project.status === 'completed' ? 'Terminé' : 'Actif'}
+                            {project.status === 'completed' ? t("project.status.completed") : t("project.status.active")}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-600">
@@ -368,7 +367,7 @@ export default function Project() {
                           </span>
                           <span className="flex items-center">
                             <Users className="w-3 h-3 mr-1" />
-                            {project.proposals} propositions
+                            {project.proposals} {t("project.proposals")}
                           </span>
                         </div>
                       </div>
@@ -382,13 +381,13 @@ export default function Project() {
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold mb-3 flex items-center">
                     <AlertCircle className="w-5 h-5 mr-2" />
-                    Conseils pour réussir
+                    {t("project.tips.title")}
                   </h3>
                   <ul className="space-y-2 text-sm text-orange-100">
-                    <li>• Soyez précis dans votre description</li>
-                    <li>• Mentionnez votre budget réaliste</li>
-                    <li>• Ajoutez des photos si nécessaire</li>
-                    <li>• Répondez rapidement aux prestataires</li>
+                    <li>• {t("project.tips.tip1")}</li>
+                    <li>• {t("project.tips.tip2")}</li>
+                    <li>• {t("project.tips.tip3")}</li>
+                    <li>• {t("project.tips.tip4")}</li>
                   </ul>
                 </CardContent>
               </Card>
