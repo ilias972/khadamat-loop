@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/ui/LanguageToggle";
-import logoSrc from "@assets/Symbole abstrait sur fond orange_1753291962087.png";
+import Logo from "@/components/ui/Logo";
 
 export default function Header() {
   const { t, language, toggleLanguage } = useLanguage();
@@ -11,16 +11,9 @@ export default function Header() {
     <header className="fixed top-0 w-full z-50 glassmorphism border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 flex items-center justify-center">
-            <img 
-              src={logoSrc} 
-              alt="Khadamat Logo" 
-              className="w-8 h-8 rounded-lg"
-            />
-          </div>
-          <span className="text-xl font-bold text-gray-900">Khadamat</span>
-        </div>
+        <Link href="/" className="flex items-center">
+          <Logo />
+        </Link>
         
         {/* Navigation centrale - TOUS ALIGNÉS */}
         <nav className="hidden md:flex items-center space-x-2">

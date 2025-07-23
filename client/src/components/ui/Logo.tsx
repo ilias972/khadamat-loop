@@ -1,19 +1,22 @@
-import { Handshake } from "lucide-react";
+import logoSrc from "@assets/Symbole abstrait sur fond orange_1753291962087.png";
 
 interface LogoProps {
-  isWhite?: boolean;
   className?: string;
+  textClassName?: string;
 }
 
-export default function Logo({ isWhite = false, className = "" }: LogoProps) {
+export default function Logo({ 
+  className = "w-8 h-8", 
+  textClassName = "text-xl font-bold text-gray-900" 
+}: LogoProps) {
   return (
-    <div className={`flex items-center space-x-3 rtl:space-x-reverse ${className}`}>
-      <div className="w-10 h-10 gradient-orange rounded-xl flex items-center justify-center">
-        <Handshake className="w-6 h-6 text-white" />
-      </div>
-      <span className={`text-2xl font-bold ${isWhite ? 'text-white' : 'text-gray-900'}`}>
-        Khadamat
-      </span>
+    <div className="flex items-center space-x-2">
+      <img 
+        src={logoSrc} 
+        alt="Khadamat" 
+        className={`${className} rounded-lg`}
+      />
+      <span className={textClassName}>Khadamat</span>
     </div>
   );
 }

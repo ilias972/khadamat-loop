@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Star, Tag, Rocket, Shield, CheckCircle, ArrowRight, Users, TrendingUp, Award, CreditCard } from "lucide-react";
+import { Search, Headphones, Building, Star, CheckCircle, ArrowRight, Users, TrendingUp, Award, CreditCard, Tag, Rocket, Shield, Crown } from "lucide-react";
 
 export default function ClubPro() {
   const { t } = useLanguage();
@@ -135,7 +135,7 @@ export default function ClubPro() {
           </h2>
           
           <p className="text-xl text-gray-600 mb-12">
-            Rejoignez le Club Pro et boostez votre activité
+            Rejoignez le Club Pro et accédez aux plus grands projets
           </p>
           
           {/* Carte d'abonnement unique */}
@@ -145,32 +145,47 @@ export default function ClubPro() {
               <div className="text-5xl font-bold mb-2">50 DH</div>
               <div className="text-orange-100">par mois</div>
               <div className="text-sm text-orange-100 mt-2">
-                💍 Engagement 1 an
+                Engagement 1 an
               </div>
             </div>
             
-            {/* Avantages */}
-            <div className="space-y-3 mb-8 text-left">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-5 h-5 text-white" />
-                <span>Badge "Vérifié" sur votre profil</span>
+            {/* Nouveaux avantages */}
+            <div className="space-y-4 mb-8 text-left">
+              <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-orange-500 font-bold text-sm">✓</span>
+                </div>
+                <span className="font-medium">Badge "Club Pro" orange et blanc sur votre profil</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-5 h-5 text-white" />
-                <span>Priorité dans les résultats de recherche</span>
+              
+              <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Search className="w-4 h-4 text-orange-500" />
+                </div>
+                <span className="font-medium">Priorité dans les résultats de recherche</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-5 h-5 text-white" />
-                <span>0% de commission sur les services</span>
+              
+              <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Headphones className="w-4 h-4 text-orange-500" />
+                </div>
+                <span className="font-medium">Support dédié aux adhérents Club Pro</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-5 h-5 text-white" />
-                <span>Support prioritaire 24/7</span>
+              
+              {/* Avantage principal - mis en évidence */}
+              <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-yellow-400/20 to-orange-300/20 rounded-xl border-2 border-yellow-300/30">
+                <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Building className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <span className="font-bold text-yellow-100 block">🏆 ACCÈS EXCLUSIF</span>
+                  <span className="font-medium">Projets de grandes ampleurs réservés aux Club Pro</span>
+                </div>
               </div>
             </div>
             
             <button className="w-full bg-white text-orange-500 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors">
-              Rejoindre maintenant
+              Rejoindre le Club Pro
             </button>
           </div>
           
@@ -215,11 +230,94 @@ export default function ClubPro() {
         </div>
       </section>
 
+      {/* Section avis prestataires - remplace "Prêt à rejoindre" */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Témoignages de nos prestataires Club Pro
+            </h2>
+            <p className="text-xl text-gray-600">
+              Découvrez comment le Club Pro a transformé leur activité
+            </p>
+          </div>
+          
+          {/* Grid des avis prestataires */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Hassan Benali",
+                service: "Plomberie",
+                city: "Casablanca", 
+                comment: "Depuis Club Pro, j'accède à des projets d'entreprises. Mon chiffre d'affaires a triplé !",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                rating: 5,
+                badge: "Club Pro depuis 2 ans"
+              },
+              {
+                name: "Khadija El Fassi",
+                service: "Ménage",
+                city: "Rabat",
+                comment: "Le badge Club Pro me donne une crédibilité énorme. Les clients me font plus confiance.",
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616c9c8a6c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100", 
+                rating: 5,
+                badge: "Club Pro depuis 1 an"
+              },
+              {
+                name: "Youssef Taibi",
+                service: "Électricité", 
+                city: "Marrakech",
+                comment: "Grâce aux gros projets Club Pro, j'ai pu embaucher 3 employés. Merci Khadamat !",
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                rating: 5,
+                badge: "Club Pro depuis 3 ans"
+              },
+              {
+                name: "Amina Zerktouni",
+                service: "Jardinage",
+                city: "Fès", 
+                comment: "Le support dédié est fantastique. Ils m'aident à décrocher les meilleurs contrats.",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+                rating: 5,
+                badge: "Club Pro depuis 6 mois"
+              }
+            ].map((review, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                <div className="flex items-center space-x-3 mb-4">
+                  <img 
+                    src={review.avatar} 
+                    alt={review.name} 
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-orange-100" 
+                  />
+                  <div>
+                    <h4 className="font-bold text-gray-900">{review.name}</h4>
+                    <p className="text-sm text-gray-500">{review.service} • {review.city}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-4 inline-block">
+                  {review.badge}
+                </div>
+                
+                <p className="text-gray-600 italic text-sm mb-4">"{review.comment}"</p>
+                
+                <div className="flex items-center">
+                  <div className="flex text-yellow-400">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl p-12 text-white">
-            <Crown className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
             <h2 className="text-3xl font-bold mb-4">
               Prêt à Rejoindre Club Pro ?
             </h2>

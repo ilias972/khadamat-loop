@@ -1,0 +1,300 @@
+MODIFICATIONS À IMPLÉMENTER
+1. PAGE CLUB PRO - Nouveaux avantages et design
+Remplace complètement la section Club Pro :
+
+jsx
+// pages/ClubPro.tsx - Section pricing mise à jour
+<section className="py-16 bg-white">
+  <div className="max-w-4xl mx-auto px-4 text-center">
+    <h2 className="text-4xl font-bold text-gray-900 mb-6">
+      Un seul abonnement, tous les avantages
+    </h2>
+    
+    <p className="text-xl text-gray-600 mb-12">
+      Rejoignez le Club Pro et accédez aux plus grands projets
+    </p>
+    
+    {/* Carte d'abonnement unique */}
+    <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-2xl transform hover:scale-105 transition-all duration-300 max-w-md mx-auto">
+      <div className="bg-white/20 rounded-2xl p-6 mb-6">
+        <h3 className="text-2xl font-bold mb-2">Club Pro</h3>
+        <div className="text-5xl font-bold mb-2">50 DH</div>
+        <div className="text-orange-100">par mois</div>
+        <div className="text-sm text-orange-100 mt-2">
+          Engagement 1 an
+        </div>
+      </div>
+      
+      {/* Nouveaux avantages */}
+      <div className="space-y-4 mb-8 text-left">
+        <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <span className="text-orange-500 font-bold text-sm">✓</span>
+          </div>
+          <span className="font-medium">Badge "Club Pro" orange et blanc sur votre profil</span>
+        </div>
+        
+        <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <Search className="w-4 h-4 text-orange-500" />
+          </div>
+          <span className="font-medium">Priorité dans les résultats de recherche</span>
+        </div>
+        
+        <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <Headphones className="w-4 h-4 text-orange-500" />
+          </div>
+          <span className="font-medium">Support dédié aux adhérents Club Pro</span>
+        </div>
+        
+        {/* Avantage principal - mis en évidence */}
+        <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-yellow-400/20 to-orange-300/20 rounded-xl border-2 border-yellow-300/30">
+          <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Building className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <span className="font-bold text-yellow-100 block">🏆 ACCÈS EXCLUSIF</span>
+            <span className="font-medium">Projets de grandes ampleurs réservés aux Club Pro</span>
+          </div>
+        </div>
+      </div>
+      
+      <button className="w-full bg-white text-orange-500 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors">
+        Rejoindre le Club Pro
+      </button>
+    </div>
+    
+    {/* Moyens de paiement avec vrais logos */}
+    <div className="mt-12">
+      <h4 className="text-lg font-semibold text-gray-900 mb-6">Moyens de paiement acceptés</h4>
+      <div className="flex flex-wrap justify-center items-center gap-6">
+        {/* inwi money */}
+        <div className="flex items-center space-x-3 bg-red-50 px-6 py-3 rounded-xl border border-red-100">
+          <img src="/logos/inwi-logo.png" alt="inwi" className="w-10 h-10 object-contain" />
+          <span className="font-medium text-gray-700">inwi money</span>
+        </div>
+        
+        {/* iam MT Cash */}
+        <div className="flex items-center space-x-3 bg-blue-50 px-6 py-3 rounded-xl border border-blue-100">
+          <img src="/logos/iam-logo.png" alt="iam" className="w-10 h-10 object-contain" />
+          <span className="font-medium text-gray-700">MT Cash</span>
+        </div>
+        
+        {/* Orange Money */}
+        <div className="flex items-center space-x-3 bg-orange-50 px-6 py-3 rounded-xl border border-orange-100">
+          <img src="/logos/orange-logo.png" alt="Orange" className="w-10 h-10 object-contain" />
+          <span className="font-medium text-gray-700">Orange Money</span>
+        </div>
+        
+        {/* Carte bancaire */}
+        <div className="flex items-center space-x-3 bg-green-50 px-6 py-3 rounded-xl border border-green-100">
+          <img src="/logos/visa-mastercard.png" alt="Cartes" className="w-16 h-10 object-contain" />
+          <span className="font-medium text-gray-700">Carte bancaire</span>
+        </div>
+        
+        {/* PayPal */}
+        <div className="flex items-center space-x-3 bg-blue-50 px-6 py-3 rounded-xl border border-blue-100">
+          <img src="/logos/paypal-logo.png" alt="PayPal" className="w-10 h-10 object-contain" />
+          <span className="font-medium text-gray-700">PayPal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Section avis prestataires - remplace "Prêt à rejoindre" */}
+<section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
+  <div className="max-w-7xl mx-auto px-4">
+    <div className="text-center mb-12">
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Témoignages de nos prestataires Club Pro
+      </h2>
+      <p className="text-xl text-gray-600">
+        Découvrez comment le Club Pro a transformé leur activité
+      </p>
+    </div>
+    
+    {/* Grid des avis prestataires - avec rotation aléatoire */}
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8" id="provider-reviews">
+      {/* Les avis seront générés dynamiquement par JavaScript */}
+    </div>
+  </div>
+</section>
+
+{/* Script pour rotation aléatoire des avis */}
+<script>
+{`
+  const providerReviews = [
+    {
+      name: "Hassan Benali",
+      service: "Plomberie",
+      city: "Casablanca", 
+      comment: "Depuis Club Pro, j'accède à des projets d'entreprises. Mon chiffre d'affaires a triplé !",
+      avatar: "/avatars/hassan.jpg",
+      rating: 5,
+      badge: "Club Pro depuis 2 ans"
+    },
+    {
+      name: "Khadija El Fassi",
+      service: "Ménage",
+      city: "Rabat",
+      comment: "Le badge Club Pro me donne une crédibilité énorme. Les clients me font plus confiance.",
+      avatar: "/avatars/khadija.jpg", 
+      rating: 5,
+      badge: "Club Pro depuis 1 an"
+    },
+    {
+      name: "Youssef Taibi",
+      service: "Électricité", 
+      city: "Marrakech",
+      comment: "Grâce aux gros projets Club Pro, j'ai pu embaucher 3 employés. Merci Khadamat !",
+      avatar: "/avatars/youssef.jpg",
+      rating: 5,
+      badge: "Club Pro depuis 3 ans"
+    },
+    {
+      name: "Amina Zerktouni",
+      service: "Jardinage",
+      city: "Fès", 
+      comment: "Le support dédié est fantastique. Ils m'aident à décrocher les meilleurs contrats.",
+      avatar: "/avatars/amina.jpg",
+      rating: 5,
+      badge: "Club Pro depuis 6 mois"
+    },
+    {
+      name: "Rachid Alami",
+      service: "Peinture",
+      city: "Agadir",
+      comment: "Les projets de grandes ampleurs m'ont permis d'acheter du matériel professionnel.",
+      avatar: "/avatars/rachid.jpg",
+      rating: 5,
+      badge: "Club Pro depuis 1.5 ans"
+    },
+    {
+      name: "Latifa Bennani",
+      service: "Décoration",
+      city: "Tanger",
+      comment: "Apparaître en premier dans les recherches change tout. Plus de clients, plus de revenus !",
+      avatar: "/avatars/latifa.jpg", 
+      rating: 5,
+      badge: "Club Pro depuis 8 mois"
+    }
+  ];
+  
+  function displayRandomReviews() {
+    const container = document.getElementById('provider-reviews');
+    const shuffled = [...providerReviews].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 4);
+    
+    container.innerHTML = selected.map(review => \`
+      <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-4">
+          <img src="\${review.avatar}" alt="\${review.name}" class="w-12 h-12 rounded-full object-cover ring-2 ring-orange-100" />
+          <div>
+            <h4 class="font-bold text-gray-900">\${review.name}</h4>
+            <p class="text-sm text-gray-500">\${review.service} • \${review.city}</p>
+          </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-4 inline-block">
+          \${review.badge}
+        </div>
+        
+        <p class="text-gray-600 italic text-sm mb-4">"\${review.comment}"</p>
+        
+        <div class="flex items-center">
+          <div class="flex text-yellow-400">
+            \${'★'.repeat(review.rating)}
+          </div>
+        </div>
+      </div>
+    \`).join('');
+  }
+  
+  // Afficher les avis au chargement de la page
+  document.addEventListener('DOMContentLoaded', displayRandomReviews);
+`}
+</script>
+2. LOGO - Remplacer le "K" par le vrai logo
+Crée le composant Logo et remplace partout :
+
+jsx
+// components/Logo.tsx
+const Logo = ({ className = "w-8 h-8", textClassName = "text-xl font-bold text-gray-900" }) => {
+  return (
+    <div className="flex items-center space-x-2">
+      {/* Remplace par ton vrai logo */}
+      <img 
+        src="/logo-khadamat.png" 
+        alt="Khadamat" 
+        className={className}
+      />
+      <span className={textClassName}>Khadamat</span>
+    </div>
+  );
+};
+
+// Dans Header.tsx - remplace le logo
+import Logo from './Logo';
+
+<Link to="/" className="flex items-center">
+  <Logo />
+</Link>
+
+// Dans Footer.tsx - remplace aussi
+<Logo className="w-10 h-10" textClassName="text-xl font-bold text-white" />
+
+// Dans tous les autres endroits où il y a le "K"
+3. SYSTÈME DE TRADUCTION ARABE COMPLET
+Crée le système i18n complet :
+
+jsx
+// contexts/LanguageContext.tsx - Système de traduction
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const translations = {
+  fr: {
+    // Navigation
+    home: "Accueil",
+    clubPro: "Club Pro", 
+    project: "Projet",
+    connection: "Connexion",
+    register: "S'inscrire",
+    sos: "🚨 SOS 24/7",
+    
+    // Page d'accueil
+    heroTitle: "Trouvez le bon",
+    heroTitleHighlight: "prestataire",
+    heroSubtitle: "La première plateforme marocaine qui connecte clients et prestataires de services à domicile avec confiance et transparence.",
+    searchPlaceholder: "Rechercher un service (ex: plombier à Casablanca)",
+    searchButton: "Rechercher",
+    
+    // Services populaires  
+    popularServicesTitle: "Services populaires à",
+    popularServicesSubtitle: "Les services les plus demandés dans votre ville",
+    
+    // Club Pro
+    clubProTitle: "Un seul abonnement, tous les avantages",
+    clubProSubtitle: "Rejoignez le Club Pro et accédez aux plus grands projets",
+    clubProPrice: "50 DH",
+    clubProPeriod: "par mois",
+    clubProCommitment: "Engagement 1 an",
+    clubProBadge: "Badge \"Club Pro\" orange et blanc sur votre profil",
+    clubProPriority: "Priorité dans les résultats de recherche", 
+    clubProSupport: "Support dédié aux adhérents Club Pro",
+    clubProProjects: "Projets de grandes ampleurs réservés aux Club Pro",
+    clubProButton: "Rejoindre le Club Pro",
+    
+    // Avis
+    reviewsTitle: "Ce que disent nos utilisateurs",
+    reviewsSubtitle: "Des milliers de clients satisfaits nous font confiance",
+    
+    // Newsletter
+    newsletterTitle: "Restez informé avec notre newsletter",
+    newsletterSubtitle: "Inscrivez-vous gratuitement et ne manquez aucune actualité de Khadamat",
+    newsletterPlaceholder: "Votre email",
+    newsletterButton: "S'inscrire",
+    newsletterBenefits: "Ce que vous recevrez :",
+    newsletterNews: "Actualités du site et nouvelles fonctionnalités",
+    newslet
