@@ -72,6 +72,25 @@ const translations = {
     "club_pro.visibility.desc": "Apparaissez en tête des résultats de recherche avec un badge Club Pro distinctif",
     "club_pro.trust.title": "Confiance Renforcée",
     "club_pro.trust.desc": "Gagnez la confiance des clients avec votre statut vérifié et vos garanties étendues",
+    "club_pro.verification_24h": "Vérification en 24h",
+    "club_pro.priority_support": "Support prioritaire",
+    "club_pro.premium_badge": "Badge premium",
+    "club_pro.why_choose": "Pourquoi Choisir Club Pro ?",
+    "club_pro.join_elite": "Rejoignez l'élite des prestataires et multipliez vos opportunités",
+    "club_pro.benefit_badge_title": "Badge Club Pro Distinctif",
+    "club_pro.benefit_badge_desc": "Votre profil sera marqué d'un badge premium visible par tous les clients",
+    "club_pro.benefit_ranking_title": "Classement Prioritaire",
+    "club_pro.benefit_ranking_desc": "Apparaissez en premier dans les résultats de recherche",
+    "club_pro.benefit_projects_title": "Accès aux Projets Premium",
+    "club_pro.benefit_projects_desc": "Recevez les demandes de projets les plus valorisés",
+    "club_pro.benefit_support_title": "Support Client Prioritaire",
+    "club_pro.benefit_support_desc": "Assistance dédiée et temps de réponse accéléré",
+    "club_pro.pricing_title": "Un seul abonnement, tous les avantages",
+    "club_pro.pricing_subtitle": "Rejoignez le Club Pro et accédez aux plus grands projets",
+    "club_pro.per_month": "par mois",
+    "club_pro.commitment_1_year": "Engagement 1 an",
+    "club_pro.join_button": "Rejoindre le Club Pro",
+    "club_pro.payment_methods": "Moyens de paiement acceptés",
     
     // SOS
     "sos.title": "Service SOS 24/7",
@@ -107,6 +126,9 @@ const translations = {
     "footer.privacy": "Politique de confidentialité",
     "footer.rights": "Tous droits réservés.",
     "footer.made_in": "Développé avec ❤️ au Maroc",
+    
+    // Common
+    "common.currency": "DH",
     "footer.secure": "Paiements Sécurisés",
     
     // Mobile navigation
@@ -188,6 +210,25 @@ const translations = {
     "club_pro.visibility.desc": "ظهر في أعلى نتائج البحث مع شارة نادي المحترفين المميزة",
     "club_pro.trust.title": "ثقة معززة",
     "club_pro.trust.desc": "اكسب ثقة العملاء مع حالتك المعتمدة والضمانات الممتدة",
+    "club_pro.verification_24h": "التحقق خلال 24 ساعة",
+    "club_pro.priority_support": "دعم أولوي",
+    "club_pro.premium_badge": "شارة مميزة",
+    "club_pro.why_choose": "لماذا تختار نادي المحترفين؟",
+    "club_pro.join_elite": "انضم إلى نخبة مقدمي الخدمات وضاعف فرصك",
+    "club_pro.benefit_badge_title": "شارة نادي المحترفين المميزة",
+    "club_pro.benefit_badge_desc": "سيتم وضع علامة على ملفك الشخصي بشارة مميزة مرئية لجميع العملاء",
+    "club_pro.benefit_ranking_title": "ترتيب أولوي",
+    "club_pro.benefit_ranking_desc": "تظهر أولاً في نتائج البحث",
+    "club_pro.benefit_projects_title": "الوصول إلى المشاريع المميزة",
+    "club_pro.benefit_projects_desc": "احصل على طلبات المشاريع الأكثر قيمة",
+    "club_pro.benefit_support_title": "دعم العملاء الأولوي",
+    "club_pro.benefit_support_desc": "مساعدة مخصصة ووقت استجابة متسارع",
+    "club_pro.pricing_title": "اشتراك واحد، جميع المزايا",
+    "club_pro.pricing_subtitle": "انضم إلى نادي المحترفين واحصل على أكبر المشاريع",
+    "club_pro.per_month": "شهرياً",
+    "club_pro.commitment_1_year": "التزام لسنة واحدة",
+    "club_pro.join_button": "انضم إلى نادي المحترفين",
+    "club_pro.payment_methods": "وسائل الدفع المقبولة",
     
     // SOS
     "sos.title": "خدمة الطوارئ 24/7",
@@ -220,6 +261,9 @@ const translations = {
     "footer.rights": "جميع الحقوق محفوظة.",
     "footer.made_in": "مطور بـ ❤️ في المغرب",
     "footer.secure": "مدفوعات آمنة",
+    
+    // Common
+    "common.currency": "درهم",
     
     // Mobile navigation
     "mobile.home": "الرئيسية",

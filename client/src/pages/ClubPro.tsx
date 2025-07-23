@@ -29,23 +29,23 @@ export default function ClubPro() {
   const benefits = [
     {
       icon: Star,
-      title: "Badge Club Pro Distinctif",
-      description: "Votre profil sera marqué d'un badge premium visible par tous les clients",
+      title: t("club_pro.benefit_badge_title"),
+      description: t("club_pro.benefit_badge_desc"),
     },
     {
       icon: TrendingUp,
-      title: "Classement Prioritaire",
-      description: "Apparaissez en premier dans les résultats de recherche",
+      title: t("club_pro.benefit_ranking_title"),
+      description: t("club_pro.benefit_ranking_desc"),
     },
     {
       icon: Users,
-      title: "Accès aux Projets Premium",
-      description: "Recevez les demandes de projets les plus valorisés",
+      title: t("club_pro.benefit_projects_title"),
+      description: t("club_pro.benefit_projects_desc"),
     },
     {
       icon: Award,
-      title: "Support Client Prioritaire",
-      description: "Assistance dédiée et temps de réponse accéléré",
+      title: t("club_pro.benefit_support_title"),
+      description: t("club_pro.benefit_support_desc"),
     },
   ];
 
@@ -71,15 +71,15 @@ export default function ClubPro() {
           <div className="flex items-center justify-center space-x-8 text-orange-100 text-sm">
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <CheckCircle className="w-5 h-5" />
-              <span>Vérification en 24h</span>
+              <span>{t("club_pro.verification_24h")}</span>
             </div>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <CheckCircle className="w-5 h-5" />
-              <span>Support prioritaire</span>
+              <span>{t("club_pro.priority_support")}</span>
             </div>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <CheckCircle className="w-5 h-5" />
-              <span>Badge premium</span>
+              <span>{t("club_pro.premium_badge")}</span>
             </div>
           </div>
         </div>
@@ -90,10 +90,10 @@ export default function ClubPro() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Pourquoi Choisir Club Pro ?
+              {t("club_pro.why_choose")}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Rejoignez l'élite des prestataires et multipliez vos opportunités
+              {t("club_pro.join_elite")}
             </p>
           </div>
           
@@ -131,21 +131,21 @@ export default function ClubPro() {
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Un seul abonnement, tous les avantages
+            {t("club_pro.pricing_title")}
           </h2>
           
           <p className="text-xl text-gray-600 mb-12">
-            Rejoignez le Club Pro et accédez aux plus grands projets
+            {t("club_pro.pricing_subtitle")}
           </p>
           
           {/* Carte d'abonnement unique */}
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-2xl transform hover:scale-105 transition-all duration-300 max-w-md mx-auto">
             <div className="bg-white/20 rounded-2xl p-6 mb-6">
-              <h3 className="text-2xl font-bold mb-2">Club Pro</h3>
-              <div className="text-5xl font-bold mb-2">50 DH</div>
-              <div className="text-orange-100">par mois</div>
+              <h3 className="text-2xl font-bold mb-2">{t("nav.club_pro")}</h3>
+              <div className="text-5xl font-bold mb-2">50 {t("common.currency")}</div>
+              <div className="text-orange-100">{t("club_pro.per_month")}</div>
               <div className="text-sm text-orange-100 mt-2">
-                Engagement 1 an
+                {t("club_pro.commitment_1_year")}
               </div>
             </div>
             
@@ -155,21 +155,21 @@ export default function ClubPro() {
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-orange-500 font-bold text-sm">✓</span>
                 </div>
-                <span className="font-medium">Badge Club Pro pour se démarquer</span>
+                <span className="font-medium">{t("club_pro.badge_benefit")}</span>
               </div>
               
               <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                   <Search className="w-4 h-4 text-orange-500" />
                 </div>
-                <span className="font-medium">Priorité dans les résultats de recherche</span>
+                <span className="font-medium">{t("club_pro.priority_benefit")}</span>
               </div>
               
               <div className="flex items-center space-x-3 p-3 bg-white/10 rounded-xl">
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                   <Headphones className="w-4 h-4 text-orange-500" />
                 </div>
-                <span className="font-medium">Support dédié aux prestataires Club Pro</span>
+                <span className="font-medium">{t("club_pro.support_benefit")}</span>
               </div>
               
               {/* Avantage principal - mis en évidence */}
@@ -178,20 +178,20 @@ export default function ClubPro() {
                   <Building className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <span className="font-bold text-yellow-100 block">🏆 ACCÈS EXCLUSIF</span>
-                  <span className="font-medium">Projets de grandes ampleurs réservés aux Club Pro</span>
+                  <span className="font-bold text-yellow-100 block">{t("club_pro.exclusive_access")}</span>
+                  <span className="font-medium">{t("club_pro.large_projects")}</span>
                 </div>
               </div>
             </div>
             
             <button className="w-full bg-white text-orange-500 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors">
-              Rejoindre le Club Pro
+              {t("club_pro.join_button")}
             </button>
           </div>
           
           {/* Moyens de paiement */}
           <div className="mt-12">
-            <h4 className="text-lg font-semibold text-gray-900 mb-6">Moyens de paiement acceptés</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-6">{t("club_pro.payment_methods")}</h4>
             <div className="flex flex-wrap justify-center items-center gap-6">
               {/* inwi money */}
               <div className="flex items-center space-x-3 bg-red-50 px-4 py-3 rounded-lg hover:bg-red-100 transition-colors">
