@@ -128,31 +128,31 @@ export default function Project() {
   ];
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-16 pb-20 md:pt-20 md:pb-4">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-16 pattern-bg">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-6 md:py-8 lg:py-16 pattern-bg">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
           <Badge variant="secondary" className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full mb-6">
             {t("project.hero.badge")}
           </Badge>
           
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
             {t("project.hero.find_the")}
             <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
               {" "}{t("project.hero.ideal_provider")}
             </span>
           </h1>
           
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
             {t("project.hero.description")}
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-12">
+      <section className="py-8 md:py-12 lg:py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="grid lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
             {/* Project Form */}
             <div className="lg:col-span-2">
               <Card className="shadow-xl border-0">
@@ -179,7 +179,7 @@ export default function Project() {
                     </div>
 
                     {/* Category & Budget */}
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="category">{t("project.form.category")} *</Label>
                         <Select onValueChange={(value) => {

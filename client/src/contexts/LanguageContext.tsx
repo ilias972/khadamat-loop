@@ -190,6 +190,7 @@ const translations = {
     
     // Common
     "common.configure": "Configurer",
+    "common.search": "Rechercher",
     
     // SOS
     "sos.title": "Service SOS 24/7",
@@ -427,6 +428,7 @@ const translations = {
     
     // Common
     "common.configure": "تكوين",
+    "common.search": "بحث",
     
     // SOS
     "sos.title": "خدمة الطوارئ 24/7",

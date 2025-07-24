@@ -33,17 +33,17 @@ export default function Index() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-20 pb-16 pattern-bg">
-        <div className="relative max-w-7xl mx-auto px-4 text-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-20 md:pt-20 pb-12 md:pb-16 pattern-bg">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 text-center">
           <div className="animate-slide-up">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
               {t("hero.title")}
               <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
                 {" "}{t("hero.title_highlight")}
               </span>
             </h1>
             
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
               {t("hero.subtitle")}
             </p>
           </div>
@@ -52,12 +52,12 @@ export default function Index() {
           <SmartSearch />
           
           {/* Quick Actions */}
-          <div className="flex justify-center flex-wrap gap-4 mt-8 animate-fade-in">
+          <div className="flex justify-center flex-wrap gap-2 md:gap-4 mt-6 md:mt-8 animate-fade-in px-4">
             {popularCategories.map((category) => (
               <Badge 
                 key={category}
                 variant="secondary"
-                className="bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-gray-700 border border-orange-200 hover:bg-white cursor-pointer transition-colors"
+                className="bg-white/70 backdrop-blur-sm px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium text-gray-700 border border-orange-200 hover:bg-white cursor-pointer transition-colors"
               >
                 {category}
               </Badge>
@@ -67,19 +67,19 @@ export default function Index() {
       </section>
 
       {/* Services populaires - Nouvelle section après recherche */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      <section className="py-12 md:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-8 md:mb-12 px-4">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
               {t("services.popular_in")} <span className="text-orange-500" id="user-city">{t("hero.location")}</span>
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-lg md:text-xl text-gray-600">
               {t("services.subtitle")}
             </p>
           </div>
           
           {/* Grid des services populaires */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
             {[
               { name: 'Plomberie', icon: '🔧', count: '156 pros', popular: true },
               { name: 'Ménage', icon: '🧽', count: '89 pros', popular: true },
@@ -89,7 +89,7 @@ export default function Index() {
               { name: 'Réparation', icon: '🔨', count: '78 pros', popular: false },
             ].map((service, index) => (
               <div key={index} className="group cursor-pointer relative">
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="bg-white border border-gray-100 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
                   {/* Badge populaire */}
                   {service.popular && (
                     <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
@@ -97,13 +97,13 @@ export default function Index() {
                     </div>
                   )}
                   
-                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
+                  <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
                     {service.icon}
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                  <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
                     {service.name}
                   </h3>
-                  <p className="text-sm text-gray-500">{service.count}</p>
+                  <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
                 </div>
               </div>
             ))}

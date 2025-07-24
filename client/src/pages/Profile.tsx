@@ -71,8 +71,8 @@ export default function Profile() {
   return (
     <div className="min-h-screen pt-16 pb-20 md:pt-20 md:pb-4">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 md:py-16">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-6 md:py-8 lg:py-16">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardContent className="p-6 md:p-8">
               <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
@@ -88,10 +88,10 @@ export default function Profile() {
 
                 {/* User Info */}
                 <div className="flex-1 text-center md:text-left">
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                     Khalid Alami
                   </h1>
-                  <p className="text-gray-600 mb-3">
+                  <p className="text-sm md:text-base text-gray-600 mb-3">
                     {t("profile.member_since")} Mars 2023
                   </p>
                   
@@ -133,8 +133,8 @@ export default function Profile() {
       </section>
 
       {/* Menu Section */}
-      <section className="py-8 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="py-6 md:py-8 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
           <Card className="shadow-xl border-0">
             <CardHeader>
               <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 flex items-center">

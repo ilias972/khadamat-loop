@@ -40,13 +40,14 @@ export default function SmartSearch({
   ];
 
   return (
-    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-6 mb-12 ${className}`}>
-      {/* First row: Service and City */}
-      <div className="flex items-center space-x-4 mb-4">
-        <div className="flex items-center space-x-3 px-4 flex-1">
-          <Search className="w-6 h-6 text-gray-400" />
+    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-4 md:p-6 mb-8 md:mb-12 ${className}`}>
+      {/* Mobile-first responsive layout */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center space-y-3 md:space-y-0 md:space-x-4">
+        {/* Service search input */}
+        <div className="flex items-center space-x-3 px-3 md:px-4 flex-1 border border-gray-200 md:border-none rounded-xl md:rounded-none">
+          <Search className="w-5 h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
           <input 
-            className="flex-1 py-4 text-lg placeholder-gray-400 border-none focus:outline-none"
+            className="flex-1 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none min-w-0"
             placeholder={t("hero.search_placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -54,10 +55,10 @@ export default function SmartSearch({
           />
         </div>
         
-        {/* City Input with Suggestions */}
-        <div className="relative flex-1 max-w-xs">
+        {/* City Input */}
+        <div className="relative flex-1 md:max-w-xs">
           <input
-            className="w-full py-4 px-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-orange-300"
+            className="w-full py-3 md:py-4 px-3 md:px-4 pr-10 text-base md:text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-orange-300 min-w-0"
             placeholder={t("hero.city_placeholder")}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -66,12 +67,14 @@ export default function SmartSearch({
           <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
         </div>
         
+        {/* Search button */}
         <button 
           onClick={handleSearch}
-          className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 flex items-center space-x-2"
+          className="gradient-orange text-white px-4 md:px-8 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105 flex items-center justify-center space-x-2 min-w-0"
         >
-          <Search className="w-5 h-5" />
-          <span>{t("hero.search_button")}</span>
+          <Search className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+          <span className="hidden sm:inline">{t("hero.search_button")}</span>
+          <span className="sm:hidden">{t("common.search")}</span>
         </button>
       </div>
       
