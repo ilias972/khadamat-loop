@@ -38,6 +38,25 @@ const translations = {
     "services.subtitle": "Découvrez notre large gamme de services professionnels disponibles dans tout le Maroc",
     "services.explore": "Explorer",
     "services.popular_in": "Services populaires à",
+    "services.plumbing": "Plomberie",
+    "services.electricity": "Électricité",
+    "services.cleaning": "Ménage",
+    "services.gardening": "Jardinage",
+    "services.painting": "Peinture",
+    "services.repair": "Réparation",
+    "services.installation": "Installation",
+    "services.deep_cleaning": "Nettoyage approfondi",
+    "services.moving": "Déménagement",
+    
+    // How it works
+    "how_it_works.title": "Comment ça marche ?",
+    "how_it_works.subtitle": "Trouvez le bon prestataire en 3 étapes simples",
+    "how_it_works.step1": "1. Recherchez",
+    "how_it_works.step1_desc": "Décrivez votre besoin et votre localisation",
+    "how_it_works.step2": "2. Comparez",
+    "how_it_works.step2_desc": "Consultez les profils et avis des prestataires",
+    "how_it_works.step3": "3. Contactez",
+    "how_it_works.step3_desc": "Échangez directement et planifiez votre service",
     
     // Providers
     "providers.title": "Prestataires Vérifiés",
@@ -206,10 +225,10 @@ const translations = {
     "testimonials.subtitle": "Des milliers de clients satisfaits nous font confiance",
     
     // Newsletter
-    "newsletter.title": "Restez Informé des Nouveautés",
-    "newsletter.subtitle": "Recevez nos dernières actualités, conseils et offres spéciales directement dans votre boîte mail",
-    "newsletter.placeholder": "Votre adresse email",
-    "newsletter.subscribe": "S'abonner",
+    "newsletter.title": "Restez informé avec notre newsletter",
+    "newsletter.subtitle": "Inscrivez-vous gratuitement et ne manquez aucune actualité de Khadamat",
+    "newsletter.placeholder": "Votre email",
+    "newsletter.subscribe": "S'inscrire",
     "newsletter.privacy": "Vos données sont protégées et ne seront jamais partagées",
     
     // Footer
@@ -272,6 +291,25 @@ const translations = {
     "services.subtitle": "اكتشف مجموعتنا الواسعة من الخدمات المهنية المتاحة في جميع أنحاء المغرب",
     "services.explore": "استكشف جميع الخدمات",
     "services.popular_in": "الخدمات الشائعة في",
+    "services.plumbing": "السباكة",
+    "services.electricity": "الكهرباء",
+    "services.cleaning": "التنظيف",
+    "services.gardening": "البستنة",
+    "services.painting": "الدهان",
+    "services.repair": "الإصلاح",
+    "services.installation": "التركيب",
+    "services.deep_cleaning": "التنظيف العميق",
+    "services.moving": "النقل",
+    
+    // How it works
+    "how_it_works.title": "كيف يعمل؟",
+    "how_it_works.subtitle": "اعثر على مقدم الخدمة المناسب في 3 خطوات بسيطة",
+    "how_it_works.step1": "1. ابحث",
+    "how_it_works.step1_desc": "صف احتياجك وموقعك",
+    "how_it_works.step2": "2. قارن",
+    "how_it_works.step2_desc": "راجع ملفات تعريف مقدمي الخدمات وآرائهم",
+    "how_it_works.step3": "3. تواصل",
+    "how_it_works.step3_desc": "تواصل مباشرة ونسق خدمتك",
     
     // Testimonials
     "testimonials.title": "ماذا يقول عملاؤنا",
@@ -440,9 +478,9 @@ const translations = {
     "sos.call_now": "اتصل الآن",
     
     // Newsletter
-    "newsletter.title": "ابق على اطلاع بالأخبار",
-    "newsletter.subtitle": "احصل على آخر أخبارنا ونصائحنا وعروضنا الخاصة مباشرة في بريدك الإلكتروني",
-    "newsletter.placeholder": "عنوان بريدك الإلكتروني",
+    "newsletter.title": "ابق على اطلاع مع نشرتنا الإخبارية",
+    "newsletter.subtitle": "اشترك مجاناً ولا تفوت أي أخبار من خدمات",
+    "newsletter.placeholder": "بريدك الإلكتروني",
     "newsletter.subscribe": "اشترك",
     "newsletter.privacy": "بياناتك محمية ولن يتم مشاركتها أبداً",
     
