@@ -47,9 +47,9 @@ export default function Footer() {
             <h4 className="text-lg font-bold mb-6">{t("footer.company")}</h4>
             <ul className="space-y-3">
               <li><Link href="/about" className="text-gray-300 hover:text-orange-400 transition-colors">{t("nav.about")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.careers")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.press")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.partners")}</Link></li>
+              <li><Link href="/careers" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.careers")}</Link></li>
+              <li><Link href="/about" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.press")}</Link></li>
+              <li><Link href="/partners" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.partners")}</Link></li>
               <li><Link href="/club-pro" className="text-gray-300 hover:text-orange-400 transition-colors">{t("nav.club_pro")}</Link></li>
             </ul>
           </div>
@@ -58,11 +58,11 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-bold mb-6">{t("footer.support")}</h4>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.help")}</Link></li>
+              <li><Link href="/help" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.help")}</Link></li>
               <li><Link href="/contact" className="text-gray-300 hover:text-orange-400 transition-colors">{t("nav.contact")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.faq")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.terms")}</Link></li>
-              <li><Link href="#" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.privacy")}</Link></li>
+              <li><Link href="/faq" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.faq")}</Link></li>
+              <li><Link href="/terms" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.terms")}</Link></li>
+              <li><Link href="/privacy" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.privacy")}</Link></li>
             </ul>
           </div>
         </div>

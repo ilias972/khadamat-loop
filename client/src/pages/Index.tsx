@@ -6,6 +6,7 @@ import ProviderCard from "@/components/providers/ProviderCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building } from "lucide-react";
+import { Link } from "wouter";
 import type { Service, ProviderWithUser } from "@shared/schema";
 
 export default function Index() {
@@ -88,8 +89,9 @@ export default function Index() {
               { nameKey: 'services.painting', icon: '🎨', count: '92 pros', popular: true },
               { nameKey: 'services.repair', icon: '🔨', count: '78 pros', popular: false },
             ].map((service, index) => (
-              <div key={index} className="group cursor-pointer relative">
-                <div className="bg-white border border-gray-100 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
+              <Link key={index} href="/services">
+                <div className="group cursor-pointer relative">
+                  <div className="bg-white border border-gray-100 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
                   {/* Badge populaire */}
                   {service.popular && (
                     <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
@@ -100,20 +102,23 @@ export default function Index() {
                   <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
                     {service.icon}
                   </div>
-                  <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
-                    {t(service.nameKey)}
-                  </h3>
-                  <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
+                    <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                      {t(service.nameKey)}
+                    </h3>
+                    <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           
           {/* Bouton voir plus */}
           <div className="text-center mt-12">
-            <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
-              {t("services.explore")}
-            </button>
+            <Link href="/services">
+              <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
+                {t("services.explore")}
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -210,9 +215,11 @@ export default function Index() {
                 </div>
               </div>
               
-              <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
-                {t("club_pro.join_cta")}
-              </button>
+              <Link href="/club-pro">
+                <button className="gradient-orange text-white px-8 py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
+                  {t("club_pro.join_cta")}
+                </button>
+              </Link>
             </div>
             
             <div className="relative">
@@ -375,9 +382,11 @@ export default function Index() {
                   className="flex-1 px-4 md:px-6 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl min-w-0"
                   placeholder={t("newsletter.placeholder")}
                 />
-                <button className="gradient-orange text-white px-4 md:px-6 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105 whitespace-nowrap">
-                  {t("newsletter.subscribe")}
-                </button>
+                <Link href="/register">
+                  <button className="gradient-orange text-white px-4 md:px-6 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105 whitespace-nowrap">
+                    {t("newsletter.subscribe")}
+                  </button>
+                </Link>
               </div>
             </div>
             

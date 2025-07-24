@@ -27,6 +27,12 @@ import Contact from "@/pages/Contact";
 import Profile from "@/pages/Profile";
 import Messages from "@/pages/Messages";
 import PostService from "@/pages/PostService";
+import FAQ from "@/pages/FAQ";
+import Help from "@/pages/Help";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
+import Careers from "@/pages/Careers";
+import Partners from "@/pages/Partners";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -50,6 +56,12 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/messages" component={Messages} />
           <Route path="/post-service" component={PostService} />
+          <Route path="/faq" component={FAQ} />
+          <Route path="/help" component={Help} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route path="/careers" component={Careers} />
+          <Route path="/partners" component={Partners} />
           <Route component={NotFound} />
         </Switch>
       </main>
