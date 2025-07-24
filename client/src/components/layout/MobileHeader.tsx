@@ -14,8 +14,10 @@ import {
   UserPlus, 
   LogIn, 
   AlertTriangle,
-  X
+  X,
+  Info
 } from "lucide-react";
+import { Link } from "wouter";
 import logoImage from "@assets/Symbole abstrait sur fond orange_1753291962087.png";
 
 export default function MobileHeader() {
@@ -64,21 +66,37 @@ export default function MobileHeader() {
             className="w-56 mt-2 bg-white/95 backdrop-blur-md border border-orange-100"
             sideOffset={4}
           >
-            <DropdownMenuItem 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 focus:bg-orange-50"
-            >
-              <UserPlus className="w-5 h-5 text-orange-600" />
-              <span className="font-medium">{t("header.register")}</span>
-            </DropdownMenuItem>
+            <Link href="/register">
+              <DropdownMenuItem 
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 focus:bg-orange-50"
+              >
+                <UserPlus className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">{t("header.register")}</span>
+              </DropdownMenuItem>
+            </Link>
             
-            <DropdownMenuItem 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 focus:bg-orange-50"
-            >
-              <LogIn className="w-5 h-5 text-orange-600" />
-              <span className="font-medium">{t("header.login")}</span>
-            </DropdownMenuItem>
+            <Link href="/login">
+              <DropdownMenuItem 
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 focus:bg-orange-50"
+              >
+                <LogIn className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">{t("header.login")}</span>
+              </DropdownMenuItem>
+            </Link>
+            
+            <DropdownMenuSeparator className="bg-orange-100" />
+            
+            <Link href="/about">
+              <DropdownMenuItem 
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 hover:bg-orange-50 focus:bg-orange-50"
+              >
+                <Info className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">{t("nav.about")}</span>
+              </DropdownMenuItem>
+            </Link>
             
             <DropdownMenuSeparator className="bg-orange-100" />
             

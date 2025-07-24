@@ -7,10 +7,10 @@ export default function Footer() {
   const { t } = useLanguage();
 
   const socialLinks = [
-    { icon: Facebook, href: "#" },
-    { icon: Instagram, href: "#" },
-    { icon: Linkedin, href: "#" },
-    { icon: Twitter, href: "#" },
+    { icon: Facebook, href: "https://facebook.com/khadamat.ma" },
+    { icon: Instagram, href: "https://instagram.com/khadamat_ma" },
+    { icon: Linkedin, href: "https://linkedin.com/company/khadamat" },
+    { icon: Twitter, href: "https://twitter.com/khadamat_ma" },
   ];
 
   return (
@@ -31,7 +31,9 @@ export default function Footer() {
               {socialLinks.map((social, index) => (
                 <a 
                   key={index}
-                  href={social.href} 
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-white/10 hover:bg-orange-500 rounded-full flex items-center justify-center transition-all hover:scale-110"
                 >
                   <social.icon className="w-5 h-5" />
@@ -48,7 +50,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link href="/about" className="text-gray-300 hover:text-orange-400 transition-colors">{t("nav.about")}</Link></li>
               <li><Link href="/careers" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.careers")}</Link></li>
-              <li><Link href="/about" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.press")}</Link></li>
+
               <li><Link href="/partners" className="text-gray-300 hover:text-orange-400 transition-colors">{t("footer.partners")}</Link></li>
               <li><Link href="/club-pro" className="text-gray-300 hover:text-orange-400 transition-colors">{t("nav.club_pro")}</Link></li>
             </ul>
