@@ -52,7 +52,7 @@ export default function ClubPro() {
 
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 mt-[-16px] mb-[-16px]">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-orange-500 to-orange-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -84,7 +84,6 @@ export default function ClubPro() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
@@ -126,7 +125,6 @@ export default function ClubPro() {
           </div>
         </div>
       </section>
-
       {/* Pricing Section */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -236,7 +234,6 @@ export default function ClubPro() {
           </div>
         </div>
       </section>
-
       {/* Section avis prestataires - remplace "Prêt à rejoindre" */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
         <div className="max-w-7xl mx-auto px-4">
@@ -320,7 +317,6 @@ export default function ClubPro() {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
