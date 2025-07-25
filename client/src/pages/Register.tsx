@@ -180,8 +180,8 @@ export default function Register() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         {/* En-tête avec alerte importante */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mt-[48px] mb-[48px]">
+        <div className="text-center mt-[32px] mb-[32px]">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mt-[4px] mb-[4px]">
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
