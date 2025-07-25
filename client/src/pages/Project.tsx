@@ -358,7 +358,7 @@ export default function Project() {
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-600">
                           <span className="flex items-center">
-                            <DollarSign className="w-3 h-3 mr-1" />
+                            <className="w-3 h-3 mr-1" />
                             {project.budget}
                           </span>
                           <span className="flex items-center">
