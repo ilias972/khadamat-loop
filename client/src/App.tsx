@@ -20,8 +20,7 @@ import Providers from "@/pages/Providers";
 import ClubPro from "@/pages/ClubPro";
 import Project from "@/pages/Project";
 import SOS from "@/pages/SOS";
-import Register from "@/pages/Register";
-import Login from "@/pages/Login";
+// Auth pages imported below with aliases
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Profile from "@/pages/Profile";
@@ -33,6 +32,9 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Careers from "@/pages/Careers";
 import Partners from "@/pages/Partners";
+import LoginPage from "@/pages/Login";
+import RegisterPage from "@/pages/Register";
+import SecurityDashboard from "@/pages/SecurityDashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -49,8 +51,7 @@ function Router() {
           <Route path="/club-pro" component={ClubPro} />
           <Route path="/project" component={Project} />
           <Route path="/sos" component={SOS} />
-          <Route path="/register" component={Register} />
-          <Route path="/login" component={Login} />
+          {/* Auth routes handled below */}
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
           <Route path="/profile" component={Profile} />
@@ -62,6 +63,9 @@ function Router() {
           <Route path="/privacy" component={Privacy} />
           <Route path="/careers" component={Careers} />
           <Route path="/partners" component={Partners} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/register" component={RegisterPage} />
+          <Route path="/security" component={SecurityDashboard} />
           <Route component={NotFound} />
         </Switch>
       </main>

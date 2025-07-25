@@ -1,39 +1,52 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Phone, 
-  MapPin, 
-  ArrowRight, 
-  ArrowLeft,
-  CheckCircle,
-  UserCheck,
-  Briefcase
-} from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Shield, Eye, EyeOff, Lock, Mail, User, Phone, MapPin, IdCard } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
-const registerSchema = insertUserSchema.extend({
-  confirmPassword: z.string().min(1, "Confirmation du mot de passe requise"),
+// Schéma de validation renforcé pour inscription
+const registerSchema = z.object({
+  email: z.string().email("Email invalide").min(1, "Email requis"),
+  password: z.string()
+    .min(12, "Mot de passe doit contenir au moins 12 caractères")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, 
+      "Mot de passe doit contenir: majuscule, minuscule, chiffre, caractère spécial"),
+  confirmPassword: z.string().min(1, "Confirmation requise"),
+  firstName: z.string()
+    .min(2, "Prénom doit contenir au moins 2 caractères")
+    .max(50, "Prénom trop long")
+    .regex(/^[a-zA-ZÀ-ÿ\s-]+$/, "Prénom contient des caractères invalides"),
+  lastName: z.string()
+    .min(2, "Nom doit contenir au moins 2 caractères")
+    .max(50, "Nom trop long")
+    .regex(/^[a-zA-ZÀ-ÿ\s-]+$/, "Nom contient des caractères invalides"),
+  phone: z.string()
+    .regex(/^(\+212|0)[5-7]\d{8}$/, "Numéro de téléphone marocain invalide"),
+  userType: z.enum(['client', 'provider'], {
+    errorMap: () => ({ message: "Type d'utilisateur requis" })
+  }),
+  nationalId: z.string()
+    .regex(/^[A-Z]{1,2}\d{6}$/, "Numéro de carte nationale marocaine invalide")
+    .optional(),
+  address: z.string().min(10, "Adresse complète requise").optional(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter les conditions d'utilisation"
+  }),
+  acceptPrivacy: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter la politique de confidentialité"
+  })
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
+  path: ["confirmPassword"]
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -41,439 +54,461 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function Register() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [userType, setUserType] = useState<"client" | "provider">("client");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<string[]>([]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm<RegisterFormData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      userType: "client",
-    },
+      email: "",
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
+      userType: undefined,
+      nationalId: "",
+      address: "",
+      acceptTerms: false,
+      acceptPrivacy: false
+    }
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: async (userData: Omit<RegisterFormData, "confirmPassword">) => {
-      const response = await apiRequest("POST", "/api/users/register", userData);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Inscription réussie !",
-        description: "Votre compte a été créé avec succès.",
-      });
-      setLocation("/login");
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur d'inscription",
-        description: error.message || "Une erreur s'est produite lors de l'inscription.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = (data: RegisterFormData) => {
-    const { confirmPassword, ...userData } = data;
-    createUserMutation.mutate(userData);
+  // Vérification force mot de passe en temps réel
+  const checkPasswordStrength = (password: string) => {
+    const checks = [
+      { test: password.length >= 12, message: "Au moins 12 caractères" },
+      { test: /[a-z]/.test(password), message: "Une minuscule" },
+      { test: /[A-Z]/.test(password), message: "Une majuscule" },
+      { test: /\d/.test(password), message: "Un chiffre" },
+      { test: /[@$!%*?&]/.test(password), message: "Un caractère spécial" }
+    ];
+    
+    setPasswordStrength(checks.map(check => 
+      check.test ? `✅ ${check.message}` : `❌ ${check.message}`
+    ));
   };
 
-  const nextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setError('Un compte avec cet email existe déjà');
+          return;
+        }
+        
+        if (result.details && Array.isArray(result.details)) {
+          setError(result.details.map((d: any) => d.msg).join(', '));
+          return;
+        }
+
+        throw new Error(result.error || 'Erreur lors de la création du compte');
+      }
+
+      setSuccess(true);
+
+    } catch (error) {
+      console.error('Erreur inscription:', error);
+      setError(error instanceof Error ? error.message : 'Erreur inconnue');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const steps = [
-    { id: 1, title: "Type de compte", description: "Choisissez votre profil" },
-    { id: 2, title: "Informations personnelles", description: "Vos coordonnées" },
-    { id: 3, title: "Sécurisation", description: "Mot de passe et validation" },
-  ];
-
-  const moroccanCities = [
-    "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", 
-    "Oujda", "Kenitra", "Tétouan", "Safi", "Mohammedia", "Khouribga", "Beni Mellal",
-    "El Jadida", "Nador", "Taza", "Settat", "Larache", "Ksar El Kebir"
-  ];
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md glassmorphism shadow-xl border-0">
+          <CardContent className="text-center p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-6">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Compte créé avec succès !
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Un email de vérification a été envoyé à votre adresse. 
+              Cliquez sur le lien pour activer votre compte.
+            </p>
+            <Link href="/login">
+              <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                Se connecter
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen pt-20 bg-gradient-to-br from-orange-50 via-white to-orange-100 pattern-bg">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Créez Votre Compte
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* En-tête */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mb-4">
+            <Shield className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Créer un compte Khadamat
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Rejoignez la communauté Khadamat et accédez à des milliers de services professionnels
+          <p className="text-gray-600">
+            Rejoignez la plateforme sécurisée de services au Maroc
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <Progress value={(currentStep / 3) * 100} className="h-2 mb-4" />
-          <div className="flex justify-between">
-            {steps.map((step) => (
-              <div 
-                key={step.id}
-                className={`flex flex-col items-center ${
-                  currentStep >= step.id ? 'text-orange-600' : 'text-gray-400'
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mb-2 ${
-                  currentStep >= step.id 
-                    ? 'bg-orange-500 text-white' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {currentStep > step.id ? <CheckCircle className="w-5 h-5" /> : step.id}
+        <Card className="glassmorphism shadow-xl border-0">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2 text-xl">
+              <User className="w-5 h-5 text-orange-500" />
+              Inscription Sécurisée
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Informations personnelles */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ahmed" {...field} disabled={isLoading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Benali" {...field} disabled={isLoading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-                <div className="text-center">
-                  <div className="font-semibold text-sm">{step.title}</div>
-                  <div className="text-xs opacity-75">{step.description}</div>
+
+                {/* Email et téléphone */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          Email
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email" 
+                            placeholder="ahmed@example.com" 
+                            {...field} 
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          Téléphone
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="+212 6 XX XX XX XX" 
+                            {...field} 
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-gray-500">Numéro marocain requis</p>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <Card className="shadow-xl border-0">
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {/* Step 1: Account Type */}
-              {currentStep === 1 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                      Quel type de compte souhaitez-vous ?
-                    </h2>
-                    <p className="text-gray-600">
-                      Choisissez le type de compte qui correspond à vos besoins
-                    </p>
-                  </div>
+                {/* Mots de passe */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Lock className="w-4 h-4" />
+                          Mot de passe
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••••••"
+                              {...field}
+                              disabled={isLoading}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                checkPasswordStrength(e.target.value);
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-2 top-1/2 -translate-y-1/2"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                        {passwordStrength.length > 0 && (
+                          <div className="text-xs space-y-1">
+                            {passwordStrength.map((check, index) => (
+                              <div key={index}>{check}</div>
+                            ))}
+                          </div>
+                        )}
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Client Card */}
-                    <div 
-                      className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                        userType === "client" 
-                          ? 'border-orange-500 bg-orange-50 shadow-lg' 
-                          : 'border-gray-200 hover:border-orange-300 hover:shadow-md'
-                      }`}
-                      onClick={() => {
-                        setUserType("client");
-                        setValue("userType", "client");
-                      }}
-                    >
-                      <div className="text-center">
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                          userType === "client" ? 'gradient-orange' : 'bg-gray-100'
-                        }`}>
-                          <User className={`w-8 h-8 ${userType === "client" ? 'text-white' : 'text-gray-500'}`} />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Client</h3>
-                        <p className="text-gray-600 text-sm mb-4">
-                          Je cherche des prestataires de services pour mes besoins
-                        </p>
-                        <ul className="text-left text-sm text-gray-600 space-y-1">
-                          <li>• Publier des projets</li>
-                          <li>• Contacter des prestataires</li>
-                          <li>• Système de favoris</li>
-                          <li>• Messagerie intégrée</li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Provider Card */}
-                    <div 
-                      className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                        userType === "provider" 
-                          ? 'border-orange-500 bg-orange-50 shadow-lg' 
-                          : 'border-gray-200 hover:border-orange-300 hover:shadow-md'
-                      }`}
-                      onClick={() => {
-                        setUserType("provider");
-                        setValue("userType", "provider");
-                      }}
-                    >
-                      <div className="text-center">
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                          userType === "provider" ? 'gradient-orange' : 'bg-gray-100'
-                        }`}>
-                          <Briefcase className={`w-8 h-8 ${userType === "provider" ? 'text-white' : 'text-gray-500'}`} />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Prestataire</h3>
-                        <p className="text-gray-600 text-sm mb-4">
-                          Je propose mes services professionnels aux clients
-                        </p>
-                        <ul className="text-left text-sm text-gray-600 space-y-1">
-                          <li>• Profil professionnel</li>
-                          <li>• Recevoir des demandes</li>
-                          <li>• Éligible Club Pro</li>
-                          <li>• Outils de gestion</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirmer le mot de passe</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="••••••••••••"
+                              {...field}
+                              disabled={isLoading}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-2 top-1/2 -translate-y-1/2"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
 
-              {/* Step 2: Personal Information */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                      Informations Personnelles
-                    </h2>
-                    <p className="text-gray-600">
-                      Complétez vos informations pour créer votre profil
-                    </p>
-                  </div>
+                {/* Type d'utilisateur */}
+                <FormField
+                  control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type de compte</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez votre type de compte" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="client">Client - Je recherche des services</SelectItem>
+                          <SelectItem value="provider">Prestataire - Je propose des services</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom *</Label>
-                      <div className="relative">
-                        <User className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                        <Input
-                          id="firstName"
-                          {...register("firstName")}
-                          className="pl-10"
-                          placeholder="Votre prénom"
-                        />
-                      </div>
-                      {errors.firstName && (
-                        <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+                {/* Informations KYC pour le Maroc */}
+                <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                  <h3 className="font-medium text-orange-800 mb-3 flex items-center gap-2">
+                    <IdCard className="w-4 h-4" />
+                    Vérification d'identité (Maroc)
+                  </h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="nationalId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Carte nationale (optionnel)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="A123456" 
+                              {...field} 
+                              disabled={isLoading}
+                              maxLength={7}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <p className="text-xs text-gray-500">Format: A123456 ou AB123456</p>
+                        </FormItem>
                       )}
-                    </div>
+                    />
 
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom *</Label>
-                      <div className="relative">
-                        <UserCheck className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                        <Input
-                          id="lastName"
-                          {...register("lastName")}
-                          className="pl-10"
-                          placeholder="Votre nom"
-                        />
-                      </div>
-                      {errors.lastName && (
-                        <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            Adresse (optionnel)
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="123 Rue Mohammed V, Casablanca" 
+                              {...field} 
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </div>
+                    />
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Adresse Email *</Label>
-                    <div className="relative">
-                      <Mail className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                      <Input
-                        id="email"
-                        type="email"
-                        {...register("email")}
-                        className="pl-10"
-                        placeholder="votre@email.com"
-                      />
-                    </div>
-                    {errors.email && (
-                      <p className="text-red-500 text-sm">{errors.email.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone</Label>
-                    <div className="relative">
-                      <Phone className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                      <Input
-                        id="phone"
-                        {...register("phone")}
-                        className="pl-10"
-                        placeholder="+212 6XX XXX XXX"
-                      />
-                    </div>
-                    {errors.phone && (
-                      <p className="text-red-500 text-sm">{errors.phone.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Ville</Label>
-                    <Select onValueChange={(value) => setValue("location", value)}>
-                      <SelectTrigger>
-                        <div className="flex items-center">
-                          <MapPin className="w-5 h-5 mr-2 text-gray-400" />
-                          <SelectValue placeholder="Choisissez votre ville" />
+                {/* Acceptation des conditions */}
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="acceptTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm">
+                            J'accepte les{" "}
+                            <Link href="/terms" className="text-orange-600 hover:underline">
+                              conditions d'utilisation
+                            </Link>
+                          </FormLabel>
+                          <FormMessage />
                         </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {moroccanCities.map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="acceptPrivacy"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm">
+                            J'accepte la{" "}
+                            <Link href="/privacy" className="text-orange-600 hover:underline">
+                              politique de confidentialité
+                            </Link>
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
 
-              {/* Step 3: Security */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                      Sécurisation du Compte
-                    </h2>
-                    <p className="text-gray-600">
-                      Choisissez un mot de passe sécurisé pour protéger votre compte
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Nom d'utilisateur *</Label>
-                    <div className="relative">
-                      <User className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                      <Input
-                        id="username"
-                        {...register("username")}
-                        className="pl-10"
-                        placeholder="Nom d'utilisateur unique"
-                      />
-                    </div>
-                    {errors.username && (
-                      <p className="text-red-500 text-sm">{errors.username.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe *</Label>
-                    <div className="relative">
-                      <Lock className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                      <Input
-                        id="password"
-                        type="password"
-                        {...register("password")}
-                        className="pl-10"
-                        placeholder="Mot de passe sécurisé"
-                      />
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-500 text-sm">{errors.password.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirmer le mot de passe *</Label>
-                    <div className="relative">
-                      <Lock className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        {...register("confirmPassword")}
-                        className="pl-10"
-                        placeholder="Répétez votre mot de passe"
-                      />
-                    </div>
-                    {errors.confirmPassword && (
-                      <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
-                    )}
-                  </div>
-
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2">Critères du mot de passe :</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• Au moins 8 caractères</li>
-                      <li>• Une lettre majuscule et minuscule</li>
-                      <li>• Un chiffre</li>
-                      <li>• Un caractère spécial</li>
-                    </ul>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <Checkbox id="terms" required />
-                    <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-                      J'accepte les{" "}
-                      <a href="#" className="text-orange-600 hover:text-orange-700 underline">
-                        conditions d'utilisation
-                      </a>{" "}
-                      et la{" "}
-                      <a href="#" className="text-orange-600 hover:text-orange-700 underline">
-                        politique de confidentialité
-                      </a>{" "}
-                      de Khadamat.
-                    </Label>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                {/* Bouton d'inscription */}
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="flex items-center space-x-2"
+                  type="submit"
+                  className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+                  disabled={isLoading}
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Précédent</span>
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Création du compte...
+                    </div>
+                  ) : (
+                    'Créer mon compte'
+                  )}
                 </Button>
+              </form>
+            </Form>
 
-                {currentStep < 3 ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="gradient-orange text-white border-0 flex items-center space-x-2"
-                  >
-                    <span>Suivant</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={createUserMutation.isPending}
-                    className="gradient-orange text-white border-0 flex items-center space-x-2"
-                  >
-                    {createUserMutation.isPending ? (
-                      <>
-                        <span>Création...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Créer mon compte</span>
-                        <CheckCircle className="w-4 h-4" />
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </form>
+            {/* Lien de connexion */}
+            <div className="text-center pt-4 border-t border-gray-200">
+              <span className="text-gray-600">Déjà un compte ? </span>
+              <Link href="/login">
+                <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 font-semibold">
+                  Se connecter
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Login Link */}
-        <div className="text-center mt-8">
-          <p className="text-gray-600">
-            Vous avez déjà un compte ?{" "}
-            <button
-              onClick={() => setLocation("/login")}
-              className="text-orange-600 hover:text-orange-700 font-semibold underline"
-            >
-              Connectez-vous
-            </button>
-          </p>
+        {/* Informations de sécurité */}
+        <div className="mt-6 text-center">
+          <div className="inline-flex items-center gap-2 text-sm text-gray-500 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm">
+            <Shield className="w-4 h-4" />
+            Données chiffrées AES-256 • Conformité Bank Al Maghrib
+          </div>
         </div>
       </div>
     </div>

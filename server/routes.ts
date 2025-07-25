@@ -4,7 +4,28 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertProjectSchema, insertMessageSchema, insertFavoriteSchema, insertReviewSchema } from "@shared/schema";
 
+// Import des middlewares de sécurité
+import { 
+  helmetConfig, 
+  corsOptions, 
+  apiRateLimit,
+  captureClientIP,
+  detectSuspiciousActivity,
+  sanitizeInput
+} from "./security/middleware";
+import { SecurityLogger } from "./security/logger";
+import securityRoutes from "./security/routes";
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Middlewares de sécurité globaux
+  app.use(helmetConfig);
+  app.use(captureClientIP);
+  app.use(detectSuspiciousActivity);
+  app.use(sanitizeInput);
+  app.use(apiRateLimit);
+  
+  // Routes de sécurité
+  app.use('/api/auth', securityRoutes);
   // Services routes
   app.get("/api/services", async (req, res) => {
     try {
