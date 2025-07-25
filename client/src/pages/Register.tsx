@@ -181,7 +181,7 @@ export default function Register() {
       <div className="max-w-2xl mx-auto">
         {/* En-tête avec alerte importante */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mt-[48px] mb-[48px]">
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
