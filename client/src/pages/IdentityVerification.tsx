@@ -23,7 +23,7 @@ export default function IdentityVerification() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* En-tête */}
-        <div className="text-center mb-8">
+        <div className="text-center mt-[48px] mb-[48px]">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mb-4">
             <IdCard className="w-8 h-8 text-white" />
           </div>
