@@ -35,6 +35,7 @@ import Partners from "@/pages/Partners";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import SecurityDashboard from "@/pages/SecurityDashboard";
+import IdentityVerification from "@/pages/IdentityVerification";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -66,6 +67,7 @@ function Router() {
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/security" component={SecurityDashboard} />
+          <Route path="/identity-verification" component={IdentityVerification} />
           <Route component={NotFound} />
         </Switch>
       </main>

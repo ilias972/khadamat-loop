@@ -351,33 +351,76 @@ export const MOROCCO_COMPLIANCE = {
   ]
 };
 
-// Validation KYC (Know Your Customer) pour Maroc
+// Validation KYC OBLIGATOIRE (Know Your Customer) pour Maroc
 export function validateMoroccanKYC(userData: any): { valid: boolean; errors: string[]; riskLevel: 'low' | 'medium' | 'high' } {
   const errors: string[] = [];
   let riskLevel: 'low' | 'medium' | 'high' = 'low';
   
-  // Vérification carte nationale marocaine
-  if (!userData.nationalId || !/^[A-Z]{1,2}\d{6}$/.test(userData.nationalId)) {
-    errors.push('Numéro de carte nationale marocaine invalide');
+  // OBLIGATOIRE: Document d'identité marocain (carte nationale OU passeport)
+  const hasNationalId = userData.nationalId && /^[A-Z]{1,2}\d{6}$/.test(userData.nationalId);
+  const hasPassport = userData.passport && /^[A-Z]{2}\d{6}$/.test(userData.passport);
+  
+  if (!hasNationalId && !hasPassport) {
+    errors.push('OBLIGATOIRE: Carte nationale marocaine OU passeport requis pour tous les utilisateurs');
+    riskLevel = 'high';
+    return { valid: false, errors, riskLevel }; // Arrêt immédiat si pas de document
+  }
+  
+  // Validation spécifique carte nationale
+  if (userData.nationalId && !hasNationalId) {
+    errors.push('Format carte nationale invalide. Format requis: A123456 ou AB123456');
     riskLevel = 'high';
   }
   
-  // Vérification numéro de téléphone marocain
+  // Validation spécifique passeport marocain
+  if (userData.passport && !hasPassport) {
+    errors.push('Format passeport marocain invalide. Format requis: AB123456');
+    riskLevel = 'high';
+  }
+  
+  // OBLIGATOIRE: Numéro de téléphone marocain
   if (!userData.phoneNumber || !/^(\+212|0)[5-7]\d{8}$/.test(userData.phoneNumber)) {
-    errors.push('Numéro de téléphone marocain requis');
-    riskLevel = 'medium';
-  }
-  
-  // Vérification adresse
-  if (!userData.address || userData.address.length < 10) {
-    errors.push('Adresse complète requise');
-    riskLevel = 'medium';
-  }
-  
-  // Vérification âge (majeur)
-  if (!userData.birthDate || new Date().getFullYear() - new Date(userData.birthDate).getFullYear() < 18) {
-    errors.push('Utilisateur doit être majeur (18+ ans)');
+    errors.push('OBLIGATOIRE: Numéro de téléphone marocain requis (+212XXXXXXXXX ou 0XXXXXXXXX)');
     riskLevel = 'high';
+  }
+  
+  // OBLIGATOIRE: Adresse complète au Maroc
+  if (!userData.address || userData.address.length < 20) {
+    errors.push('OBLIGATOIRE: Adresse complète au Maroc requise (minimum 20 caractères)');
+    riskLevel = 'high';
+  }
+  
+  // OBLIGATOIRE: Vérification âge (majeur)
+  if (!userData.birthDate) {
+    errors.push('OBLIGATOIRE: Date de naissance requise');
+    riskLevel = 'high';
+  } else {
+    const age = new Date().getFullYear() - new Date(userData.birthDate).getFullYear();
+    if (age < 18) {
+      errors.push('OBLIGATOIRE: Utilisateur doit être majeur (18+ ans) selon la loi marocaine');
+      riskLevel = 'high';
+    }
+  }
+  
+  // Vérifications additionnelles pour conformité Bank Al Maghrib
+  if (userData.nationalId) {
+    // Validation préfixes carte nationale valides
+    const validPrefixes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF'];
+    const prefix = userData.nationalId.replace(/\d/g, '');
+    if (!validPrefixes.includes(prefix)) {
+      errors.push('Préfixe de carte nationale non reconnu');
+      riskLevel = 'medium';
+    }
+  }
+  
+  if (userData.passport) {
+    // Validation préfixes passeport marocain
+    const validPassportPrefixes = ['MA', 'AB', 'CD', 'EF', 'GH', 'IJ', 'KL', 'MN', 'OP', 'QR', 'ST', 'UV'];
+    const prefix = userData.passport.substring(0, 2);
+    if (!validPassportPrefixes.includes(prefix)) {
+      errors.push('Préfixe de passeport marocain non reconnu');
+      riskLevel = 'medium';
+    }
   }
   
   return {

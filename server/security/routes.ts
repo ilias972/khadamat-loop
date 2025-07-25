@@ -82,15 +82,21 @@ router.post('/register',
         });
       }
       
-      // Validation KYC pour utilisateurs marocains
-      if (nationalId || address) {
-        const kycValidation = validateMoroccanKYC({ nationalId, phone, address });
-        if (!kycValidation.valid) {
-          return res.status(400).json({
-            error: 'Informations KYC invalides',
-            details: kycValidation.errors
-          });
-        }
+      // Validation KYC OBLIGATOIRE pour tous les utilisateurs
+      const kycValidation = validateMoroccanKYC({ 
+        nationalId, 
+        passport: req.body.passport,
+        phoneNumber: phone, 
+        address,
+        birthDate: req.body.birthDate
+      });
+      
+      if (!kycValidation.valid) {
+        return res.status(400).json({
+          error: 'Vérification d\'identité obligatoire échouée',
+          details: kycValidation.errors,
+          riskLevel: kycValidation.riskLevel
+        });
       }
       
       // Chiffrement mot de passe

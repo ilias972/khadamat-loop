@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield, Eye, EyeOff, Lock, Mail, User, Phone, MapPin, IdCard } from "lucide-react";
+import { Shield, Eye, EyeOff, Lock, Mail, User, Phone, MapPin, IdCard, AlertTriangle } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 // Schéma de validation renforcé pour inscription
@@ -37,7 +37,11 @@ const registerSchema = z.object({
   nationalId: z.string()
     .regex(/^[A-Z]{1,2}\d{6}$/, "Numéro de carte nationale marocaine invalide")
     .optional(),
-  address: z.string().min(10, "Adresse complète requise").optional(),
+  passport: z.string()
+    .regex(/^[A-Z]{2}\d{6}$/, "Numéro de passeport marocain invalide")
+    .optional(),
+  address: z.string().min(20, "Adresse complète requise (minimum 20 caractères)"),
+  birthDate: z.string().min(1, "Date de naissance requise"),
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "Vous devez accepter les conditions d'utilisation"
   }),
@@ -47,6 +51,18 @@ const registerSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas",
   path: ["confirmPassword"]
+}).refine((data) => data.nationalId || data.passport, {
+  message: "OBLIGATOIRE: Carte nationale OU passeport marocain requis",
+  path: ["nationalId"]
+}).refine((data) => {
+  if (data.birthDate) {
+    const age = new Date().getFullYear() - new Date(data.birthDate).getFullYear();
+    return age >= 18;
+  }
+  return false;
+}, {
+  message: "Vous devez être majeur (18+ ans) pour créer un compte",
+  path: ["birthDate"]
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -72,7 +88,9 @@ export default function Register() {
       phone: "",
       userType: undefined,
       nationalId: "",
+      passport: "",
       address: "",
+      birthDate: "",
       acceptTerms: false,
       acceptPrivacy: false
     }
@@ -161,7 +179,7 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* En-tête */}
+        {/* En-tête avec alerte importante */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mb-4">
             <Shield className="w-8 h-8 text-white" />
@@ -173,6 +191,16 @@ export default function Register() {
             Rejoignez la plateforme sécurisée de services au Maroc
           </p>
         </div>
+
+        {/* Alerte importante sur la vérification d'identité */}
+        <Alert className="mb-6 border-amber-200 bg-amber-50">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            <strong>Nouvelle réglementation marocaine :</strong> Conformément aux directives de Bank Al Maghrib et 
+            à la loi sur la protection des consommateurs, tous les utilisateurs doivent fournir une pièce d'identité 
+            marocaine valide (carte nationale ou passeport) pour créer un compte.
+          </AlertDescription>
+        </Alert>
 
         <Card className="glassmorphism shadow-xl border-0">
           <CardHeader className="text-center">
@@ -369,51 +397,118 @@ export default function Register() {
                   )}
                 />
 
-                {/* Informations KYC pour le Maroc */}
-                <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                  <h3 className="font-medium text-orange-800 mb-3 flex items-center gap-2">
-                    <IdCard className="w-4 h-4" />
-                    Vérification d'identité (Maroc)
+                {/* Vérification d'identité OBLIGATOIRE */}
+                <div className="p-6 bg-red-50 rounded-lg border border-red-200">
+                  <h3 className="font-bold text-red-800 mb-4 flex items-center gap-2">
+                    <IdCard className="w-5 h-5" />
+                    Vérification d'identité OBLIGATOIRE
                   </h3>
+                  <div className="bg-red-100 border border-red-300 rounded p-4 mb-4">
+                    <p className="text-sm text-red-800 font-medium mb-2">
+                      ⚠️ REQUIS: Tous les utilisateurs doivent fournir une pièce d'identité marocaine valide
+                    </p>
+                    <ul className="text-xs text-red-700 list-disc list-inside space-y-1">
+                      <li>Conformité aux réglementations de Bank Al Maghrib</li>
+                      <li>Protection contre la fraude et l'usurpation d'identité</li>
+                      <li>Sécurisation des transactions financières</li>
+                      <li>Respect de la loi marocaine sur les services numériques</li>
+                    </ul>
+                  </div>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    {/* Documents d'identité */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="nationalId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-red-700 font-medium">
+                              Carte nationale marocaine
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="A123456 ou AB123456" 
+                                {...field} 
+                                disabled={isLoading}
+                                maxLength={8}
+                                className="border-red-300 focus:border-red-500"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-xs text-red-600">Format strict: A123456 ou AB123456</p>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="passport"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-red-700 font-medium">
+                              OU Passeport marocain
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="AB123456" 
+                                {...field} 
+                                disabled={isLoading}
+                                maxLength={8}
+                                className="border-red-300 focus:border-red-500"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-xs text-red-600">Format: AB123456 (2 lettres + 6 chiffres)</p>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Date de naissance */}
                     <FormField
                       control={form.control}
-                      name="nationalId"
+                      name="birthDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Carte nationale (optionnel)</FormLabel>
+                          <FormLabel className="text-red-700 font-medium">
+                            Date de naissance (18+ ans requis)
+                          </FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="A123456" 
+                              type="date"
                               {...field} 
                               disabled={isLoading}
-                              maxLength={7}
+                              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                              className="border-red-300 focus:border-red-500"
                             />
                           </FormControl>
                           <FormMessage />
-                          <p className="text-xs text-gray-500">Format: A123456 ou AB123456</p>
+                          <p className="text-xs text-red-600">Vous devez être majeur selon la loi marocaine</p>
                         </FormItem>
                       )}
                     />
 
+                    {/* Adresse complète */}
                     <FormField
                       control={form.control}
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2">
+                          <FormLabel className="flex items-center gap-2 text-red-700 font-medium">
                             <MapPin className="w-4 h-4" />
-                            Adresse (optionnel)
+                            Adresse complète au Maroc
                           </FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="123 Rue Mohammed V, Casablanca" 
+                              placeholder="Numéro, rue, quartier, ville, Maroc (minimum 20 caractères)" 
                               {...field} 
                               disabled={isLoading}
+                              className="border-red-300 focus:border-red-500"
                             />
                           </FormControl>
                           <FormMessage />
+                          <p className="text-xs text-red-600">Adresse complète requise pour conformité Bank Al Maghrib</p>
                         </FormItem>
                       )}
                     />
@@ -503,11 +598,17 @@ export default function Register() {
           </CardContent>
         </Card>
 
-        {/* Informations de sécurité */}
-        <div className="mt-6 text-center">
+        {/* Informations de sécurité et liens utiles */}
+        <div className="mt-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 text-sm text-gray-500 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm">
             <Shield className="w-4 h-4" />
             Données chiffrées AES-256 • Conformité Bank Al Maghrib
+          </div>
+          
+          <div className="text-sm text-gray-600">
+            <Link href="/identity-verification" className="text-orange-600 hover:underline">
+              Pourquoi demandons-nous une pièce d'identité ?
+            </Link>
           </div>
         </div>
       </div>
