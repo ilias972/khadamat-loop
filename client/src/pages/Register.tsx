@@ -96,6 +96,32 @@ export default function Register() {
     }
   });
 
+  // Validation en temps réel pour l'affichage visuel
+  const watchedNationalId = form.watch("nationalId");
+  const watchedPassport = form.watch("passport");
+  const watchedBirthDate = form.watch("birthDate");
+  const watchedAddress = form.watch("address");
+
+  // Validation des formats
+  const isNationalIdValid = watchedNationalId && /^[A-Z]{1,2}\d{6}$/.test(watchedNationalId);
+  const isPassportValid = watchedPassport && /^[A-Z]{2}\d{6}$/.test(watchedPassport);
+  const isAgeValid = watchedBirthDate && (new Date().getFullYear() - new Date(watchedBirthDate).getFullYear() >= 18);
+  const isAddressValid = watchedAddress && watchedAddress.length >= 20;
+  
+  // Au moins un document d'identité valide
+  const hasValidIdentity = isNationalIdValid || isPassportValid;
+  
+  // Détermine la couleur du cadre
+  const getIdentityBoxColor = () => {
+    if (!watchedNationalId && !watchedPassport && !watchedBirthDate && !watchedAddress) {
+      return "border-red-300 bg-red-50"; // Rouge si aucune donnée
+    }
+    if (hasValidIdentity && isAgeValid && isAddressValid) {
+      return "border-green-300 bg-green-50"; // Vert si tout est valide
+    }
+    return "border-orange-300 bg-orange-50"; // Orange en cours de saisie
+  };
+
   // Vérification force mot de passe en temps réel
   const checkPasswordStrength = (password: string) => {
     const checks = [
@@ -196,9 +222,8 @@ export default function Register() {
         <Alert className="mb-6 border-amber-200 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
-            <strong>Nouvelle réglementation marocaine :</strong> Conformément aux directives de Bank Al Maghrib et 
-            à la loi sur la protection des consommateurs, tous les utilisateurs doivent fournir une pièce d'identité 
-            marocaine valide (carte nationale ou passeport) pour créer un compte.
+            <strong>Vérification d'identité obligatoire :</strong> Tous les utilisateurs doivent fournir une pièce d'identité 
+            marocaine valide (carte nationale ou passeport) pour créer un compte sécurisé.
           </AlertDescription>
         </Alert>
 
@@ -397,21 +422,26 @@ export default function Register() {
                   )}
                 />
 
-                {/* Vérification d'identité OBLIGATOIRE */}
-                <div className="p-6 bg-red-50 rounded-lg border border-red-200">
-                  <h3 className="font-bold text-red-800 mb-4 flex items-center gap-2">
+                {/* Vérification d'identité OBLIGATOIRE avec validation visuelle */}
+                <div className={`p-6 rounded-lg border-2 transition-all duration-300 ${getIdentityBoxColor()}`}>
+                  <h3 className="font-bold mb-4 flex items-center gap-2">
                     <IdCard className="w-5 h-5" />
                     Vérification d'identité OBLIGATOIRE
+                    {hasValidIdentity && isAgeValid && isAddressValid && (
+                      <span className="text-green-600 text-sm">✓ Valide</span>
+                    )}
+                    {(!watchedNationalId && !watchedPassport && !watchedBirthDate && !watchedAddress) && (
+                      <span className="text-red-600 text-sm">⚠ Requis</span>
+                    )}
                   </h3>
-                  <div className="bg-red-100 border border-red-300 rounded p-4 mb-4">
-                    <p className="text-sm text-red-800 font-medium mb-2">
+                  <div className="bg-blue-50 border border-blue-300 rounded p-4 mb-4">
+                    <p className="text-sm text-blue-800 font-medium mb-2">
                       ⚠️ REQUIS: Tous les utilisateurs doivent fournir une pièce d'identité marocaine valide
                     </p>
-                    <ul className="text-xs text-red-700 list-disc list-inside space-y-1">
-                      <li>Conformité aux réglementations de Bank Al Maghrib</li>
-                      <li>Protection contre la fraude et l'usurpation d'identité</li>
-                      <li>Sécurisation des transactions financières</li>
-                      <li>Respect de la loi marocaine sur les services numériques</li>
+                    <ul className="text-xs text-blue-700 list-disc list-inside space-y-1">
+                      <li>Protection de votre compte et de vos transactions</li>
+                      <li>Vérification de votre identité pour plus de sécurité</li>
+                      <li>Conformité aux standards de sécurité requis</li>
                     </ul>
                   </div>
                   
@@ -423,8 +453,9 @@ export default function Register() {
                         name="nationalId"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-red-700 font-medium">
+                            <FormLabel className="font-medium flex items-center gap-2">
                               Carte nationale marocaine
+                              {isNationalIdValid && <span className="text-green-600 text-xs">✓</span>}
                             </FormLabel>
                             <FormControl>
                               <Input 
@@ -432,11 +463,17 @@ export default function Register() {
                                 {...field} 
                                 disabled={isLoading}
                                 maxLength={8}
-                                className="border-red-300 focus:border-red-500"
+                                className={`transition-colors ${
+                                  isNationalIdValid 
+                                    ? "border-green-500 focus:border-green-600" 
+                                    : field.value && !isNationalIdValid 
+                                      ? "border-red-500 focus:border-red-600"
+                                      : "border-gray-300"
+                                }`}
                               />
                             </FormControl>
                             <FormMessage />
-                            <p className="text-xs text-red-600">Format strict: A123456 ou AB123456</p>
+                            <p className="text-xs text-gray-600">Format: A123456 ou AB123456</p>
                           </FormItem>
                         )}
                       />
@@ -446,8 +483,9 @@ export default function Register() {
                         name="passport"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-red-700 font-medium">
+                            <FormLabel className="font-medium flex items-center gap-2">
                               OU Passeport marocain
+                              {isPassportValid && <span className="text-green-600 text-xs">✓</span>}
                             </FormLabel>
                             <FormControl>
                               <Input 
@@ -455,11 +493,17 @@ export default function Register() {
                                 {...field} 
                                 disabled={isLoading}
                                 maxLength={8}
-                                className="border-red-300 focus:border-red-500"
+                                className={`transition-colors ${
+                                  isPassportValid 
+                                    ? "border-green-500 focus:border-green-600" 
+                                    : field.value && !isPassportValid 
+                                      ? "border-red-500 focus:border-red-600"
+                                      : "border-gray-300"
+                                }`}
                               />
                             </FormControl>
                             <FormMessage />
-                            <p className="text-xs text-red-600">Format: AB123456 (2 lettres + 6 chiffres)</p>
+                            <p className="text-xs text-gray-600">Format: AB123456 (2 lettres + 6 chiffres)</p>
                           </FormItem>
                         )}
                       />
@@ -471,8 +515,9 @@ export default function Register() {
                       name="birthDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-red-700 font-medium">
+                          <FormLabel className="font-medium flex items-center gap-2">
                             Date de naissance (18+ ans requis)
+                            {isAgeValid && <span className="text-green-600 text-xs">✓</span>}
                           </FormLabel>
                           <FormControl>
                             <Input 
@@ -480,11 +525,17 @@ export default function Register() {
                               {...field} 
                               disabled={isLoading}
                               max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-                              className="border-red-300 focus:border-red-500"
+                              className={`transition-colors ${
+                                isAgeValid 
+                                  ? "border-green-500 focus:border-green-600" 
+                                  : field.value && !isAgeValid 
+                                    ? "border-red-500 focus:border-red-600"
+                                    : "border-gray-300"
+                              }`}
                             />
                           </FormControl>
                           <FormMessage />
-                          <p className="text-xs text-red-600">Vous devez être majeur selon la loi marocaine</p>
+                          <p className="text-xs text-gray-600">Vous devez être majeur (18+ ans)</p>
                         </FormItem>
                       )}
                     />
@@ -495,20 +546,29 @@ export default function Register() {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-red-700 font-medium">
+                          <FormLabel className="flex items-center gap-2 font-medium">
                             <MapPin className="w-4 h-4" />
                             Adresse complète au Maroc
+                            {isAddressValid && <span className="text-green-600 text-xs">✓</span>}
                           </FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Numéro, rue, quartier, ville, Maroc (minimum 20 caractères)" 
                               {...field} 
                               disabled={isLoading}
-                              className="border-red-300 focus:border-red-500"
+                              className={`transition-colors ${
+                                isAddressValid 
+                                  ? "border-green-500 focus:border-green-600" 
+                                  : field.value && !isAddressValid 
+                                    ? "border-red-500 focus:border-red-600"
+                                    : "border-gray-300"
+                              }`}
                             />
                           </FormControl>
                           <FormMessage />
-                          <p className="text-xs text-red-600">Adresse complète requise pour conformité Bank Al Maghrib</p>
+                          <p className="text-xs text-gray-600">
+                            Adresse complète requise • {field.value?.length || 0}/20 caractères minimum
+                          </p>
                         </FormItem>
                       )}
                     />
@@ -602,7 +662,7 @@ export default function Register() {
         <div className="mt-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 text-sm text-gray-500 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm">
             <Shield className="w-4 h-4" />
-            Données chiffrées AES-256 • Conformité Bank Al Maghrib
+            Données chiffrées AES-256 • Protection maximale
           </div>
           
           <div className="text-sm text-gray-600">
