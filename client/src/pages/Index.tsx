@@ -131,16 +131,16 @@ export default function Index() {
                 <Link key={index} href="/services">
                   <div className="group cursor-pointer relative">
                     <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
-                    {/* Badge populaire */}
-                    {service.popular && (
-                      <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                        🔥 TOP
+                      {/* Badge populaire */}
+                      {service.popular && (
+                        <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                          🔥 TOP
+                        </div>
+                      )}
+                      
+                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
+                        <ServiceIcon serviceName={service.serviceName} className="w-8 h-8 md:w-12 md:h-12" />
                       </div>
-                    )}
-                    
-                    <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
-                      <ServiceIcon serviceName={service.serviceName} className="w-8 h-8 md:w-12 md:h-12" />
-                    </div>
                       <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
                         {t(service.nameKey)}
                       </h3>

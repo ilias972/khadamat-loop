@@ -20,7 +20,7 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       onClick={onClick}
     >
       <div className="w-16 h-16 gradient-orange rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-        <ServiceIcon serviceName={service.name} className="w-8 h-8" />
+        <ServiceIcon serviceName={service.category || service.name} className="w-8 h-8" />
       </div>
       
       <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
