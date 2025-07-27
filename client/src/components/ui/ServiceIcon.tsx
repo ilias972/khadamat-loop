@@ -6,23 +6,45 @@ interface ServiceIconProps {
 }
 
 const iconMap: Record<string, string> = {
-  'plomberie': '/src/assets/icons/plumbing.svg',
-  'electricite': '/src/assets/icons/electricity.svg',
-  'nettoyage': '/src/assets/icons/cleaning.svg',
-  'jardinage': '/src/assets/icons/gardening.svg',
-  'peinture': '/src/assets/icons/painting.svg',
-  'reparation': '/src/assets/icons/repair.svg',
-  'climatisation': '/src/assets/icons/air-conditioning.svg',
-  'securite': '/src/assets/icons/security.svg',
-  // Fallbacks pour les noms en français
-  'Plomberie': '/src/assets/icons/plumbing.svg',
-  'Électricité': '/src/assets/icons/electricity.svg',
-  'Nettoyage': '/src/assets/icons/cleaning.svg',
-  'Jardinage': '/src/assets/icons/gardening.svg',
-  'Peinture': '/src/assets/icons/painting.svg',
-  'Réparation': '/src/assets/icons/repair.svg',
-  'Climatisation': '/src/assets/icons/air-conditioning.svg',
-  'Sécurité': '/src/assets/icons/security.svg',
+  // Services principaux (minuscules)
+  'plomberie': './assets/icons/plumbing.svg',
+  'electricite': './assets/icons/electricity.svg',
+  'nettoyage': './assets/icons/cleaning.svg',
+  'jardinage': './assets/icons/gardening.svg',
+  'peinture': './assets/icons/painting.svg',
+  'reparation': './assets/icons/repair.svg',
+  'climatisation': './assets/icons/air-conditioning.svg',
+  'securite': './assets/icons/security.svg',
+  
+  // Fallbacks pour les noms français (avec accents)
+  'Plomberie': './assets/icons/plumbing.svg',
+  'Électricité': './assets/icons/electricity.svg',
+  'Nettoyage': './assets/icons/cleaning.svg',
+  'Jardinage': './assets/icons/gardening.svg',
+  'Peinture': './assets/icons/painting.svg',
+  'Réparation': './assets/icons/repair.svg',
+  'Climatisation': './assets/icons/air-conditioning.svg',
+  'Sécurité': './assets/icons/security.svg',
+  
+  // Services supplémentaires
+  'menage': './assets/icons/cleaning.svg',
+  'Ménage': './assets/icons/cleaning.svg',
+  'maçonnerie': './assets/icons/gardening.svg',
+  'Maçonnerie': './assets/icons/gardening.svg',
+  'menuiserie': './assets/icons/repair.svg',
+  'Menuiserie': './assets/icons/repair.svg',
+  'serrurerie': './assets/icons/security.svg',
+  'Serrurerie': './assets/icons/security.svg',
+  
+  // Correspondances supplémentaires pour les catégories
+  'plumbing': './assets/icons/plumbing.svg',
+  'electricity': './assets/icons/electricity.svg',
+  'cleaning': './assets/icons/cleaning.svg',
+  'gardening': './assets/icons/gardening.svg',
+  'painting': './assets/icons/painting.svg',
+  'repair': './assets/icons/repair.svg',
+  'air-conditioning': './assets/icons/air-conditioning.svg',
+  'security': './assets/icons/security.svg',
 };
 
 export default function ServiceIcon({ serviceName, className = "w-8 h-8" }: ServiceIconProps) {

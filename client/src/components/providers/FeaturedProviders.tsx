@@ -130,7 +130,7 @@ export default function FeaturedProviders() {
 
         {/* Bouton voir plus */}
         <div className="text-center mt-12">
-          <Link href="/artisans">
+          <Link href="/prestataires">
             <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
               {t("featured_providers.view_all")}
             </button>

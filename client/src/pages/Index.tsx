@@ -97,10 +97,10 @@ export default function Index() {
       {/* Services populaires - Section avec background coloré et dégradés */}
       <section className="relative overflow-hidden">
         {/* Dégradé supérieur */}
-        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent z-10"></div>
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-gray-50 z-10"></div>
         
         {/* Background principal */}
-        <div className="py-12 md:py-16" style={{ backgroundColor: 'rgb(248, 233, 232)' }}>
+        <div className="py-12 md:py-16 bg-gradient-to-br from-gray-50 to-orange-50">
           {/* Éléments décoratifs */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-20 h-20 bg-orange-300 rounded-full"></div>
@@ -121,12 +121,12 @@ export default function Index() {
             {/* Grid des services populaires */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
               {[
-                { nameKey: 'services.plumbing', serviceName: 'Plomberie', count: '156 pros', popular: true },
-                { nameKey: 'services.cleaning', serviceName: 'Nettoyage', count: '89 pros', popular: true },
-                { nameKey: 'services.electricity', serviceName: 'Électricité', count: '134 pros', popular: false },
-                { nameKey: 'services.gardening', serviceName: 'Jardinage', count: '67 pros', popular: false },
-                { nameKey: 'services.painting', serviceName: 'Peinture', count: '92 pros', popular: true },
-                { nameKey: 'services.repair', serviceName: 'Réparation', count: '78 pros', popular: false },
+                { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 pros', popular: true },
+                { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 pros', popular: true },
+                { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 pros', popular: false },
+                { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 pros', popular: false },
+                { nameKey: 'services.painting', serviceName: 'peinture', count: '92 pros', popular: true },
+                { nameKey: 'services.repair', serviceName: 'reparation', count: '78 pros', popular: false },
               ].map((service, index) => (
                 <Link key={index} href="/services">
                   <div className="group cursor-pointer relative">
@@ -163,7 +163,7 @@ export default function Index() {
         </div>
         
         {/* Dégradé inférieur */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent z-10"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-orange-50 to-transparent z-10"></div>
       </section>
 
       {/* Prestataires en Vedette */}

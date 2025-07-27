@@ -129,7 +129,7 @@ export default function SmartSearch({
     if (query) params.append('service', query);
     if (location) params.append('ville', location);
     if (provider) params.append('provider', provider);
-    const searchUrl = `/artisans${params.toString() ? '?' + params.toString() : ''}`;
+    const searchUrl = `/prestataires${params.toString() ? '?' + params.toString() : ''}`;
     setLocation(searchUrl);
   };
 

@@ -117,7 +117,7 @@ export default function Services() {
 
   const handleServiceClick = (service: Service) => {
     // Rediriger vers la page des prestataires avec le service sélectionné
-    window.location.href = `/artisans?service=${encodeURIComponent(service.name)}`;
+            window.location.href = `/prestataires?service=${encodeURIComponent(service.name)}`;
   };
 
   if (error) {
@@ -231,7 +231,7 @@ export default function Services() {
                 Nous contacter
               </button>
             </Link>
-            <Link href="/artisans">
+            <Link href="/prestataires">
               <button className="border-2 border-orange-500 text-orange-500 px-8 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-colors">
                 Voir les prestataires
               </button>

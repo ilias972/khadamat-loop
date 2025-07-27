@@ -28,7 +28,7 @@ export default function Header() {
             {t("nav.home")}
           </Link>
           <Link 
-            href="/artisans" 
+            href="/prestataires" 
             className="px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105"
           >
             {t("nav.providers")}

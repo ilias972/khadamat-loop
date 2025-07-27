@@ -105,7 +105,7 @@ const allProviders: Provider[] = [
 const services = ["Tous", "Cuisinière", "Électricien", "Jardinage", "Ménage", "Peintre", "Plombier"];
 const cities = ["Toutes les villes", "Rabat", "Casablanca", "Tanger", "Marrakech", "Agadir", "Fès", "Oujda"];
 
-export default function Artisans() {
+export default function Prestataires() {
   const { t } = useLanguage();
   const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
@@ -501,13 +501,7 @@ export default function Artisans() {
                                   <span className="text-white text-xs font-bold">✓</span>
                                 </div>
                               </div>
-                              <ArtisanProfileCard provider={{
-                                ...provider,
-                                nameAr: provider.nameAr,
-                                description: provider.description,
-                                specialties: provider.specialties,
-                                missionsCount: provider.missionsCount
-                              }} />
+                              <ArtisanProfileCard provider={provider} />
                             </div>
                           ))}
                       </div>
@@ -531,13 +525,7 @@ export default function Artisans() {
                                   <span className="text-white text-xs font-bold">✗</span>
                                 </div>
                               </div>
-                              <ArtisanProfileCard provider={{
-                                ...provider,
-                                nameAr: provider.nameAr,
-                                description: provider.description,
-                                specialties: provider.specialties,
-                                missionsCount: provider.missionsCount
-                              }} />
+                              <ArtisanProfileCard provider={provider} />
                             </div>
                           ))}
                       </div>
@@ -551,13 +539,7 @@ export default function Artisans() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                   {filteredProviders.map((provider) => (
                     <div key={provider.id} className="relative group">
-                      <ArtisanProfileCard provider={{
-                        ...provider,
-                        nameAr: provider.nameAr,
-                        description: provider.description,
-                        specialties: provider.specialties,
-                        missionsCount: provider.missionsCount
-                      }} />
+                      <ArtisanProfileCard provider={provider} />
                     </div>
                   ))}
                 </div>
@@ -568,7 +550,7 @@ export default function Artisans() {
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun artisan trouvé</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun prestataire trouvé</h3>
               <p className="text-gray-600">Essayez de modifier vos critères de recherche</p>
             </div>
           )}
