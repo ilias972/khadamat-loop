@@ -125,23 +125,10 @@ export default function SmartSearch({
     : [];
 
   const handleSearch = () => {
-    // Construire l'URL avec les paramètres de recherche
     const params = new URLSearchParams();
-    
-    // Essayer de parser le texte de recherche pour extraire service et ville
-    const parsedSuggestion = parseSuggestionText(query);
-    
-    if (parsedSuggestion) {
-      params.append('service', parsedSuggestion.service);
-      params.append('city', parsedSuggestion.city);
-    } else {
-      // Fallback: utiliser les champs séparés
-      if (query) params.append('service', query);
-      if (location) params.append('city', location);
-    }
-    
+    if (query) params.append('service', query);
+    if (location) params.append('ville', location);
     if (provider) params.append('provider', provider);
-    
     const searchUrl = `/artisans${params.toString() ? '?' + params.toString() : ''}`;
     setLocation(searchUrl);
   };
@@ -238,38 +225,6 @@ export default function SmartSearch({
       </div>
       
       {/* Suggestions intelligentes */}
-      {query && intelligentSuggestions.length > 0 && (
-        <div className="mt-4 p-3 bg-orange-50 rounded-xl border border-orange-200">
-          <div className="flex items-center space-x-2 mb-2">
-            <Search className="w-4 h-4 text-orange-600" />
-            <span className="text-sm font-medium text-orange-800">Suggestions intelligentes :</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {intelligentSuggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                className="text-sm bg-white text-gray-700 px-3 py-2 rounded-lg hover:bg-orange-100 hover:text-orange-700 transition-colors border border-orange-200"
-                onClick={() => {
-                  if (suggestion.type === 'combination') {
-                    const [service, city] = suggestion.text.split(' ');
-                    setQuery(service);
-                    setLocationState(city);
-                    const params = new URLSearchParams();
-                    params.append('service', service);
-                    params.append('city', city);
-                    const searchUrl = `/artisans?${params.toString()}`;
-                    setLocation(searchUrl);
-                  } else {
-                    setQuery(suggestion.text);
-                  }
-                }}
-              >
-                {suggestion.display}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       
       {/* Second row: Provider Search - Optional */}
       <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl">
@@ -291,14 +246,8 @@ export default function SmartSearch({
             key={index} 
             className="text-sm bg-orange-50 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-100 transition-colors"
             onClick={() => {
-              setQuery(suggestion.displayText);
+              setQuery(suggestion.service);
               setLocationState(suggestion.city);
-              // Redirection automatique vers la page des artisans avec les filtres
-              const params = new URLSearchParams();
-              params.append('service', suggestion.service);
-              params.append('city', suggestion.city);
-              const searchUrl = `/artisans?${params.toString()}`;
-              setLocation(searchUrl);
             }}
           >
             {suggestion.displayText}

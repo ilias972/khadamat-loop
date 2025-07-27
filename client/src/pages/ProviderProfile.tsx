@@ -154,7 +154,6 @@ export default function ProviderProfile() {
                 </div>
               </div>
             </div>
-
             {/* Badges et stats */}
             <div className="flex flex-wrap items-center space-x-2">
               {providerData.isVerified && (
@@ -176,7 +175,6 @@ export default function ProviderProfile() {
                 </div>
               )}
             </div>
-
             {/* Note et avis */}
             <div className="flex items-center space-x-4">
               <div className="text-center">

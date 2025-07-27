@@ -2,249 +2,130 @@ import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
 import FeaturedProviderCard from "@/components/providers/FeaturedProviderCard";
+import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { Search, Filter, MapPin, Calendar, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Données mockées des prestataires
 const allProviders = [
   {
     id: "1",
-    name: "Ahmed Benali",
-    service: "Électricien",
-    location: "Rabat",
-    rating: 4.8,
-    reviewCount: 52,
-    price: "À partir de 150 DHS",
+    name: "Ahmed Ben Ali",
+    nameAr: "أحمد بن علي",
+    service: "Menuisier",
+    description: "Menuisier professionnel avec 15 ans d'expérience dans la fabrication de meubles et de décoration",
+    location: "Casablanca",
+    rating: 4.9,
+    reviewCount: 127,
     isVerified: true,
     isPro: true,
-    priceRange: "150-200",
+    avatar: undefined,
+    specialties: ["Meubles sur mesure", "Parquet"],
+    missionsCount: 150,
+    price: "150-300 MAD",
+    priceRange: "150-300",
     available: true,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["09:00-12:00", "14:00-18:00"],
-      tuesday: ["09:00-12:00", "14:00-18:00"],
-      wednesday: ["09:00-12:00", "14:00-18:00"],
-      thursday: ["09:00-12:00", "14:00-18:00"],
-      friday: ["09:00-12:00", "14:00-18:00"],
-      saturday: ["09:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    availability: {},
+    disponibilites: []
   },
   {
     id: "2",
-    name: "Fatima El Mansouri",
-    service: "Ménage",
-    location: "Casablanca",
-    rating: 4.9,
-    reviewCount: 78,
-    price: "À partir de 120 DHS",
+    name: "Fatima Zahra",
+    nameAr: "فاطمة الزهراء",
+    service: "Nettoyage",
+    description: "Service de nettoyage fiable pour maisons et bureaux",
+    location: "Rabat",
+    rating: 4.8,
+    reviewCount: 89,
     isVerified: true,
-    isPro: true,
-    priceRange: "100-150",
+    isPro: false,
+    avatar: undefined,
+    specialties: ["Ménage écologique", "Repassage"],
+    missionsCount: 95,
+    price: "80-120 MAD",
+    priceRange: "80-120",
     available: true,
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616c9c8a6c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["08:00-12:00", "14:00-18:00"],
-      tuesday: ["08:00-12:00", "14:00-18:00"],
-      wednesday: ["08:00-12:00", "14:00-18:00"],
-      thursday: ["08:00-12:00", "14:00-18:00"],
-      friday: ["08:00-12:00", "14:00-18:00"],
-      saturday: ["08:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-01", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    availability: {},
+    disponibilites: []
   },
   {
     id: "3",
-    name: "Omar Tazi",
-    service: "Plombier",
+    name: "Mohammed Idrissi",
+    nameAr: "محمد الإدريسي",
+    service: "Électricien",
+    description: "Électricien certifié spécialisé dans les installations électriques modernes",
     location: "Marrakech",
     rating: 4.7,
-    reviewCount: 45,
-    price: "À partir de 180 DHS",
+    reviewCount: 156,
     isVerified: true,
-    isPro: false,
-    priceRange: "150-200",
-    available: false,
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["09:00-12:00", "14:00-18:00"],
-      tuesday: ["09:00-12:00", "14:00-18:00"],
-      wednesday: ["09:00-12:00", "14:00-18:00"],
-      thursday: ["09:00-12:00", "14:00-18:00"],
-      friday: ["09:00-12:00", "14:00-18:00"],
-      saturday: ["09:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    isPro: true,
+    avatar: undefined,
+    specialties: ["Domotique", "Tableaux électriques"],
+    missionsCount: 203,
+    price: "200-400 MAD",
+    priceRange: "200-400",
+    available: true,
+    availability: {},
+    disponibilites: []
   },
   {
     id: "4",
-    name: "Aicha Zerouali",
-    service: "Jardinage",
+    name: "Abderrahman Tazi",
+    nameAr: "عبد الرحمن التازي",
+    service: "Plombier",
+    description: "Plombier expert en réparation et installation de tuyauterie et équipements sanitaires",
     location: "Fès",
     rating: 4.6,
-    reviewCount: 38,
-    price: "À partir de 200 DHS",
+    reviewCount: 94,
     isVerified: true,
-    isPro: true,
-    priceRange: "200-300",
+    isPro: false,
+    avatar: undefined,
+    specialties: ["Réparation fuite", "Débouchage"],
+    missionsCount: 120,
+    price: "120-250 MAD",
+    priceRange: "120-250",
     available: true,
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["07:00-12:00", "14:00-19:00"],
-      tuesday: ["07:00-12:00", "14:00-19:00"],
-      wednesday: ["07:00-12:00", "14:00-19:00"],
-      thursday: ["07:00-12:00", "14:00-19:00"],
-      friday: ["07:00-12:00", "14:00-19:00"],
-      saturday: ["07:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-01", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    availability: {},
+    disponibilites: []
   },
   {
     id: "5",
-    name: "Karim Alami",
-    service: "Peintre",
-    location: "Tanger",
-    rating: 4.5,
-    reviewCount: 29,
-    price: "À partir de 160 DHS",
+    name: "Khadija Marrakchi",
+    nameAr: "خديجة المراكشي",
+    service: "Nettoyage",
+    description: "Service de nettoyage complet avec utilisation de produits écologiques",
+    location: "Marrakech",
+    rating: 4.9,
+    reviewCount: 112,
     isVerified: true,
-    isPro: false,
-    priceRange: "150-200",
+    isPro: true,
+    avatar: undefined,
+    specialties: ["Nettoyage profond", "Désinfection"],
+    missionsCount: 140,
+    price: "90-140 MAD",
+    priceRange: "90-140",
     available: true,
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["08:00-12:00", "14:00-18:00"],
-      tuesday: ["08:00-12:00", "14:00-18:00"],
-      wednesday: ["08:00-12:00", "14:00-18:00"],
-      thursday: ["08:00-12:00", "14:00-18:00"],
-      friday: ["08:00-12:00", "14:00-18:00"],
-      saturday: ["08:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-01", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    availability: {},
+    disponibilites: []
   },
   {
     id: "6",
-    name: "Sara Bennani",
-    service: "Cuisinière",
-    location: "Agadir",
-    rating: 4.9,
-    reviewCount: 63,
-    price: "À partir de 140 DHS",
-    isVerified: true,
-    isPro: true,
-    priceRange: "100-150",
-    available: true,
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616c9c8a6c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["06:00-12:00", "14:00-20:00"],
-      tuesday: ["06:00-12:00", "14:00-20:00"],
-      wednesday: ["06:00-12:00", "14:00-20:00"],
-      thursday: ["06:00-12:00", "14:00-20:00"],
-      friday: ["06:00-12:00", "14:00-20:00"],
-      saturday: ["06:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-01", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
-  },
-  {
-    id: "7",
-    name: "Hassan El Fassi",
-    service: "Plombier",
+    name: "Youssef Bidaoui",
+    nameAr: "يوسف البيضاوي",
+    service: "Peintre",
+    description: "Peintre professionnel spécialisé dans la peinture intérieure et extérieure",
     location: "Casablanca",
-    rating: 4.4,
-    reviewCount: 41,
-    price: "À partir de 170 DHS",
-    isVerified: true,
+    rating: 4.5,
+    reviewCount: 67,
+    isVerified: false,
     isPro: false,
-    priceRange: "150-200",
+    avatar: undefined,
+    specialties: ["Peinture intérieure", "Façade"],
+    missionsCount: 85,
+    price: "100-200 MAD",
+    priceRange: "100-200",
     available: true,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["09:00-12:00", "14:00-18:00"],
-      tuesday: ["09:00-12:00", "14:00-18:00"],
-      wednesday: ["09:00-12:00", "14:00-18:00"],
-      thursday: ["09:00-12:00", "14:00-18:00"],
-      friday: ["09:00-12:00", "14:00-18:00"],
-      saturday: ["09:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-01", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
-  },
-  {
-    id: "8",
-    name: "Nadia Benslimane",
-    service: "Ménage",
-    location: "Rabat",
-    rating: 4.8,
-    reviewCount: 56,
-    price: "À partir de 130 DHS",
-    isVerified: true,
-    isPro: true,
-    priceRange: "100-150",
-    available: false,
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616c9c8a6c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-    availability: {
-      monday: ["08:00-12:00", "14:00-18:00"],
-      tuesday: ["08:00-12:00", "14:00-18:00"],
-      wednesday: ["08:00-12:00", "14:00-18:00"],
-      thursday: ["08:00-12:00", "14:00-18:00"],
-      friday: ["08:00-12:00", "14:00-18:00"],
-      saturday: ["08:00-12:00"],
-      sunday: []
-    },
-    disponibilites: [
-      "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
-      "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08",
-      "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-15",
-      "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22",
-      "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"
-    ]
+    availability: {},
+    disponibilites: []
   }
 ];
 
@@ -264,6 +145,10 @@ export default function Artisans() {
   const [selectedDate, setSelectedDate] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // Utiliser des listes locales pour permettre l'ajout dynamique
+  const [serviceOptions, setServiceOptions] = useState([...services]);
+  const [cityOptions, setCityOptions] = useState([...cities]);
 
   // Fonctions pour le calendrier
   const getDaysInMonth = (date: Date) => {
@@ -342,39 +227,36 @@ export default function Artisans() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const serviceParam = urlParams.get('service');
-    const cityParam = urlParams.get('city');
+    const villeParam = urlParams.get('ville');
     const providerParam = urlParams.get('provider');
-    
+
     // Mettre à jour les filtres avec les paramètres d'URL
     if (serviceParam) {
-      setSearchTerm(serviceParam);
-      // Trouver le service correspondant dans la liste des services
-      const matchingService = services.find(service => 
-        service.toLowerCase() === serviceParam.toLowerCase()
-      );
-      if (matchingService) {
-        setSelectedService(matchingService);
-      } else {
-        setSelectedService(serviceParam);
+      if (!serviceOptions.includes(serviceParam)) {
+        setServiceOptions(prev => [...prev, serviceParam]);
       }
+      setSelectedService(serviceParam);
     }
-    
-    if (cityParam) {
-      // Trouver la ville correspondante dans la liste des villes
-      const matchingCity = cities.find(city => 
-        city.toLowerCase() === cityParam.toLowerCase()
-      );
-      if (matchingCity) {
-        setSelectedCity(matchingCity);
-      } else {
-        setSelectedCity(cityParam);
+
+    if (villeParam) {
+      if (!cityOptions.includes(villeParam)) {
+        setCityOptions(prev => [...prev, villeParam]);
       }
+      setSelectedCity(villeParam);
     }
-    
-    if (providerParam) {
-      setSearchTerm(prev => prev ? `${prev} ${providerParam}` : providerParam);
-    }
+
+    // On ne touche pas à searchTerm ici
+    // if (providerParam) {
+    //   setSearchTerm(prev => prev ? `${prev} ${providerParam}` : providerParam);
+    // }
   }, [location]);
+
+  // Synchroniser le champ recherche et le dropdown service
+  useEffect(() => {
+    if (selectedService && selectedService !== 'Tous') {
+      setSearchTerm(selectedService);
+    }
+  }, [selectedService]);
 
   // Filtrage des prestataires
   const filteredProviders = useMemo(() => {
@@ -467,7 +349,7 @@ export default function Artisans() {
               onChange={(e) => setSelectedService(e.target.value)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-300"
             >
-              {services.map(service => (
+              {serviceOptions.map(service => (
                 <option key={service} value={service}>{service}</option>
               ))}
             </select>
@@ -478,7 +360,7 @@ export default function Artisans() {
               onChange={(e) => setSelectedCity(e.target.value)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-300"
             >
-              {cities.map(city => (
+              {cityOptions.map(city => (
                 <option key={city} value={city}>{city}</option>
               ))}
             </select>
@@ -698,7 +580,7 @@ export default function Artisans() {
                         <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                         Disponibles le {new Date(selectedDate).toLocaleDateString('fr-FR')}
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                         {filteredProviders
                           .filter(p => isProviderAvailableOnDate(p, selectedDate))
                           .map((provider) => (
@@ -708,7 +590,13 @@ export default function Artisans() {
                                   <span className="text-white text-xs font-bold">✓</span>
                                 </div>
                               </div>
-                              <FeaturedProviderCard provider={provider} />
+                              <ArtisanProfileCard provider={{
+                                ...provider,
+                                nameAr: provider.nameAr,
+                                description: provider.description,
+                                specialties: provider.specialties,
+                                missionsCount: provider.missionsCount
+                              }} />
                             </div>
                           ))}
                       </div>
@@ -722,7 +610,7 @@ export default function Artisans() {
                         <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
                         Autres prestataires (disponibles autour de cette date)
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                         {filteredProviders
                           .filter(p => !isProviderAvailableOnDate(p, selectedDate))
                           .map((provider) => (
@@ -732,7 +620,13 @@ export default function Artisans() {
                                   <span className="text-white text-xs font-bold">✗</span>
                                 </div>
                               </div>
-                              <FeaturedProviderCard provider={provider} />
+                              <ArtisanProfileCard provider={{
+                                ...provider,
+                                nameAr: provider.nameAr,
+                                description: provider.description,
+                                specialties: provider.specialties,
+                                missionsCount: provider.missionsCount
+                              }} />
                             </div>
                           ))}
                       </div>
@@ -743,10 +637,16 @@ export default function Artisans() {
 
               {/* Affichage normal si aucune date n'est sélectionnée */}
               {!selectedDate && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                   {filteredProviders.map((provider) => (
                     <div key={provider.id} className="relative group">
-                      <FeaturedProviderCard provider={provider} />
+                      <ArtisanProfileCard provider={{
+                        ...provider,
+                        nameAr: provider.nameAr,
+                        description: provider.description,
+                        specialties: provider.specialties,
+                        missionsCount: provider.missionsCount
+                      }} />
                     </div>
                   ))}
                 </div>
