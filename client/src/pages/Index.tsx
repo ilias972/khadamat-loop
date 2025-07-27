@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building } from "lucide-react";
 import { Link } from "wouter";
 import type { Service, ProviderWithUser } from "@shared/schema";
+import ServiceIcon from "@/components/ui/ServiceIcon";
 
 export default function Index() {
   const { t } = useLanguage();
@@ -93,83 +94,76 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Services populaires - Section avec background coloré et filtres améliorés */}
-      <section className="py-12 md:py-16 bg-gradient-to-br from-orange-100 via-orange-50 to-yellow-50 relative overflow-hidden">
-        {/* Éléments décoratifs */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-20 h-20 bg-orange-300 rounded-full"></div>
-          <div className="absolute bottom-20 right-20 w-32 h-32 bg-yellow-300 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200 rounded-full"></div>
-        </div>
+      {/* Services populaires - Section avec background coloré et dégradés */}
+      <section className="relative overflow-hidden">
+        {/* Dégradé supérieur */}
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent z-10"></div>
         
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center mb-8 md:mb-12 px-4">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-              {t("services.popular")}
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600">
-              {t("services.subtitle")}
-            </p>
+        {/* Background principal */}
+        <div className="py-12 md:py-16" style={{ backgroundColor: 'rgb(248, 233, 232)' }}>
+          {/* Éléments décoratifs */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-20 h-20 bg-orange-300 rounded-full"></div>
+            <div className="absolute bottom-20 right-20 w-32 h-32 bg-yellow-300 rounded-full"></div>
+            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200 rounded-full"></div>
           </div>
           
-          {/* Filtres améliorés */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-orange-200">
-              <div className="flex flex-wrap gap-2">
-                {['Tous', 'Populaires', 'Nouveaux', 'Urgents'].map((filter) => (
-                  <button
-                    key={filter}
-                    className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-orange-100 hover:text-orange-700"
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
+          <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+            <div className="text-center mb-8 md:mb-12 px-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                {t("services.popular")}
+              </h2>
+              <p className="text-lg md:text-xl text-gray-600">
+                {t("services.subtitle")}
+              </p>
+            </div>
+            
+            {/* Grid des services populaires */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
+              {[
+                { nameKey: 'services.plumbing', serviceName: 'Plomberie', count: '156 pros', popular: true },
+                { nameKey: 'services.cleaning', serviceName: 'Nettoyage', count: '89 pros', popular: true },
+                { nameKey: 'services.electricity', serviceName: 'Électricité', count: '134 pros', popular: false },
+                { nameKey: 'services.gardening', serviceName: 'Jardinage', count: '67 pros', popular: false },
+                { nameKey: 'services.painting', serviceName: 'Peinture', count: '92 pros', popular: true },
+                { nameKey: 'services.repair', serviceName: 'Réparation', count: '78 pros', popular: false },
+              ].map((service, index) => (
+                <Link key={index} href="/services">
+                  <div className="group cursor-pointer relative">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                    {/* Badge populaire */}
+                    {service.popular && (
+                      <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                        🔥 TOP
+                      </div>
+                    )}
+                    
+                    <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
+                      <ServiceIcon serviceName={service.serviceName} className="w-8 h-8 md:w-12 md:h-12" />
+                    </div>
+                      <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                        {t(service.nameKey)}
+                      </h3>
+                      <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            
+            {/* Bouton voir plus */}
+            <div className="text-center mt-12">
+              <Link href="/services">
+                <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
+                  {t("services.explore")}
+                </button>
+              </Link>
             </div>
           </div>
-          
-          {/* Grid des services populaires */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
-            {[
-              { nameKey: 'services.plumbing', icon: '🔧', count: '156 pros', popular: true },
-              { nameKey: 'services.cleaning', icon: '🧽', count: '89 pros', popular: true },
-              { nameKey: 'services.electricity', icon: '⚡', count: '134 pros', popular: false },
-              { nameKey: 'services.gardening', icon: '🌱', count: '67 pros', popular: false },
-              { nameKey: 'services.painting', icon: '🎨', count: '92 pros', popular: true },
-              { nameKey: 'services.repair', icon: '🔨', count: '78 pros', popular: false },
-            ].map((service, index) => (
-              <Link key={index} href="/services">
-                <div className="group cursor-pointer relative">
-                  <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
-                  {/* Badge populaire */}
-                  {service.popular && (
-                    <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                      🔥 TOP
-                    </div>
-                  )}
-                  
-                  <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
-                    {service.icon}
-                  </div>
-                    <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
-                      {t(service.nameKey)}
-                    </h3>
-                    <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-          
-          {/* Bouton voir plus */}
-          <div className="text-center mt-12">
-            <Link href="/services">
-              <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
-                {t("services.explore")}
-              </button>
-            </Link>
-          </div>
         </div>
+        
+        {/* Dégradé inférieur */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent z-10"></div>
       </section>
 
       {/* Prestataires en Vedette */}

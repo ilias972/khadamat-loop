@@ -32,7 +32,7 @@ export default function Careers() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 to-white py-16">
+      <section className="bg-gradient-to-br from-orange-50 to-white py-16 pt-24">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Rejoignez l'équipe Khadamat

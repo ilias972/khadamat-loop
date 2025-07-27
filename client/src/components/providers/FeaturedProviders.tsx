@@ -5,12 +5,11 @@ import { Link } from "wouter";
 import FeaturedProviderCard from "./FeaturedProviderCard";
 import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 
-// Données mockées des prestataires en vedette
+// Données mockées des prestataires Club Pro en vedette
 const featuredProviders = [
   {
     id: "1",
     name: "Ahmed Ben Ali",
-    nameAr: "أحمد بن علي",
     service: "Menuisier",
     description: "Menuisier professionnel avec 15 ans d'expérience dans la fabrication de meubles et de décoration",
     location: "Casablanca",
@@ -18,29 +17,11 @@ const featuredProviders = [
     reviewCount: 127,
     isVerified: true,
     isPro: true,
-    avatar: undefined,
-    specialties: ["Meubles sur mesure", "Parquet"],
-    missionsCount: 150
-  },
-  {
-    id: "2",
-    name: "Fatima Zahra",
-    nameAr: "فاطمة الزهراء",
-    service: "Nettoyage",
-    description: "Service de nettoyage fiable pour maisons et bureaux",
-    location: "Rabat",
-    rating: 4.8,
-    reviewCount: 89,
-    isVerified: true,
-    isPro: false,
-    avatar: undefined,
-    specialties: ["Ménage écologique", "Repassage"],
-    missionsCount: 95
+    avatar: undefined
   },
   {
     id: "3",
     name: "Mohammed Idrissi",
-    nameAr: "محمد الإدريسي",
     service: "Électricien",
     description: "Électricien certifié spécialisé dans les installations électriques modernes",
     location: "Marrakech",
@@ -48,14 +29,11 @@ const featuredProviders = [
     reviewCount: 156,
     isVerified: true,
     isPro: true,
-    avatar: undefined,
-    specialties: ["Domotique", "Tableaux électriques"],
-    missionsCount: 203
+    avatar: undefined
   },
   {
     id: "4",
     name: "Khadija Marrakchi",
-    nameAr: "خديجة المراكشي",
     service: "Nettoyage",
     description: "Service de nettoyage complet avec utilisation de produits écologiques",
     location: "Marrakech",
@@ -63,9 +41,19 @@ const featuredProviders = [
     reviewCount: 112,
     isVerified: true,
     isPro: true,
-    avatar: undefined,
-    specialties: ["Nettoyage profond", "Désinfection"],
-    missionsCount: 140
+    avatar: undefined
+  },
+  {
+    id: "5",
+    name: "Hassan Alami",
+    service: "Plombier",
+    description: "Plombier expert avec certification professionnelle et garantie de travail",
+    location: "Casablanca",
+    rating: 4.8,
+    reviewCount: 203,
+    isVerified: true,
+    isPro: true,
+    avatar: undefined
   }
 ];
 
@@ -113,13 +101,7 @@ export default function FeaturedProviders() {
           <div className="flex flex-row overflow-x-auto gap-6 px-8 py-2 scrollbar-hide justify-center mx-auto">
             {visibleProviders.map((provider) => (
               <div key={provider.id} className="min-w-[320px] max-w-xs w-full flex-shrink-0">
-                <ArtisanProfileCard provider={{
-                  ...provider,
-                  nameAr: provider.nameAr,
-                  description: provider.description,
-                  specialties: provider.specialties,
-                  missionsCount: provider.missionsCount
-                }} />
+                <ArtisanProfileCard provider={provider} />
               </div>
             ))}
           </div>

@@ -6,7 +6,6 @@ interface ArtisanProfileCardProps {
   provider: {
     id: string;
     name: string;
-    nameAr?: string;
     service: string;
     description?: string;
     location: string;
@@ -15,8 +14,6 @@ interface ArtisanProfileCardProps {
     isVerified: boolean;
     isPro: boolean;
     avatar?: string;
-    specialties?: string[];
-    missionsCount?: number;
   };
 }
 
@@ -37,33 +34,24 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
               <User className="w-7 h-7" />
             )}
           </div>
-          <div>
-            <h3 className="font-bold text-gray-900 text-lg leading-tight">{provider.name}</h3>
-            {provider.nameAr && (
-              <div className="text-orange-600 text-sm font-semibold leading-tight">{provider.nameAr}</div>
-            )}
-            <div className="flex items-center space-x-2 mt-1 rtl:space-x-reverse">
-              {provider.isPro && (
-                <span title="Club Pro" className="inline-flex items-center bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">
-                  <Crown className="w-3 h-3 mr-1" />
-                  Pro
-                </span>
-              )}
-              {provider.isVerified && (
-                <span title="Vérifié" className="inline-flex items-center bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  Vérifié
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* Missions count badge */}
-        {provider.missionsCount && (
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold ml-2 rtl:ml-0 rtl:mr-2">
-            {provider.missionsCount} mission
-          </span>
-        )}
+                               <div>
+                       <h3 className="font-bold text-gray-900 text-lg leading-tight">{provider.name}</h3>
+                       <div className="flex items-center space-x-2 mt-1 rtl:space-x-reverse">
+                         {provider.isPro && (
+                           <span title="Club Pro" className="inline-flex items-center bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">
+                             <Crown className="w-3 h-3 mr-1" />
+                             Pro
+                           </span>
+                         )}
+                         {provider.isVerified && (
+                           <span title="Vérifié" className="inline-flex items-center bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                             <CheckCircle className="w-3 h-3 mr-1" />
+                             Vérifié
+                           </span>
+                         )}
+                       </div>
+                     </div>
+                   </div>
       </div>
       <div className="text-orange-600 font-semibold text-sm mb-1">{provider.service}</div>
       {provider.description && (
@@ -78,15 +66,6 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
         <MapPin className="w-4 h-4" />
         <span>{provider.location}</span>
       </div>
-      {provider.specialties && provider.specialties.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {provider.specialties.map((spec, idx) => (
-            <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-              {spec}
-            </span>
-          ))}
-        </div>
-      )}
       <Link href={`/providers/${provider.id}`}>
         <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-xl font-semibold transition-all mt-2">
           Voir le profil

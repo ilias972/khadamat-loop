@@ -5,12 +5,26 @@ import FeaturedProviderCard from "@/components/providers/FeaturedProviderCard";
 import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { Search, Filter, MapPin, Calendar, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 
+// Type pour les prestataires
+interface Provider {
+  id: string;
+  name: string;
+  service: string;
+  description?: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
+  isVerified: boolean;
+  isPro: boolean;
+  avatar?: string;
+  disponibilites: string[];
+}
+
 // Données mockées des prestataires
-const allProviders = [
+const allProviders: Provider[] = [
   {
     id: "1",
     name: "Ahmed Ben Ali",
-    nameAr: "أحمد بن علي",
     service: "Menuisier",
     description: "Menuisier professionnel avec 15 ans d'expérience dans la fabrication de meubles et de décoration",
     location: "Casablanca",
@@ -19,18 +33,11 @@ const allProviders = [
     isVerified: true,
     isPro: true,
     avatar: undefined,
-    specialties: ["Meubles sur mesure", "Parquet"],
-    missionsCount: 150,
-    price: "150-300 MAD",
-    priceRange: "150-300",
-    available: true,
-    availability: {},
     disponibilites: []
   },
   {
     id: "2",
     name: "Fatima Zahra",
-    nameAr: "فاطمة الزهراء",
     service: "Nettoyage",
     description: "Service de nettoyage fiable pour maisons et bureaux",
     location: "Rabat",
@@ -39,18 +46,11 @@ const allProviders = [
     isVerified: true,
     isPro: false,
     avatar: undefined,
-    specialties: ["Ménage écologique", "Repassage"],
-    missionsCount: 95,
-    price: "80-120 MAD",
-    priceRange: "80-120",
-    available: true,
-    availability: {},
     disponibilites: []
   },
   {
     id: "3",
     name: "Mohammed Idrissi",
-    nameAr: "محمد الإدريسي",
     service: "Électricien",
     description: "Électricien certifié spécialisé dans les installations électriques modernes",
     location: "Marrakech",
@@ -59,18 +59,11 @@ const allProviders = [
     isVerified: true,
     isPro: true,
     avatar: undefined,
-    specialties: ["Domotique", "Tableaux électriques"],
-    missionsCount: 203,
-    price: "200-400 MAD",
-    priceRange: "200-400",
-    available: true,
-    availability: {},
     disponibilites: []
   },
   {
     id: "4",
     name: "Abderrahman Tazi",
-    nameAr: "عبد الرحمن التازي",
     service: "Plombier",
     description: "Plombier expert en réparation et installation de tuyauterie et équipements sanitaires",
     location: "Fès",
@@ -79,18 +72,11 @@ const allProviders = [
     isVerified: true,
     isPro: false,
     avatar: undefined,
-    specialties: ["Réparation fuite", "Débouchage"],
-    missionsCount: 120,
-    price: "120-250 MAD",
-    priceRange: "120-250",
-    available: true,
-    availability: {},
     disponibilites: []
   },
   {
     id: "5",
     name: "Khadija Marrakchi",
-    nameAr: "خديجة المراكشي",
     service: "Nettoyage",
     description: "Service de nettoyage complet avec utilisation de produits écologiques",
     location: "Marrakech",
@@ -99,18 +85,11 @@ const allProviders = [
     isVerified: true,
     isPro: true,
     avatar: undefined,
-    specialties: ["Nettoyage profond", "Désinfection"],
-    missionsCount: 140,
-    price: "90-140 MAD",
-    priceRange: "90-140",
-    available: true,
-    availability: {},
     disponibilites: []
   },
   {
     id: "6",
     name: "Youssef Bidaoui",
-    nameAr: "يوسف البيضاوي",
     service: "Peintre",
     description: "Peintre professionnel spécialisé dans la peinture intérieure et extérieure",
     location: "Casablanca",
@@ -119,19 +98,12 @@ const allProviders = [
     isVerified: false,
     isPro: false,
     avatar: undefined,
-    specialties: ["Peinture intérieure", "Façade"],
-    missionsCount: 85,
-    price: "100-200 MAD",
-    priceRange: "100-200",
-    available: true,
-    availability: {},
     disponibilites: []
   }
 ];
 
-const services = ["Tous", "Plombier", "Électricien", "Ménage", "Jardinage", "Peintre", "Cuisinière"];
-const cities = ["Toutes les villes", "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Oujda"];
-const priceRanges = ["Tous les prix", "0-100 DHS", "100-200 DHS", "200-300 DHS", "+300 DHS"];
+const services = ["Tous", "Cuisinière", "Électricien", "Jardinage", "Ménage", "Peintre", "Plombier"];
+const cities = ["Toutes les villes", "Rabat", "Casablanca", "Tanger", "Marrakech", "Agadir", "Fès", "Oujda"];
 
 export default function Artisans() {
   const { t } = useLanguage();
@@ -139,10 +111,7 @@ export default function Artisans() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedService, setSelectedService] = useState("Tous");
   const [selectedCity, setSelectedCity] = useState("Toutes les villes");
-  const [selectedPriceRange, setSelectedPriceRange] = useState("Tous les prix");
-  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
-  const [showProOnly, setShowProOnly] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -179,14 +148,14 @@ export default function Artisans() {
     const dayName = dayNames[date.getDay()];
     // Vérifier si au moins un prestataire est disponible ce jour-là
     const dateString = formatDate(date);
-    return allProviders.some(provider => 
-      provider.disponibilites && provider.disponibilites.includes(dateString)
+    return allProviders.some((provider: Provider) => 
+      provider.disponibilites && Array.isArray(provider.disponibilites) && provider.disponibilites.includes(dateString)
     );
   };
 
   // Fonction pour vérifier si un prestataire spécifique est disponible à une date
-  const isProviderAvailableOnDate = (provider: any, date: string) => {
-    return provider.disponibilites && provider.disponibilites.includes(date);
+  const isProviderAvailableOnDate = (provider: Provider, date: string) => {
+    return provider.disponibilites && Array.isArray(provider.disponibilites) && provider.disponibilites.includes(date);
   };
 
   const isDateInPast = (date: Date) => {
@@ -216,10 +185,7 @@ export default function Artisans() {
     setSearchTerm("");
     setSelectedService("Tous");
     setSelectedCity("Toutes les villes");
-    setSelectedPriceRange("Tous les prix");
-    setShowAvailableOnly(false);
-    setShowProOnly(false);
-    setSelectedDate("");
+    setSelectedDate(null);
     setShowCalendar(false);
   };
 
@@ -272,24 +238,15 @@ export default function Artisans() {
       // Filtre par ville
       const matchesCity = selectedCity === "Toutes les villes" || provider.location === selectedCity;
 
-      // Filtre par prix
-      const matchesPrice = selectedPriceRange === "Tous les prix" || provider.priceRange === selectedPriceRange;
-
-      // Filtre par disponibilité
-      const matchesAvailability = !showAvailableOnly || provider.available;
-
-      // Filtre par Club Pro
-      const matchesPro = !showProOnly || provider.isPro;
-
       // Filtre par date sélectionnée
-      const matchesDate = !selectedDate || isProviderAvailableOnDate(provider, selectedDate);
+      const matchesDate = !selectedDate || isProviderAvailableOnDate(provider, formatDate(selectedDate));
 
-      return matchesSearch && matchesService && matchesCity && matchesPrice && matchesAvailability && matchesPro && matchesDate;
+      return matchesSearch && matchesService && matchesCity && matchesDate;
     }).sort((a, b) => {
       // Tri par disponibilité si une date est sélectionnée
       if (selectedDate) {
-        const aAvailable = isProviderAvailableOnDate(a, selectedDate);
-        const bAvailable = isProviderAvailableOnDate(b, selectedDate);
+        const aAvailable = isProviderAvailableOnDate(a, formatDate(selectedDate));
+        const bAvailable = isProviderAvailableOnDate(b, formatDate(selectedDate));
         
         if (aAvailable && !bAvailable) return -1;
         if (!aAvailable && bAvailable) return 1;
@@ -302,7 +259,7 @@ export default function Artisans() {
       // Tri par note décroissante
       return b.rating - a.rating;
     });
-  }, [searchTerm, selectedService, selectedCity, selectedPriceRange, showAvailableOnly, showProOnly, selectedDate]);
+  }, [searchTerm, selectedService, selectedCity, selectedDate]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -365,38 +322,7 @@ export default function Artisans() {
               ))}
             </select>
 
-            {/* Filtre Prix */}
-            <select
-              value={selectedPriceRange}
-              onChange={(e) => setSelectedPriceRange(e.target.value)}
-              className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-300"
-            >
-              {priceRanges.map(range => (
-                <option key={range} value={range}>{range}</option>
-              ))}
-            </select>
 
-            {/* Checkbox Disponibilité */}
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showAvailableOnly}
-                onChange={(e) => setShowAvailableOnly(e.target.checked)}
-                className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-              />
-              <span className="text-sm text-gray-700">Disponible maintenant</span>
-            </label>
-
-            {/* Checkbox Club Pro */}
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showProOnly}
-                onChange={(e) => setShowProOnly(e.target.checked)}
-                className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-              />
-              <span className="text-sm text-gray-700">Club Pro uniquement</span>
-            </label>
 
             {/* Bouton Calendrier */}
             <button
@@ -405,12 +331,12 @@ export default function Artisans() {
             >
               <Calendar className="w-4 h-4 text-gray-500" />
               <span className="text-xs md:text-sm text-gray-700">
-                {selectedDate ? new Date(selectedDate).toLocaleDateString('fr-FR') : 'Choisir une date'}
+                {selectedDate ? selectedDate.toLocaleDateString('fr-FR') : 'Choisir une date'}
               </span>
             </button>
 
             {/* Bouton Effacer les filtres */}
-            {(searchTerm || selectedService !== "Tous" || selectedCity !== "Toutes les villes" || selectedPriceRange !== "Tous les prix" || showAvailableOnly || showProOnly || selectedDate) && (
+            {(searchTerm || selectedService !== "Tous" || selectedCity !== "Toutes les villes" || selectedDate) && (
               <button
                 onClick={clearFilters}
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg hover:border-red-300 hover:text-red-600 transition-colors"
@@ -460,7 +386,7 @@ export default function Artisans() {
 
                            const isAvailable = isDateAvailable(day);
          const isPast = isDateInPast(day);
-         const isSelected = selectedDate === formatDate(day);
+         const isSelected = selectedDate && formatDate(selectedDate) === formatDate(day);
          const canSelect = !isPast; // Permettre la sélection de toutes les dates non passées
 
          return (
@@ -468,7 +394,7 @@ export default function Artisans() {
              key={index}
              onClick={() => {
                if (canSelect) {
-                 setSelectedDate(formatDate(day));
+                 setSelectedDate(day);
                }
              }}
              disabled={!canSelect}
@@ -521,7 +447,7 @@ export default function Artisans() {
               </p>
               
               {/* Filtres actifs */}
-              {(searchTerm || selectedService !== "Tous" || selectedCity !== "Toutes les villes" || selectedPriceRange !== "Tous les prix" || showAvailableOnly || showProOnly || selectedDate) && (
+              {(searchTerm || selectedService !== "Tous" || selectedCity !== "Toutes les villes" || selectedDate) && (
                 <div className="flex flex-wrap gap-2">
                   {searchTerm && (
                     <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
@@ -536,21 +462,6 @@ export default function Artisans() {
                   {selectedCity !== "Toutes les villes" && (
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
                       {t("search.city")}: {selectedCity}
-                    </span>
-                  )}
-                  {selectedPriceRange !== "Tous les prix" && (
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                      {t("search.price")}: {selectedPriceRange}
-                    </span>
-                  )}
-                  {showAvailableOnly && (
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                      {t("search.available")}
-                    </span>
-                  )}
-                  {showProOnly && (
-                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
-                      {t("search.club_pro")}
                     </span>
                   )}
                   {selectedDate && (
@@ -574,15 +485,15 @@ export default function Artisans() {
               {selectedDate && (
                 <>
                   {/* Prestataires disponibles à cette date exacte */}
-                  {filteredProviders.filter(p => isProviderAvailableOnDate(p, selectedDate)).length > 0 && (
+                  {filteredProviders.filter(p => isProviderAvailableOnDate(p, formatDate(selectedDate))).length > 0 && (
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                         <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                        Disponibles le {new Date(selectedDate).toLocaleDateString('fr-FR')}
+                        Disponibles le {selectedDate.toLocaleDateString('fr-FR')}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                         {filteredProviders
-                          .filter(p => isProviderAvailableOnDate(p, selectedDate))
+                          .filter(p => isProviderAvailableOnDate(p, formatDate(selectedDate)))
                           .map((provider) => (
                             <div key={provider.id} className="relative group">
                               <div className="absolute top-4 right-4 z-10">
@@ -604,7 +515,7 @@ export default function Artisans() {
                   )}
 
                   {/* Prestataires disponibles autour de cette date */}
-                  {filteredProviders.filter(p => !isProviderAvailableOnDate(p, selectedDate)).length > 0 && (
+                  {filteredProviders.filter(p => !isProviderAvailableOnDate(p, formatDate(selectedDate))).length > 0 && (
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                         <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
@@ -612,7 +523,7 @@ export default function Artisans() {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                         {filteredProviders
-                          .filter(p => !isProviderAvailableOnDate(p, selectedDate))
+                          .filter(p => !isProviderAvailableOnDate(p, formatDate(selectedDate)))
                           .map((provider) => (
                             <div key={provider.id} className="relative group">
                               <div className="absolute top-4 right-4 z-10">
