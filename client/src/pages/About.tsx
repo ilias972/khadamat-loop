@@ -273,40 +273,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Notre Équipe
-            </h2>
-            <p className="text-xl text-gray-600">
-              Les visionnaires derrière Khadamat
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover-scale overflow-hidden">
-                <div className="aspect-square overflow-hidden">
-                  <img 
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
-                  <Badge variant="secondary" className="bg-orange-100 text-orange-600 mb-4">
-                    {member.role}
-                  </Badge>
-                  <p className="text-gray-600 leading-relaxed">{member.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Contact CTA Section */}
       <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600 text-white">

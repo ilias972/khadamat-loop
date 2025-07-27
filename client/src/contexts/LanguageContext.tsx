@@ -16,11 +16,11 @@ const translations = {
     "nav.services": "Services",
     "nav.providers": "Prestataires",
     "nav.club_pro": "Club Pro",
+    "nav.messages": "Messages",
     "nav.project": "Projets",
     "nav.support": "Support",
     "nav.login": "Connexion",
     "nav.register": "Inscription",
-    "nav.about": "À propos",
     "nav.contact": "Contact",
     
     // Hero section
@@ -37,6 +37,7 @@ const translations = {
     "services.title": "Nos services populaires",
     "services.subtitle": "Découvrez notre large gamme de services professionnels disponibles dans tout le Maroc",
     "services.explore": "Explorer",
+    "services.popular": "Services Populaires",
     "services.popular_in": "Services populaires à",
     "services.plumbing": "Plomberie",
     "services.electricity": "Électricité",
@@ -146,6 +147,22 @@ const translations = {
     "project.toast.error_description": "Une erreur s'est produite lors de la publication.",
     "project.how_it_works.title": "Comment ça marche ?",
     "project.how_it_works.step1_title": "Publiez votre projet",
+    
+    // Search and filters
+    "search.suggestions": "Suggestions",
+    "search.clear_filters": "Effacer les filtres",
+    "search.active_filters": "Filtres actifs",
+    "search.search_term": "Recherche",
+    "search.service": "Service",
+    "search.city": "Ville",
+    "search.price": "Prix",
+    "search.available": "Disponible",
+    "search.club_pro": "Club Pro",
+    "search.date": "Date",
+    "calendar.available": "Disponible",
+    "calendar.unavailable": "Indisponible",
+    "calendar.selected": "Sélectionné",
+    "calendar.legend": "Légende",
     "project.how_it_works.step1_desc": "Décrivez vos besoins en détail",
     "project.how_it_works.step2_title": "Recevez des propositions",
     "project.how_it_works.step2_desc": "Les prestataires vous contactent",
@@ -170,7 +187,6 @@ const translations = {
     "cities.marrakech": "Marrakech",
     
     // Navigation mobile
-    "nav.messages": "Messages",
     "nav.profile": "Profil",
     
     // Header
@@ -246,6 +262,15 @@ const translations = {
     "footer.rights": "Tous droits réservés.",
     "footer.made_in": "Développé avec ❤️ au Maroc",
     
+    // Featured Providers
+    "featured_providers.title": "Prestataires en Vedette",
+    "featured_providers.subtitle": "Découvrez nos meilleurs prestataires sélectionnés selon leur note et leur expérience",
+    "featured_providers.verified": "Vérifié",
+    "featured_providers.pro": "Pro",
+    "featured_providers.reviews": "avis",
+    "featured_providers.view_profile": "Voir le profil",
+    "featured_providers.view_all": "Voir tous les prestataires",
+    
     // Common
     "common.currency": "DH",
     "footer.secure": "Paiements Sécurisés",
@@ -273,7 +298,7 @@ const translations = {
     "nav.support": "الدعم",
     "nav.login": "تسجيل الدخول",
     "nav.register": "التسجيل",
-    "nav.about": "حول",
+    "nav.messages": "الرسائل",
     "nav.contact": "اتصل بنا",
     
     // Hero section
@@ -290,6 +315,7 @@ const translations = {
     "services.title": "خدماتنا الشائعة",
     "services.subtitle": "اكتشف مجموعتنا الواسعة من الخدمات المهنية المتاحة في جميع أنحاء المغرب",
     "services.explore": "استكشف جميع الخدمات",
+    "services.popular": "الخدمات الشائعة",
     "services.popular_in": "الخدمات الشائعة في",
     "services.plumbing": "السباكة",
     "services.electricity": "الكهرباء",
@@ -374,6 +400,22 @@ const translations = {
     "project.hero.ideal_provider": "مقدم الخدمة المثالي",
     "project.hero.description": "صف مشروعك واحصل على عروض من مقدمي خدمات مؤهلين. قارن العروض واختر أفضل محترف لاحتياجاتك.",
     "project.form.title": "نشر مشروع جديد",
+    
+    // Search and filters
+    "search.suggestions": "اقتراحات",
+    "search.clear_filters": "مسح المرشحات",
+    "search.active_filters": "المرشحات النشطة",
+    "search.search_term": "بحث",
+    "search.service": "خدمة",
+    "search.city": "مدينة",
+    "search.price": "سعر",
+    "search.available": "متاح",
+    "search.club_pro": "نادي المحترفين",
+    "search.date": "تاريخ",
+    "calendar.available": "متاح",
+    "calendar.unavailable": "غير متاح",
+    "calendar.selected": "محدد",
+    "calendar.legend": "مفتاح",
     "project.form.project_title": "عنوان المشروع",
     "project.form.title_placeholder": "مثال: تركيب كهرباء في الصالون",
     "project.form.category": "الفئة",
@@ -427,7 +469,6 @@ const translations = {
     "cities.marrakech": "مراكش",
     
     // Navigation mobile
-    "nav.messages": "الرسائل",
     "nav.profile": "الملف الشخصي",
     
     // Header
@@ -499,6 +540,15 @@ const translations = {
     "footer.rights": "جميع الحقوق محفوظة.",
     "footer.made_in": "مطور بـ ❤️ في المغرب",
     "footer.secure": "مدفوعات آمنة",
+    
+    // Featured Providers
+    "featured_providers.title": "مقدمو الخدمات المميزون",
+    "featured_providers.subtitle": "اكتشف أفضل مقدمي الخدمات المختارين حسب تقييمهم وخبرتهم",
+    "featured_providers.verified": "موثق",
+    "featured_providers.pro": "محترف",
+    "featured_providers.reviews": "مراجعة",
+    "featured_providers.view_profile": "عرض الملف الشخصي",
+    "featured_providers.view_all": "عرض جميع مقدمي الخدمات",
     
     // Common
     "common.currency": "درهم",

@@ -3,6 +3,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import SmartSearch from "@/components/search/SmartSearch";
 import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
+import FeaturedProviders from "@/components/providers/FeaturedProviders";
+import JoinProviders from "@/components/providers/JoinProviders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building } from "lucide-react";
@@ -34,7 +36,7 @@ export default function Index() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-20 md:pt-20 pb-12 md:pb-16 pattern-bg">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-32 md:pt-36 pb-12 md:pb-16 pattern-bg">
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 text-center">
           <div className="animate-slide-up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
@@ -67,16 +69,63 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Services populaires - Nouvelle section après recherche */}
-      <section className="py-12 md:py-16 bg-white">
+      {/* Statistiques - 4 blocs d'information */}
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">10K+</div>
+              <div className="text-gray-600 font-medium">Prestataires</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">50K+</div>
+              <div className="text-gray-600 font-medium">Missions</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">4.8/5</div>
+              <div className="text-gray-600 font-medium">Satisfaction</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">24/7</div>
+              <div className="text-gray-600 font-medium">Support</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services populaires - Section avec background coloré et filtres améliorés */}
+      <section className="py-12 md:py-16 bg-gradient-to-br from-orange-100 via-orange-50 to-yellow-50 relative overflow-hidden">
+        {/* Éléments décoratifs */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 bg-orange-300 rounded-full"></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-yellow-300 rounded-full"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200 rounded-full"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
           <div className="text-center mb-8 md:mb-12 px-4">
             <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-              {t("services.popular_in")} <span className="text-orange-500" id="user-city">{t("hero.location")}</span>
+              {t("services.popular")}
             </h2>
             <p className="text-lg md:text-xl text-gray-600">
               {t("services.subtitle")}
             </p>
+          </div>
+          
+          {/* Filtres améliorés */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-orange-200">
+              <div className="flex flex-wrap gap-2">
+                {['Tous', 'Populaires', 'Nouveaux', 'Urgents'].map((filter) => (
+                  <button
+                    key={filter}
+                    className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-orange-100 hover:text-orange-700"
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           
           {/* Grid des services populaires */}
@@ -91,7 +140,7 @@ export default function Index() {
             ].map((service, index) => (
               <Link key={index} href="/services">
                 <div className="group cursor-pointer relative">
-                  <div className="bg-white border border-gray-100 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2">
+                  <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
                   {/* Badge populaire */}
                   {service.popular && (
                     <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
@@ -122,6 +171,9 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Prestataires en Vedette */}
+      <FeaturedProviders />
 
       {/* Comment ça marche */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
@@ -358,6 +410,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Rejoignez nos prestataires */}
+      <JoinProviders />
+
       {/* Newsletter Section */}
       <section className="py-8 md:py-12 lg:py-16 bg-gradient-to-br from-orange-50 to-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -375,15 +430,27 @@ export default function Index() {
             </p>
             
             {/* Formulaire newsletter responsive */}
-            <div className="max-w-sm sm:max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-2 mb-8 md:mb-12">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                <input 
-                  type="email"
-                  className="flex-1 px-4 md:px-6 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl min-w-0"
-                  placeholder={t("newsletter.placeholder")}
-                />
+            <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-4 mb-8 md:mb-12">
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  <input 
+                    type="email"
+                    className="flex-1 px-4 md:px-6 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl min-w-0"
+                    placeholder={t("newsletter.placeholder")}
+                  />
+                  <select className="px-4 md:px-6 py-3 md:py-4 text-base md:text-lg border-none focus:outline-none rounded-xl bg-gray-50 text-gray-700">
+                    <option value="">Toutes les villes</option>
+                    <option value="casablanca">Casablanca</option>
+                    <option value="rabat">Rabat</option>
+                    <option value="marrakech">Marrakech</option>
+                    <option value="fes">Fès</option>
+                    <option value="tanger">Tanger</option>
+                    <option value="agadir">Agadir</option>
+                    <option value="oujda">Oujda</option>
+                  </select>
+                </div>
                 <Link href="/register">
-                  <button className="gradient-orange text-white px-4 md:px-6 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105 whitespace-nowrap">
+                  <button className="w-full gradient-orange text-white px-4 md:px-6 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105">
                     {t("newsletter.subscribe")}
                   </button>
                 </Link>
