@@ -266,25 +266,25 @@ export default function Prestataires() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-orange-50 to-white py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Trouvez le bon artisan
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Trouvez le bon prestataire
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Des milliers d'artisans qualifiés et vérifiés prêts à vous aider dans vos projets
+              Des milliers de prestataires qualifiés et vérifiés prêts à vous aider dans vos projets
             </p>
           </div>
 
           {/* Barre de recherche */}
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto mb-8">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Rechercher un artisan, un service ou une ville..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-orange-300"
+                className="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-colors"
+                placeholder="Rechercher un prestataire, un service ou une ville..."
               />
             </div>
           </div>
@@ -443,7 +443,7 @@ export default function Prestataires() {
           <div className="mt-6">
             <div className="flex items-center justify-between">
               <p className="text-gray-600">
-                {filteredProviders.length} artisan{filteredProviders.length > 1 ? 's' : ''} trouvé{filteredProviders.length > 1 ? 's' : ''}
+                {filteredProviders.length} prestataire{filteredProviders.length > 1 ? 's' : ''} trouvé{filteredProviders.length > 1 ? 's' : ''}
               </p>
               
               {/* Filtres actifs */}

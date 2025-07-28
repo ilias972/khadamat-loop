@@ -237,23 +237,6 @@ export default function SmartSearch({
           onKeyPress={handleKeyPress}
         />
       </div>
-      
-      {/* Suggestions rapides */}
-      <div className="flex flex-wrap gap-2 mt-4 px-4">
-        <span className="text-sm text-gray-500">{t("search.suggestions")} :</span>
-        {getSuggestionsByLanguage(language).slice(0, 6).map((suggestion, index) => (
-          <button 
-            key={index} 
-            className="text-sm bg-orange-50 text-orange-600 px-3 py-1 rounded-full hover:bg-orange-100 transition-colors"
-            onClick={() => {
-              setQuery(suggestion.service);
-              setLocationState(suggestion.city);
-            }}
-          >
-            {suggestion.displayText}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

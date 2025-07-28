@@ -66,11 +66,18 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
         <MapPin className="w-4 h-4" />
         <span>{provider.location}</span>
       </div>
-      <Link href={`/providers/${provider.id}`}>
-        <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-xl font-semibold transition-all mt-2">
-          Voir le profil
+      
+      {/* Boutons d'action */}
+      <div className="flex space-x-2 rtl:space-x-reverse mt-3">
+        <Link href={`/providers/${provider.id}`} className="flex-1">
+          <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-xl font-semibold transition-all">
+            Voir le profil
+          </button>
+        </Link>
+        <button className="flex-1 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-xl font-semibold transition-all">
+          Réserver
         </button>
-      </Link>
+      </div>
     </div>
   );
 } 

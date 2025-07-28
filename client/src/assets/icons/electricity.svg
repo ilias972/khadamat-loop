@@ -1,1 +1,13 @@
- 
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rounded square -->
+  <rect width="64" height="64" rx="12" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+  
+  <!-- Wrench -->
+  <path d="M20 44 L28 36 L32 40 L24 48 L20 44 Z" fill="#6B7280" stroke="#374151" stroke-width="1.5"/>
+  <rect x="28" y="36" width="8" height="8" rx="4" fill="#6B7280" stroke="#374151" stroke-width="1.5"/>
+  <rect x="30" y="38" width="4" height="4" rx="2" fill="#4B5563"/>
+  
+  <!-- Lightning bolt -->
+  <path d="M32 20 L28 32 L36 28 L32 44 L36 32 L28 36 Z" fill="#FBBF24" stroke="#374151" stroke-width="1"/>
+  <path d="M30 22 L26 34 L34 30 L30 42 L34 30 L26 34 Z" fill="#F59E0B"/>
+</svg> 

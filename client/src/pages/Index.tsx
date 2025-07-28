@@ -11,9 +11,50 @@ import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb,
 import { Link } from "wouter";
 import type { Service, ProviderWithUser } from "@shared/schema";
 import ServiceIcon from "@/components/ui/ServiceIcon";
+import { useState, useEffect } from "react";
 
 export default function Index() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [userLocation, setUserLocation] = useState<string>("");
+
+  // Détection automatique de la localisation
+  useEffect(() => {
+    const detectUserLocation = async () => {
+      try {
+        // Essayer la géolocalisation du navigateur
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              try {
+                // Utiliser un service de géocodage inverse (exemple avec une API gratuite)
+                const response = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=fr`
+                );
+                const data = await response.json();
+                const city = data.address?.city || data.address?.town || data.address?.village || "Casablanca";
+                setUserLocation(city);
+              } catch (error) {
+                console.log("Erreur géocodage:", error);
+                setUserLocation("Casablanca"); // Fallback
+              }
+            },
+            (error) => {
+              console.log("Erreur géolocalisation:", error);
+              setUserLocation("Casablanca"); // Fallback
+            }
+          );
+        } else {
+          setUserLocation("Casablanca"); // Fallback si géolocalisation non supportée
+        }
+      } catch (error) {
+        console.log("Erreur détection localisation:", error);
+        setUserLocation("Casablanca"); // Fallback final
+      }
+    };
+
+    detectUserLocation();
+  }, []);
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
@@ -94,20 +135,10 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Services populaires - Section avec background coloré et dégradés */}
+      {/* Services populaires - Section avec dégradé intégré */}
       <section className="relative overflow-hidden">
-        {/* Dégradé supérieur */}
-        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-gray-50 z-10"></div>
-        
-        {/* Background principal */}
-        <div className="py-12 md:py-16 bg-gradient-to-br from-gray-50 to-orange-50">
-          {/* Éléments décoratifs */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 bg-orange-300 rounded-full"></div>
-            <div className="absolute bottom-20 right-20 w-32 h-32 bg-yellow-300 rounded-full"></div>
-            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200 rounded-full"></div>
-          </div>
-          
+        {/* Background principal avec dégradé fluide */}
+        <div className="py-12 md:py-16 bg-gradient-to-b from-white via-gray-50 to-orange-50">
           <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
             <div className="text-center mb-8 md:mb-12 px-4">
               <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
@@ -121,13 +152,14 @@ export default function Index() {
             {/* Grid des services populaires */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
               {[
-                { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 pros', popular: true },
-                { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 pros', popular: true },
-                { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 pros', popular: false },
-                { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 pros', popular: false },
-                { nameKey: 'services.painting', serviceName: 'peinture', count: '92 pros', popular: true },
-                { nameKey: 'services.repair', serviceName: 'reparation', count: '78 pros', popular: false },
-              ].map((service, index) => (
+                { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 prestataires', popular: true },
+                { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 prestataires', popular: true },
+                { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 prestataires', popular: false },
+                { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 prestataires', popular: false },
+                { nameKey: 'services.painting', serviceName: 'peinture', count: '92 prestataires', popular: true },
+                { nameKey: 'services.repair', serviceName: 'reparation', count: '78 prestataires', popular: false },
+              ].map((service, index) => {
+                return (
                 <Link key={index} href="/services">
                   <div className="group cursor-pointer relative">
                     <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
@@ -138,8 +170,13 @@ export default function Index() {
                         </div>
                       )}
                       
-                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
-                        <ServiceIcon serviceName={service.serviceName} className="w-8 h-8 md:w-12 md:h-12" />
+                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                        {service.serviceName === 'plomberie' && (
+                          <ServiceIcon serviceName={service.serviceName} className="w-12 h-12 md:w-16 md:h-16" />
+                        )}
+                        {service.serviceName === 'electricite' && (
+                          <ServiceIcon serviceName={service.serviceName} className="w-12 h-12 md:w-16 md:h-16" />
+                        )}
                       </div>
                       <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
                         {t(service.nameKey)}
@@ -148,7 +185,8 @@ export default function Index() {
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
             
             {/* Bouton voir plus */}
@@ -161,9 +199,6 @@ export default function Index() {
             </div>
           </div>
         </div>
-        
-        {/* Dégradé inférieur */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-orange-50 to-transparent z-10"></div>
       </section>
 
       {/* Prestataires en Vedette */}
@@ -432,16 +467,6 @@ export default function Index() {
                     className="flex-1 px-4 md:px-6 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none rounded-xl min-w-0"
                     placeholder={t("newsletter.placeholder")}
                   />
-                  <select className="px-4 md:px-6 py-3 md:py-4 text-base md:text-lg border-none focus:outline-none rounded-xl bg-gray-50 text-gray-700">
-                    <option value="">Toutes les villes</option>
-                    <option value="casablanca">Casablanca</option>
-                    <option value="rabat">Rabat</option>
-                    <option value="marrakech">Marrakech</option>
-                    <option value="fes">Fès</option>
-                    <option value="tanger">Tanger</option>
-                    <option value="agadir">Agadir</option>
-                    <option value="oujda">Oujda</option>
-                  </select>
                 </div>
                 <Link href="/register">
                   <button className="w-full gradient-orange text-white px-4 md:px-6 py-3 md:py-4 rounded-xl font-semibold transition-all hover:scale-105">
