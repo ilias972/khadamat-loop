@@ -1,0 +1,1 @@
+{"timestamp":"2025-07-29T19:24:35.766Z","level":"warn","message":"SUSPICIOUS_ACTIVITY","traceId":"0cdc94ee-25f9-464a-811f-30e18fc2d4e1","service":"khadamat-security","ip":"::1","activityType":"SUSPICIOUS_USER_AGENT","details":{"userAgent":"curl/8.7.1","endpoint":"/"},"severity":"HIGH"}

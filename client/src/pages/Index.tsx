@@ -5,6 +5,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ProviderCard from "@/components/providers/ProviderCard";
 import FeaturedProvidersCarousel from "@/components/providers/FeaturedProvidersCarousel";
 import JoinProviders from "@/components/providers/JoinProviders";
+import NewsletterSection from "@/components/ui/NewsletterSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building, Wrench, Droplets, Sparkles, Palette, Hammer } from "lucide-react";
@@ -261,6 +262,9 @@ export default function Index() {
       {/* Prestataires en vedette */}
       <FeaturedProvidersCarousel />
 
+      {/* Newsletter - Repositionnée plus haut */}
+      <NewsletterSection />
+
       {/* Rejoindre les prestataires */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -347,33 +351,6 @@ export default function Index() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            {t("newsletter.title")}
-          </h2>
-          <p className="text-lg md:text-xl mb-8 text-orange-100">
-            {t("newsletter.subtitle")}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder={t("newsletter.placeholder")}
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
-            />
-            <button className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              {t("newsletter.subscribe")}
-            </button>
-          </div>
-          
-          <p className="text-sm text-orange-200 mt-4">
-            {t("newsletter.privacy")}
-          </p>
         </div>
       </section>
     </div>
