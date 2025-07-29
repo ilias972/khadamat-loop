@@ -22,6 +22,8 @@ const translations = {
     "nav.login": "Connexion",
     "nav.register": "Inscription",
     "nav.contact": "Contact",
+    "nav.about": "À propos",
+    "nav.profile": "Profil",
     
     // Hero section
     "hero.title": "Trouvez le bon",
@@ -186,9 +188,6 @@ const translations = {
     "cities.rabat": "Rabat",
     "cities.marrakech": "Marrakech",
     
-    // Navigation mobile
-    "nav.profile": "Profil",
-    
     // Header
     "header.register": "Inscription",
     "header.login": "Connexion",
@@ -300,6 +299,8 @@ const translations = {
     "nav.register": "التسجيل",
     "nav.messages": "الرسائل",
     "nav.contact": "اتصل بنا",
+    "nav.about": "حول",
+    "nav.profile": "الملف الشخصي",
     
     // Hero section
     "hero.title": "ابحث عن",
@@ -467,9 +468,6 @@ const translations = {
     "cities.casablanca": "الدار البيضاء",
     "cities.rabat": "الرباط",
     "cities.marrakech": "مراكش",
-    
-    // Navigation mobile
-    "nav.profile": "الملف الشخصي",
     
     // Header
     "header.register": "التسجيل",

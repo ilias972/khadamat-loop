@@ -5,7 +5,7 @@ import {
   Crown, 
   MessageCircle, 
   Home, 
-  FileText, 
+  Users, 
   User 
 } from "lucide-react";
 
@@ -15,10 +15,10 @@ export default function MobileBottomNav() {
 
   const navItems = [
     {
-      icon: Crown,
-      label: t("nav.club_pro"),
-      path: "/club-pro",
-      key: "club-pro"
+      icon: Users,
+      label: t("nav.providers"),
+      path: "/prestataires",
+      key: "providers"
     },
     {
       icon: MessageCircle,
@@ -33,10 +33,10 @@ export default function MobileBottomNav() {
       key: "home"
     },
     {
-      icon: FileText,
-      label: t("nav.project"),
-      path: "/project",
-      key: "project"
+      icon: Crown,
+      label: t("nav.club_pro"),
+      path: "/club-pro",
+      key: "club-pro"
     },
     {
       icon: User,
