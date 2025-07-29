@@ -30,25 +30,25 @@ export default function ProviderCard({
         </div>
       )}
       
-      <div className="p-8">
-        <div className="flex items-start space-x-6 rtl:space-x-reverse">
+      <div className="p-6">
+        <div className="flex items-center space-x-6 rtl:space-x-reverse">
           <div className="relative">
             <img 
               src={provider.user.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200`}
               alt={`${provider.user.firstName} ${provider.user.lastName}`}
-              className="w-20 h-20 rounded-2xl object-cover ring-4 ring-orange-100" 
+              className="w-16 h-16 rounded-xl object-cover ring-2 ring-orange-100" 
             />
             {provider.isOnline && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-3 border-white rounded-full"></div>
             )}
           </div>
           
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
               {provider.user.firstName} {provider.user.lastName}
             </h3>
             
-            <div className="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+            <div className="flex items-center space-x-4 rtl:space-x-reverse mb-3">
               <div className="flex items-center space-x-1 rtl:space-x-reverse">
                 <Star className="w-5 h-5 text-yellow-400 fill-current" />
                 <span className="font-semibold text-gray-900">{provider.rating}</span>
@@ -65,12 +65,12 @@ export default function ProviderCard({
             
             {/* Specialties Tags */}
             {provider.specialties && provider.specialties.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {provider.specialties.map((specialty, index) => (
                   <Badge 
                     key={index}
                     variant="secondary"
-                    className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm font-medium hover:bg-orange-100"
+                    className="bg-orange-50 text-orange-600 px-2 py-1 rounded-full text-xs font-medium hover:bg-orange-100"
                   >
                     {specialty}
                   </Badge>
@@ -83,7 +83,7 @@ export default function ProviderCard({
                 onClick={onContact}
                 className="flex-1 gradient-orange text-white py-3 px-6 rounded-xl font-semibold transition-all hover:shadow-lg border-0"
               >
-                {t("providers.contact")}
+                Profil
               </Button>
               <Button 
                 onClick={onToggleFavorite}

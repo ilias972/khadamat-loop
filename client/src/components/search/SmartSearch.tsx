@@ -225,13 +225,37 @@ export default function SmartSearch({
       </div>
       
       {/* Suggestions intelligentes */}
+      {intelligentSuggestions.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex flex-wrap gap-2">
+            {intelligentSuggestions.map((suggestion, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (suggestion.type === 'combination') {
+                    const [service, city] = suggestion.text.split(' ');
+                    setQuery(service);
+                    setLocationState(city);
+                  } else if (suggestion.type === 'service') {
+                    setQuery(suggestion.text);
+                  } else if (suggestion.type === 'city') {
+                    setLocationState(suggestion.text);
+                  }
+                }}
+                className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-100 transition-colors"
+              >
+                {suggestion.display}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Second row: Provider Search - Optional */}
       <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl">
-        <Search className="w-5 h-5 text-gray-400" />
         <input 
           className="flex-1 py-2 text-base placeholder-gray-400 bg-transparent border-none focus:outline-none"
-          placeholder={t("hero.provider_placeholder")}
+          placeholder="Rechercher un prestataire par nom"
           value={provider}
           onChange={(e) => setProvider(e.target.value)}
           onKeyPress={handleKeyPress}

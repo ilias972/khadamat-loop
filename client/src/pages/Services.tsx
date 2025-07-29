@@ -92,11 +92,8 @@ const mockServices: Service[] = [
   }
 ];
 
-const categories = ['Tous', 'Populaires', 'Nouveaux', 'Urgents'];
-
 export default function Services() {
   const { t } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState('Tous');
 
   const { data: services, isLoading, error } = useQuery<Service[]>({
     queryKey: ["/api/services"],
@@ -106,14 +103,8 @@ export default function Services() {
   // Utiliser les données mockées si l'API échoue ou retourne vide
   const displayServices = services && services.length > 0 ? services : mockServices;
 
-  // Filtrer les services selon la catégorie sélectionnée
-  const filteredServices = displayServices.filter(service => {
-    if (selectedCategory === 'Tous') return true;
-    if (selectedCategory === 'Populaires') return service.isPopular;
-    if (selectedCategory === 'Nouveaux') return !service.isPopular;
-    if (selectedCategory === 'Urgents') return service.isPopular; // Pour l'exemple
-    return true;
-  });
+  // Utiliser tous les services
+  const filteredServices = displayServices;
 
   const handleServiceClick = (service: Service) => {
     // Rediriger vers la page des prestataires avec le service sélectionné
@@ -143,30 +134,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Filtres */}
-      <section className="py-8 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-center">
-            <div className="bg-gray-50 rounded-2xl p-2 shadow-sm border border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      selectedCategory === category
-                        ? 'bg-orange-500 text-white shadow-md'
-                        : 'hover:bg-orange-100 hover:text-orange-700 text-gray-600'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Services Grid */}
       <section className="py-16 bg-gray-50">
@@ -183,7 +151,7 @@ export default function Services() {
             <>
               <div className="text-center mb-12">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                  {selectedCategory === 'Tous' ? 'Tous nos services' : `Services ${selectedCategory.toLowerCase()}`}
+                  Tous nos services
                 </h2>
                 <p className="text-gray-600">
                   {filteredServices.length} service{filteredServices.length > 1 ? 's' : ''} disponible{filteredServices.length > 1 ? 's' : ''}
@@ -202,13 +170,7 @@ export default function Services() {
               
               {filteredServices.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg mb-4">Aucun service trouvé pour cette catégorie</p>
-                  <button 
-                    onClick={() => setSelectedCategory('Tous')}
-                    className="text-orange-500 hover:text-orange-600 font-medium"
-                  >
-                    Voir tous les services
-                  </button>
+                  <p className="text-gray-500 text-lg mb-4">Aucun service trouvé</p>
                 </div>
               )}
             </>

@@ -21,7 +21,6 @@ export default function Header() {
     { href: "/", label: t("nav.home") },
     { href: "/prestataires", label: t("nav.providers") },
     { href: "/club-pro", label: t("nav.club_pro") },
-    { href: "/profile", label: t("nav.profile") },
   ];
 
   const toggleMobileMenu = () => {
@@ -52,15 +51,7 @@ export default function Header() {
         </nav>
 
         {/* Actions (Droite) - Desktop */}
-        <div className="hidden lg:flex items-center gap-3">
-          {/* SOS - Mis en évidence avec triangle d'alerte */}
-          <Link href="/sos">
-            <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white transition-all font-medium rounded-lg shadow-md transform hover:scale-105 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" />
-              SOS
-            </button>
-          </Link>
-          
+        <div className="hidden lg:flex items-center gap-6">
           {/* Sélecteur de langue */}
           <LanguageToggle />
           
@@ -82,6 +73,14 @@ export default function Header() {
           ) : (
             <UserProfileMenu />
           )}
+          
+          {/* SOS - Mis en évidence avec triangle d'alerte */}
+          <Link href="/sos">
+            <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white transition-all font-medium rounded-lg shadow-md transform hover:scale-105 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              SOS
+            </button>
+          </Link>
         </div>
 
         {/* Menu Burger - Mobile */}

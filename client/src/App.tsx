@@ -39,6 +39,10 @@ import IdentityVerification from "@/pages/IdentityVerification";
 import Prestataires from "@/pages/Prestataires";
 import ProviderProfile from "@/pages/ProviderProfile";
 import NotFound from "@/pages/not-found";
+import Orders from "@/pages/Orders";
+import Favorites from "@/pages/Favorites";
+import Missions from "@/pages/Missions";
+import Settings from "@/pages/Settings";
 
 function Router() {
   return (
@@ -72,6 +76,13 @@ function Router() {
           <Route path="/identity-verification" component={IdentityVerification} />
           <Route path="/prestataires" component={Prestataires} />
           <Route path="/providers/:id" component={ProviderProfile} />
+          
+          {/* Routes utilisateur */}
+          <Route path="/mes-commandes" component={Orders} />
+          <Route path="/favoris" component={Favorites} />
+          <Route path="/mes-missions" component={Missions} />
+          <Route path="/reglages" component={Settings} />
+          
           <Route component={NotFound} />
         </Switch>
       </main>
