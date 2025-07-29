@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import Logo from "@/components/ui/Logo";
+import UserProfileMenu from "@/components/ui/UserProfileMenu";
 import { useUnreadMessages } from '@/hooks/use-unread-messages';
 import { Menu, X, AlertTriangle } from "lucide-react";
 
@@ -14,7 +15,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Mock user authentication state - à remplacer par votre logique d'auth
-  const isUserLoggedIn = false; // Changez ceci selon votre logique d'authentification
+  const isUserLoggedIn = true; // Changez ceci selon votre logique d'authentification
 
   const navigationItems = [
     { href: "/", label: t("nav.home") },
@@ -63,7 +64,7 @@ export default function Header() {
           {/* Sélecteur de langue */}
           <LanguageToggle />
           
-          {/* Boutons de connexion/inscription ou profil selon l'état de connexion */}
+          {/* Menu profil utilisateur ou boutons de connexion */}
           {!isUserLoggedIn ? (
             <>
               <Link href="/login">
@@ -79,11 +80,7 @@ export default function Header() {
               </Link>
             </>
           ) : (
-            <Link href="/profile">
-              <button className="px-3 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105">
-                {t("nav.profile")}
-              </button>
-            </Link>
+            <UserProfileMenu />
           )}
         </div>
 

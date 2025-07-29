@@ -20,6 +20,7 @@ interface UserProfileMenuProps {
 // Hook pour détecter le rôle de l'utilisateur
 const useUserRole = () => {
   // Simulation - à remplacer par votre logique d'authentification
+  // Vous pouvez passer ces props depuis le Header ou utiliser un contexte d'auth
   const isClient = true; // ou false selon l'utilisateur connecté
   const isPrestataire = false; // ou true selon l'utilisateur connecté
   
@@ -74,17 +75,17 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   };
 
   const menuItems = isClient ? [
-    { label: "Profil", icon: User, href: "/profile" },
-    { label: "Mes commandes", icon: Package, href: "/orders" },
-    { label: "Mes favoris", icon: Heart, href: "/favorites" },
-    { label: "Messages", icon: MessageSquare, href: "/messages" },
-    { label: "Réglages", icon: Settings, href: "/settings" },
+    { label: t("profile.menu.profile"), icon: User, href: "/profile" },
+    { label: t("profile.menu.orders"), icon: Package, href: "/orders" },
+    { label: t("profile.menu.favorites"), icon: Heart, href: "/favorites" },
+    { label: t("profile.menu.messages"), icon: MessageSquare, href: "/messages" },
+    { label: t("profile.menu.settings"), icon: Settings, href: "/settings" },
   ] : [
-    { label: "Profil", icon: User, href: "/profile" },
-    { label: "Mes missions", icon: FileText, href: "/missions" },
-    { label: "Club Pro", icon: Crown, href: "/club-pro" },
-    { label: "Messages", icon: MessageSquare, href: "/messages" },
-    { label: "Réglages", icon: Settings, href: "/settings" },
+    { label: t("profile.menu.profile"), icon: User, href: "/profile" },
+    { label: t("profile.menu.missions"), icon: FileText, href: "/missions" },
+    { label: t("profile.menu.club_pro"), icon: Crown, href: "/club-pro" },
+    { label: t("profile.menu.messages"), icon: MessageSquare, href: "/messages" },
+    { label: t("profile.menu.settings"), icon: Settings, href: "/settings" },
   ];
 
   return (
@@ -92,13 +93,13 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
       {/* Bouton du menu */}
       <button
         onClick={toggleMenu}
-        className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+        className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-orange-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 hover:shadow-md transform hover:scale-105"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Menu profil utilisateur"
       >
         {/* Avatar ou icône par défaut */}
-        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
           {user.avatar ? (
             <img 
               src={user.avatar} 
@@ -125,11 +126,11 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
 
       {/* Menu déroulant */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
           {/* En-tête du menu */}
-          <div className="px-4 py-3 border-b border-gray-100">
+          <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white rounded-t-xl">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
                 {user.avatar ? (
                   <img 
                     src={user.avatar} 
@@ -141,11 +142,21 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
                 )}
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-semibold text-gray-900">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {isClient ? "Client" : "Prestataire"}
+                <p className="text-xs text-gray-500 flex items-center gap-1">
+                  {isClient ? (
+                    <>
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      {t("profile.role.client")}
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                      {t("profile.role.provider")}
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -156,25 +167,25 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
             {menuItems.map((item, index) => (
               <Link key={index} href={item.href}>
                 <button
-                  className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-150"
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-all duration-150 rounded-lg mx-2"
                   onClick={() => setIsOpen(false)}
                 >
                   <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
+                  <span className="font-medium">{item.label}</span>
                 </button>
               </Link>
             ))}
             
             {/* Séparateur */}
-            <div className="border-t border-gray-100 my-1"></div>
+            <div className="border-t border-gray-100 my-2 mx-2"></div>
             
             {/* Bouton de déconnexion */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+              className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all duration-150 rounded-lg mx-2"
             >
               <LogOut className="w-4 h-4" />
-              <span>Se déconnecter</span>
+              <span className="font-medium">{t("profile.menu.logout")}</span>
             </button>
           </div>
         </div>

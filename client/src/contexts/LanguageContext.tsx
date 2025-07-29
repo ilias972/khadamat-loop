@@ -25,6 +25,18 @@ const translations = {
     "nav.about": "À propos",
     "nav.profile": "Profil",
     
+    // User Profile Menu
+    "profile.menu.profile": "Profil",
+    "profile.menu.orders": "Mes commandes",
+    "profile.menu.favorites": "Mes favoris",
+    "profile.menu.missions": "Mes missions",
+    "profile.menu.club_pro": "Club Pro",
+    "profile.menu.messages": "Messages",
+    "profile.menu.settings": "Réglages",
+    "profile.menu.logout": "Se déconnecter",
+    "profile.role.client": "Client",
+    "profile.role.provider": "Prestataire",
+    
     // Hero section
     "hero.title": "Trouvez le bon",
     "hero.title_highlight": "prestataire",
@@ -301,6 +313,18 @@ const translations = {
     "nav.contact": "اتصل بنا",
     "nav.about": "حول",
     "nav.profile": "الملف الشخصي",
+    
+    // User Profile Menu
+    "profile.menu.profile": "الملف الشخصي",
+    "profile.menu.orders": "طلباتي",
+    "profile.menu.favorites": "المفضلة",
+    "profile.menu.missions": "مهامي",
+    "profile.menu.club_pro": "النادي المميز",
+    "profile.menu.messages": "الرسائل",
+    "profile.menu.settings": "الإعدادات",
+    "profile.menu.logout": "تسجيل الخروج",
+    "profile.role.client": "عميل",
+    "profile.role.provider": "مقدم خدمة",
     
     // Hero section
     "hero.title": "ابحث عن",
