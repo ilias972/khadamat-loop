@@ -42,7 +42,7 @@ import NotFound from "@/pages/not-found";
 import Orders from "@/pages/Orders";
 import Favorites from "@/pages/Favorites";
 import Missions from "@/pages/Missions";
-import Settings from "@/pages/Settings";
+import Parametre from "@/pages/Parametre";
 
 function Router() {
   return (
@@ -81,7 +81,7 @@ function Router() {
           <Route path="/mes-commandes" component={Orders} />
           <Route path="/favoris" component={Favorites} />
           <Route path="/mes-missions" component={Missions} />
-          <Route path="/reglages" component={Settings} />
+          <Route path="/reglages" component={Parametre} />
           
           <Route component={NotFound} />
         </Switch>

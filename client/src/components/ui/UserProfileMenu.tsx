@@ -79,13 +79,13 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
     { label: t("profile.menu.orders"), icon: Package, href: "/orders" },
     { label: t("profile.menu.favorites"), icon: Heart, href: "/favorites" },
     { label: t("profile.menu.messages"), icon: MessageSquare, href: "/messages" },
-    { label: t("profile.menu.settings"), icon: Settings, href: "/settings" },
+    { label: t("profile.menu.settings"), icon: Settings, href: "/reglages" },
   ] : [
     { label: t("profile.menu.profile"), icon: User, href: "/profile" },
     { label: t("profile.menu.missions"), icon: FileText, href: "/missions" },
     { label: t("profile.menu.club_pro"), icon: Crown, href: "/club-pro" },
     { label: t("profile.menu.messages"), icon: MessageSquare, href: "/messages" },
-    { label: t("profile.menu.settings"), icon: Settings, href: "/settings" },
+    { label: t("profile.menu.settings"), icon: Settings, href: "/reglages" },
   ];
 
   return (

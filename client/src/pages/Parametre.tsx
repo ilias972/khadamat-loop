@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Settings, Bell, Shield, User, Globe, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 
-export default function Settings() {
+export default function Parametre() {
   const { t, language, toggleLanguage } = useLanguage();
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
