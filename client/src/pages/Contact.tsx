@@ -127,11 +127,11 @@ export default function Contact() {
     },
     {
       question: "Quels sont les tarifs de Khadamat ?",
-      answer: "L'inscription est gratuite pour les clients. Les prestataires paient une commission sur chaque service réalisé via la plateforme.",
+      answer: "L'inscription est gratuite pour les clients. Personne ne paie de commission, ni les clients ni les prestataires.",
     },
     {
       question: "Comment fonctionne le Club Pro ?",
-      answer: "Le Club Pro est notre programme premium pour les prestataires vérifiés. Il offre plus de visibilité et des avantages exclusifs pour 299 DH/mois.",
+      answer: "Le Club Pro est notre programme premium pour les prestataires vérifiés. Il offre plus de visibilité et des avantages exclusifs pour 50 DH/mois.",
     },
     {
       question: "Que faire si j'ai un problème avec un prestataire ?",

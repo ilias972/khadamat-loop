@@ -12,6 +12,7 @@ interface SmartSearchProps {
   placeholder?: string;
   defaultLocation?: string;
   className?: string;
+  showSuggestions?: boolean;
 }
 
 interface IntelligentSuggestion {
@@ -35,7 +36,8 @@ export default function SmartSearch({
   onSearch, 
   placeholder, 
   defaultLocation = "",
-  className = ""
+  className = "",
+  showSuggestions = true
 }: SmartSearchProps) {
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
@@ -62,58 +64,70 @@ export default function SmartSearch({
     keys: ['name']
   });
 
-  // Suggestions intelligentes combinées
+  // Suggestions intelligentes combinées - Toujours affichées
   const getIntelligentSuggestions = (): IntelligentSuggestion[] => {
-    if (!query.trim()) return [];
+    // Suggestions populaires toujours visibles
+    const popularCombinations = [
+      { service: 'Ménage', city: 'Casablanca' },
+      { service: 'Jardinier', city: 'Rabat' },
+      { service: 'Plombier', city: 'Marrakech' },
+      { service: 'Électricien', city: 'Fès' },
+      { service: 'Peintre', city: 'Agadir' },
+      { service: 'Maçon', city: 'Tanger' }
+    ];
     
     const suggestions: IntelligentSuggestion[] = [];
     
-    // Recherche dans les services
-    const serviceResults = fuseServices.search(query);
-    serviceResults.slice(0, 3).forEach(result => {
-      suggestions.push({
-        type: 'service',
-        text: result.item,
-        display: `${result.item} - Service`,
-        score: result.score || 1
-      });
-    });
-    
-    // Recherche dans les villes
-    const cityResults = fuseCities.search(query);
-    cityResults.slice(0, 2).forEach(result => {
-      suggestions.push({
-        type: 'city',
-        text: result.item,
-        display: `${result.item} - Ville`,
-        score: result.score || 1
-      });
-    });
-    
-    // Combinaisons populaires
-    const popularCombinations = [
-      { service: 'Plombier', city: 'Casablanca' },
-      { service: 'Électricien', city: 'Rabat' },
-      { service: 'Ménage', city: 'Marrakech' },
-      { service: 'Jardinier', city: 'Fès' }
-    ];
-    
-    popularCombinations.forEach(combo => {
-      if (query.toLowerCase().includes(combo.service.toLowerCase()) || 
-          query.toLowerCase().includes(combo.city.toLowerCase())) {
+    // Si il y a une recherche, filtrer les suggestions
+    if (query.trim()) {
+      // Recherche dans les services
+      const serviceResults = fuseServices.search(query);
+      serviceResults.slice(0, 3).forEach(result => {
         suggestions.push({
-          type: 'combination',
-          text: `${combo.service} ${combo.city}`,
-          display: `${combo.service} à ${combo.city}`,
-          score: 0.5
+          type: 'service',
+          text: result.item,
+          display: `${result.item} - Service`,
+          score: result.score || 1
         });
-      }
-    });
-    
-    // Trier par score et limiter
-    return suggestions
-      .sort((a, b) => (a.score || 1) - (b.score || 1))
-      .slice(0, 6);
+      });
+      
+      // Recherche dans les villes
+      const cityResults = fuseCities.search(query);
+      cityResults.slice(0, 2).forEach(result => {
+        suggestions.push({
+          type: 'city',
+          text: result.item,
+          display: `${result.item} - Ville`,
+          score: result.score || 1
+        });
+      });
+      
+      // Combinaisons populaires filtrées
+      popularCombinations.forEach(combo => {
+        if (query.toLowerCase().includes(combo.service.toLowerCase()) || 
+            query.toLowerCase().includes(combo.city.toLowerCase())) {
+          suggestions.push({
+            type: 'combination',
+            text: `${combo.service} ${combo.city}`,
+            display: `${combo.service} à ${combo.city}`,
+            score: 0.5
+          });
+        }
+      });
+      
+      // Trier par score et limiter
+      return suggestions
+        .sort((a, b) => (a.score || 1) - (b.score || 1))
+        .slice(0, 6);
+    } else {
+      // Si pas de recherche, afficher toutes les combinaisons populaires
+      return popularCombinations.map(combo => ({
+        type: 'combination',
+        text: `${combo.service} ${combo.city}`,
+        display: `${combo.service} à ${combo.city}`,
+        score: 0.5
+      }));
+    }
   };
 
   const intelligentSuggestions = getIntelligentSuggestions();
@@ -224,8 +238,8 @@ export default function SmartSearch({
         </button>
       </div>
       
-      {/* Suggestions intelligentes */}
-      {intelligentSuggestions.length > 0 && (
+      {/* Suggestions intelligentes intégrées dans le cadre blanc - CONDITIONNELLES */}
+      {showSuggestions && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex flex-wrap gap-2">
             {intelligentSuggestions.map((suggestion, idx) => (
@@ -236,13 +250,18 @@ export default function SmartSearch({
                     const [service, city] = suggestion.text.split(' ');
                     setQuery(service);
                     setLocationState(city);
+                    // Rediriger vers la page services avec les filtres
+                    const params = new URLSearchParams();
+                    params.append('service', service);
+                    params.append('ville', city);
+                    setLocation(`/services?${params.toString()}`);
                   } else if (suggestion.type === 'service') {
                     setQuery(suggestion.text);
                   } else if (suggestion.type === 'city') {
                     setLocationState(suggestion.text);
                   }
                 }}
-                className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-100 transition-colors"
+                className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-100 transition-colors cursor-pointer"
               >
                 {suggestion.display}
               </button>

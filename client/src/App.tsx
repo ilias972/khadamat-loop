@@ -27,7 +27,7 @@ import Profile from "@/pages/Profile";
 import Messages from "@/pages/Messages";
 import PostService from "@/pages/PostService";
 import FAQ from "@/pages/FAQ";
-import Help from "@/pages/Help";
+
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Careers from "@/pages/Careers";
@@ -43,6 +43,8 @@ import Orders from "@/pages/Orders";
 import Favorites from "@/pages/Favorites";
 import Missions from "@/pages/Missions";
 import Parametre from "@/pages/Parametre";
+import MesReservations from "@/pages/MesReservations";
+import MesFavoris from "@/pages/MesFavoris";
 
 function Router() {
   return (
@@ -65,7 +67,7 @@ function Router() {
           <Route path="/messages" component={Messages} />
           <Route path="/post-service" component={PostService} />
           <Route path="/faq" component={FAQ} />
-          <Route path="/help" component={Help} />
+
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
           <Route path="/careers" component={Careers} />
@@ -80,6 +82,8 @@ function Router() {
           {/* Routes utilisateur */}
           <Route path="/mes-commandes" component={Orders} />
           <Route path="/favoris" component={Favorites} />
+          <Route path="/mes-reservations" component={MesReservations} />
+          <Route path="/mes-favoris" component={MesFavoris} />
           <Route path="/mes-missions" component={Missions} />
           <Route path="/reglages" component={Parametre} />
           

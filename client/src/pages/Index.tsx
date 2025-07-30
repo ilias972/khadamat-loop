@@ -98,8 +98,8 @@ export default function Index() {
             </p>
           </div>
           
-          {/* Smart Search Bar */}
-          <SmartSearch />
+          {/* Smart Search Bar avec suggestions */}
+          <SmartSearch showSuggestions={true} />
           
           {/* Quick Actions - Suggestions cliquables */}
           <div className="flex justify-center flex-wrap gap-2 md:gap-4 mt-6 md:mt-8 animate-fade-in px-4">
@@ -172,14 +172,8 @@ export default function Index() {
                 const Icon = service.icon;
                 return (
                 <Link key={index} href="/services">
-                  <div className="group cursor-pointer relative">
-                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
-                      {/* Badge populaire */}
-                      {service.popular && (
-                        <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                          🔥 TOP
-                        </div>
-                      )}
+                                      <div className="group cursor-pointer relative">
+                      <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
                       
                       <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
                         <Icon className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
@@ -265,12 +259,8 @@ export default function Index() {
       {/* Newsletter - Repositionnée plus haut */}
       <NewsletterSection />
 
-      {/* Rejoindre les prestataires */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <JoinProviders />
-        </div>
-      </section>
+      {/* Rejoindre les prestataires - Pleine largeur */}
+      <JoinProviders />
 
       {/* Témoignages */}
       <section className="py-16 bg-gray-50">

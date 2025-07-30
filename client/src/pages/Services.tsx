@@ -129,7 +129,7 @@ export default function Services() {
               {t("services.subtitle")}
             </p>
             
-            <SmartSearch />
+            <SmartSearch showSuggestions={false} />
           </div>
         </div>
       </section>

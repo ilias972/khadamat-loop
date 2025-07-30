@@ -76,8 +76,8 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
 
   const menuItems = isClient ? [
     { label: t("profile.menu.profile"), icon: User, href: "/profile" },
-    { label: t("profile.menu.orders"), icon: Package, href: "/orders" },
-    { label: t("profile.menu.favorites"), icon: Heart, href: "/favorites" },
+    { label: t("profile.menu.reservations"), icon: Package, href: "/mes-reservations" },
+    { label: t("profile.menu.favorites"), icon: Heart, href: "/mes-favoris" },
     { label: t("profile.menu.messages"), icon: MessageSquare, href: "/messages" },
     { label: t("profile.menu.settings"), icon: Settings, href: "/reglages" },
   ] : [

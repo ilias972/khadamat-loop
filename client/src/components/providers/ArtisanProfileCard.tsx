@@ -71,7 +71,7 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
       <div className="flex space-x-2 rtl:space-x-reverse mt-3">
         <Link href={`/providers/${provider.id}`} className="flex-1">
           <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-xl font-semibold transition-all">
-            Voir le profil
+            Profil
           </button>
         </Link>
         <button className="flex-1 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-xl font-semibold transition-all">

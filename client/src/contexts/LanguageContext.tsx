@@ -28,6 +28,7 @@ const translations = {
     // User Profile Menu
     "profile.menu.profile": "Profil",
     "profile.menu.orders": "Mes commandes",
+    "profile.menu.reservations": "Mes réservations",
     "profile.menu.favorites": "Mes favoris",
     "profile.menu.missions": "Mes missions",
     "profile.menu.club_pro": "Club Pro",
@@ -231,8 +232,6 @@ const translations = {
     "profile.menu.verification_desc": "Vérifiez votre identité",
     "profile.menu.payments": "Paiements",
     "profile.menu.payments_desc": "Moyens de paiement et facturation",
-    "profile.menu.settings": "Paramètres",
-    "profile.menu.settings_desc": "Notifications et préférences",
     
     // Common
     "common.configure": "Configurer",
@@ -317,6 +316,7 @@ const translations = {
     // User Profile Menu
     "profile.menu.profile": "الملف الشخصي",
     "profile.menu.orders": "طلباتي",
+    "profile.menu.reservations": "حجوزاتي",
     "profile.menu.favorites": "المفضلة",
     "profile.menu.missions": "مهامي",
     "profile.menu.club_pro": "النادي المميز",
@@ -524,8 +524,6 @@ const translations = {
     "profile.menu.verification_desc": "تحقق من هويتك",
     "profile.menu.payments": "المدفوعات",
     "profile.menu.payments_desc": "وسائل الدفع والفواتير",
-    "profile.menu.settings": "الإعدادات",
-    "profile.menu.settings_desc": "الإشعارات والتفضيلات",
     
     // Common
     "common.configure": "تكوين",

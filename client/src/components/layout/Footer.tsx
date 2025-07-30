@@ -16,7 +16,7 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-orange-900 text-white">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-4 gap-6">
           {/* Brand Column */}
           <div>
             <div className="mb-4">
@@ -60,9 +60,15 @@ export default function Footer() {
           <div>
             <h4 className="text-base font-bold mb-4">{t("footer.support")}</h4>
             <ul className="space-y-2">
-              <li><Link href="/help" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.help")}</Link></li>
               <li><Link href="/contact" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("nav.contact")}</Link></li>
               <li><Link href="/faq" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.faq")}</Link></li>
+            </ul>
+          </div>
+          
+          {/* Legal Column */}
+          <div>
+            <h4 className="text-base font-bold mb-4">Légal</h4>
+            <ul className="space-y-2">
               <li><Link href="/terms" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.terms")}</Link></li>
               <li><Link href="/privacy" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.privacy")}</Link></li>
             </ul>

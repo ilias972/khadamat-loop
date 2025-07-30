@@ -52,9 +52,6 @@ export default function Header() {
 
         {/* Actions (Droite) - Desktop */}
         <div className="hidden lg:flex items-center gap-6">
-          {/* Sélecteur de langue */}
-          <LanguageToggle />
-          
           {/* Menu profil utilisateur ou boutons de connexion */}
           {!isUserLoggedIn ? (
             <>
@@ -73,6 +70,9 @@ export default function Header() {
           ) : (
             <UserProfileMenu />
           )}
+          
+          {/* Sélecteur de langue */}
+          <LanguageToggle />
           
           {/* SOS - Mis en évidence avec triangle d'alerte */}
           <Link href="/sos">
