@@ -101,23 +101,6 @@ export default function Index() {
           {/* Smart Search Bar avec suggestions */}
           <SmartSearch showSuggestions={true} />
           
-          {/* Quick Actions - Suggestions cliquables */}
-          <div className="flex justify-center flex-wrap gap-2 md:gap-4 mt-6 md:mt-8 animate-fade-in px-4">
-            {popularCategories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <Badge 
-                  key={category.name}
-                  variant="secondary"
-                  className="bg-white/70 backdrop-blur-sm px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium text-gray-700 border border-orange-200 hover:bg-white cursor-pointer transition-colors flex items-center gap-2"
-                  onClick={() => handleSuggestionClick(category.service)}
-                >
-                  <Icon className="w-4 h-4" />
-                  {category.name}
-                </Badge>
-              );
-            })}
-          </div>
         </div>
       </section>
 
