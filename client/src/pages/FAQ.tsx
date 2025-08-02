@@ -34,34 +34,34 @@ export default function FAQ() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-gray-50 pt-24">
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Foire Aux Questions
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Trouvez rapidement les réponses à vos questions
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
               <button
                 onClick={() => toggleQuestion(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors"
+                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors"
               >
-                <h3 className="font-semibold text-gray-900">{faq.question}</h3>
+                <h3 className="font-semibold text-gray-900 text-lg">{faq.question}</h3>
                 {openQuestion === index ? (
-                  <ChevronUp className="w-5 h-5 text-orange-500" />
+                  <ChevronUp className="w-6 h-6 text-orange-500" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                  <ChevronDown className="w-6 h-6 text-gray-400" />
                 )}
               </button>
               {openQuestion === index && (
-                <div className="px-6 pb-4">
-                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                <div className="px-8 pb-6">
+                  <p className="text-gray-600 leading-relaxed text-base">{faq.answer}</p>
                 </div>
               )}
             </div>
