@@ -147,7 +147,7 @@ export default function ClubPro() {
             </div>
           </div>
 
-          <Button className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
+          <Button variant="outline" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
             Rejoindre le Club Pro
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
@@ -250,13 +250,13 @@ export default function ClubPro() {
       </section>
 
       {/* Pricing Section - Modern Card */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <section className="py-20 bg-white text-black">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Tarification Simple
             </h2>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl text-black-300">
               Un seul plan, tous les avantages inclus
             </p>
           </div>
@@ -306,7 +306,7 @@ export default function ClubPro() {
       </section>
 
       {/* Testimonials Section - Enhanced Design */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -369,12 +369,12 @@ export default function ClubPro() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
+            <Button variant="outline" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
               Rejoindre le Club Pro
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg font-semibold rounded-xl transition-all">
+            <Button variant="outline" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
               En savoir plus
             </Button>
           </div>

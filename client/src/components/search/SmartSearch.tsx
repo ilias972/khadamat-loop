@@ -20,12 +20,14 @@ interface IntelligentSuggestion {
   text: string;
   display: string;
   score: number;
+  service?: string;
+  city?: string;
 }
 
 // Listes de services et villes (personnalisables)
 const SERVICES = {
-  fr: ["Plombier", "Électricien", "Jardinier", "Peintre", "Maçon", "Menuisier", "Déboucheur"],
-  ar: ["سباك", "كهربائي", "بستاني", "رسام", "بناء", "نجار", "مفتح مجاري"]
+  fr: ["Plombier", "Électricien", "Jardinier", "Peintre", "Maçon", "Menuisier", "Déboucheur", "Ménage", "Nettoyage"],
+  ar: ["سباك", "كهربائي", "بستاني", "رسام", "بناء", "نجار", "مفتح مجاري", "تنظيف", "تنظيف"]
 };
 const CITIES = {
   fr: ["Casablanca", "Rabat", "Fès", "Marrakech", "Agadir", "Tanger", "Oujda"],
@@ -64,7 +66,7 @@ export default function SmartSearch({
     keys: ['name']
   });
 
-  // Suggestions intelligentes combinées - Toujours affichées
+  // Suggestions intelligentes combinées - Format "Service à Ville"
   const getIntelligentSuggestions = (): IntelligentSuggestion[] => {
     // Suggestions populaires toujours visibles
     const popularCombinations = [
@@ -73,7 +75,9 @@ export default function SmartSearch({
       { service: 'Plombier', city: 'Marrakech' },
       { service: 'Électricien', city: 'Fès' },
       { service: 'Peintre', city: 'Agadir' },
-      { service: 'Maçon', city: 'Tanger' }
+      { service: 'Maçon', city: 'Tanger' },
+      { service: 'Nettoyage', city: 'Casablanca' },
+      { service: 'Menuisier', city: 'Rabat' }
     ];
     
     const suggestions: IntelligentSuggestion[] = [];
@@ -87,7 +91,8 @@ export default function SmartSearch({
           type: 'service',
           text: result.item,
           display: `${result.item} - Service`,
-          score: result.score || 1
+          score: result.score || 1,
+          service: result.item
         });
       });
       
@@ -98,7 +103,8 @@ export default function SmartSearch({
           type: 'city',
           text: result.item,
           display: `${result.item} - Ville`,
-          score: result.score || 1
+          score: result.score || 1,
+          city: result.item
         });
       });
       
@@ -110,7 +116,9 @@ export default function SmartSearch({
             type: 'combination',
             text: `${combo.service} ${combo.city}`,
             display: `${combo.service} à ${combo.city}`,
-            score: 0.5
+            score: 0.5,
+            service: combo.service,
+            city: combo.city
           });
         }
       });
@@ -125,7 +133,9 @@ export default function SmartSearch({
         type: 'combination',
         text: `${combo.service} ${combo.city}`,
         display: `${combo.service} à ${combo.city}`,
-        score: 0.5
+        score: 0.5,
+        service: combo.service,
+        city: combo.city
       }));
     }
   };
@@ -150,6 +160,34 @@ export default function SmartSearch({
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: IntelligentSuggestion) => {
+    if (suggestion.type === 'combination') {
+      // Rediriger vers la page prestataires avec les filtres pré-remplis
+      const params = new URLSearchParams();
+      if (suggestion.service) {
+        params.append('service', suggestion.service);
+        setQuery(suggestion.service); // Mettre à jour aussi les champs de recherche
+      }
+      if (suggestion.city) {
+        params.append('location', suggestion.city); // Changé de 'ville' à 'location'
+        setLocationState(suggestion.city);
+      }
+      setLocation(`/prestataires?${params.toString()}`);
+    } else if (suggestion.type === 'service') {
+      setQuery(suggestion.service || suggestion.text);
+      // Rediriger directement vers prestataires avec le service sélectionné
+      const params = new URLSearchParams();
+      params.append('service', suggestion.service || suggestion.text);
+      setLocation(`/prestataires?${params.toString()}`);
+    } else if (suggestion.type === 'city') {
+      setLocationState(suggestion.city || suggestion.text);
+      // Rediriger directement vers prestataires avec la ville sélectionnée
+      const params = new URLSearchParams();
+      params.append('location', suggestion.city || suggestion.text); // Changé de 'ville' à 'location'
+      setLocation(`/prestataires?${params.toString()}`);
     }
   };
 
@@ -198,10 +236,10 @@ export default function SmartSearch({
             className="w-full py-3 md:py-4 px-3 md:px-4 pr-10 text-base md:text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-orange-300 min-w-0"
             placeholder={t("hero.city_placeholder")}
             value={location}
-                               onChange={(e) => {
-                     setLocationState(e.target.value);
-                     setShowCitySuggestions(true);
-                   }}
+            onChange={(e) => {
+              setLocationState(e.target.value);
+              setShowCitySuggestions(true);
+            }}
             onFocus={() => setShowCitySuggestions(true)}
             onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
             onKeyPress={handleKeyPress}
@@ -238,40 +276,8 @@ export default function SmartSearch({
         </button>
       </div>
       
-      {/* Suggestions intelligentes intégrées dans le cadre blanc - CONDITIONNELLES */}
-      {showSuggestions && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="flex flex-wrap gap-2">
-            {intelligentSuggestions.map((suggestion, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  if (suggestion.type === 'combination') {
-                    const [service, city] = suggestion.text.split(' ');
-                    setQuery(service);
-                    setLocationState(city);
-                    // Rediriger vers la page services avec les filtres
-                    const params = new URLSearchParams();
-                    params.append('service', service);
-                    params.append('ville', city);
-                    setLocation(`/services?${params.toString()}`);
-                  } else if (suggestion.type === 'service') {
-                    setQuery(suggestion.text);
-                  } else if (suggestion.type === 'city') {
-                    setLocationState(suggestion.text);
-                  }
-                }}
-                className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-100 transition-colors cursor-pointer"
-              >
-                {suggestion.display}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      
       {/* Second row: Provider Search - Optional */}
-      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl">
+      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl mt-4">
         <input 
           className="flex-1 py-2 text-base placeholder-gray-400 bg-transparent border-none focus:outline-none"
           placeholder="Rechercher un prestataire par nom"
@@ -280,6 +286,24 @@ export default function SmartSearch({
           onKeyPress={handleKeyPress}
         />
       </div>
+      
+      {/* Suggestions intelligentes - MAINTENANT EN BAS dans le cadre blanc */}
+      {showSuggestions && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <p className="text-sm text-gray-600 mb-3 font-medium">Suggestions populaires :</p>
+          <div className="flex flex-wrap gap-2">
+            {intelligentSuggestions.map((suggestion, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="px-3 py-2 bg-orange-50 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-100 transition-colors cursor-pointer border border-orange-200 hover:border-orange-300"
+              >
+                {suggestion.display}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
