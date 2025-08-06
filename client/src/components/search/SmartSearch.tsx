@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 import Fuse from "fuse.js";
 import { getSuggestionsByLanguage, parseSuggestionText } from "@/lib/suggestions";
+import { useGeolocation } from "@/hooks/use-geolocation";
 
 interface SmartSearchProps {
   onSearch?: (query: string, location: string, provider?: string) => void;
@@ -49,6 +50,16 @@ export default function SmartSearch({
   // Suggestions dynamiques
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  
+  // Utiliser le hook de géolocalisation
+  const { city: userCity, isLoading: locationLoading } = useGeolocation();
+  
+  // Pré-remplir la ville avec la géolocalisation
+  useEffect(() => {
+    if (userCity && !defaultLocation) {
+      setLocationState(userCity);
+    }
+  }, [userCity, defaultLocation]);
 
   // Récupérer les listes selon la langue
   const currentServices = SERVICES[language as keyof typeof SERVICES] || SERVICES.fr;
@@ -86,7 +97,7 @@ export default function SmartSearch({
     if (query.trim()) {
       // Recherche dans les services
       const serviceResults = fuseServices.search(query);
-      serviceResults.slice(0, 3).forEach(result => {
+      serviceResults.slice(0, 2).forEach(result => {
         suggestions.push({
           type: 'service',
           text: result.item,
@@ -151,7 +162,7 @@ export default function SmartSearch({
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (query) params.append('service', query);
-    if (location) params.append('ville', location);
+    if (location) params.append('location', location);
     if (provider) params.append('provider', provider);
     const searchUrl = `/prestataires${params.toString() ? '?' + params.toString() : ''}`;
     setLocation(searchUrl);
@@ -245,7 +256,7 @@ export default function SmartSearch({
             onKeyPress={handleKeyPress}
             autoComplete="off"
           />
-          <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <MapPin className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 ${locationLoading ? 'geolocation-pulse' : ''}`} />
           {/* Suggestions dynamiques villes */}
           {showCitySuggestions && citySuggestions.length > 0 && (
             <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">

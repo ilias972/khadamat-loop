@@ -65,7 +65,6 @@ export default function ProviderProfile() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
   const [missionDescription, setMissionDescription] = useState("");
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -227,29 +226,29 @@ export default function ProviderProfile() {
           <div className="space-y-6">
             {/* Carte de réservation */}
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Réserver ce prestataire</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{t("provider_profile.book_provider")}</h3>
               
               {!showBookingForm ? (
                 <div className="space-y-4">
                   <div className="text-center">
-                    <p className="text-gray-600 mb-2">Contactez le prestataire pour discuter de votre projet</p>
+                    <p className="text-gray-600 mb-2">{t("provider_profile.contact_description")}</p>
                   </div>
                   
                   <button
                     onClick={() => setShowBookingForm(true)}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-colors"
                   >
-                    Réserver maintenant
+                    {t("provider_profile.book_now")}
                   </button>
                   
                   <div className="flex space-x-2">
                     <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg transition-colors flex items-center justify-center space-x-2">
                       <MessageCircle className="w-4 h-4" />
-                      <span>Message</span>
+                      <span>{t("provider_profile.message")}</span>
                     </button>
                     <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg transition-colors flex items-center justify-center space-x-2">
                       <Phone className="w-4 h-4" />
-                      <span>Appeler</span>
+                      <span>{t("provider_profile.call")}</span>
                     </button>
                   </div>
                 </div>
@@ -324,48 +323,14 @@ export default function ProviderProfile() {
                     </div>
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tranche horaire</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { value: "09:00-09:30", label: "09h00 - 09h30" },
-                        { value: "09:30-10:00", label: "09h30 - 10h00" },
-                        { value: "10:00-10:30", label: "10h00 - 10h30" },
-                        { value: "10:30-11:00", label: "10h30 - 11h00" },
-                        { value: "11:00-11:30", label: "11h00 - 11h30" },
-                        { value: "11:30-12:00", label: "11h30 - 12h00" },
-                        { value: "14:00-14:30", label: "14h00 - 14h30" },
-                        { value: "14:30-15:00", label: "14h30 - 15h00" },
-                        { value: "15:00-15:30", label: "15h00 - 15h30" },
-                        { value: "15:30-16:00", label: "15h30 - 16h00" },
-                        { value: "16:00-16:30", label: "16h00 - 16h30" },
-                        { value: "16:30-17:00", label: "16h30 - 17h00" },
-                        { value: "17:00-17:30", label: "17h00 - 17h30" },
-                        { value: "17:30-18:00", label: "17h30 - 18h00" }
-                      ].map((slot) => (
-                        <button
-                          key={slot.value}
-                          onClick={() => setSelectedTime(slot.value)}
-                          className={`
-                            p-2 text-sm border rounded-lg transition-all
-                            ${selectedTime === slot.value
-                              ? 'bg-orange-500 text-white border-orange-500'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-orange-300 hover:bg-orange-50'
-                            }
-                          `}
-                        >
-                          {slot.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Description de la mission</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t("provider_profile.mission_description")}</label>
                     <textarea
                       value={missionDescription}
                       onChange={(e) => setMissionDescription(e.target.value)}
-                      placeholder="Décrivez votre projet..."
+                      placeholder={t("provider_profile.mission_placeholder")}
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-300"
                     />
@@ -376,13 +341,14 @@ export default function ProviderProfile() {
                       onClick={() => setShowBookingForm(false)}
                       className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg transition-colors"
                     >
-                      Annuler
+                      {t("provider_profile.cancel")}
                     </button>
                     <button
                       onClick={handleBooking}
-                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg transition-colors"
+                      disabled={!selectedDate || !missionDescription.trim()}
+                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Confirmer
+                      {t("provider_profile.confirm")}
                     </button>
                   </div>
                 </div>

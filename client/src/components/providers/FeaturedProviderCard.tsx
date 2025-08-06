@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { Star, MapPin, CheckCircle, Crown, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useState } from "react";
+import BookingModal from "@/components/ui/BookingModal";
 
 interface FeaturedProviderCardProps {
   provider: {
@@ -19,6 +21,15 @@ interface FeaturedProviderCardProps {
 
 export default function FeaturedProviderCard({ provider }: FeaturedProviderCardProps) {
   const { t } = useLanguage();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const handleBooking = (date: string, description: string) => {
+    // Ici vous pouvez ajouter la logique pour envoyer la réservation à l'API
+    console.log("Réservation:", { provider: provider.name, date, description });
+    // Simuler une confirmation
+    alert(`${t("booking.confirm")} pour ${provider.name} le ${date}`);
+  };
+
   return (
     <div className="bg-white rounded-2xl p-5 shadow-lg border-2 border-gray-100 hover:shadow-2xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2 min-h-[280px] flex flex-col">
       {/* Zone unifiée avec background stylisé */}
@@ -90,16 +101,24 @@ export default function FeaturedProviderCard({ provider }: FeaturedProviderCardP
       <div className="flex space-x-2 mt-auto">
         <Link href={`/providers/${provider.id}`} className="flex-1">
           <button className="w-full bg-orange-500 text-white hover:bg-orange-600 border border-orange-500 rounded-xl py-2 px-4 font-medium transition-colors">
-            Profil
+            {t("providers.view_profile")}
           </button>
         </Link>
-        <button className="bg-green-500 text-white hover:bg-green-600 rounded-xl p-2 transition-colors">
-          💬
-        </button>
-        <button className="bg-blue-500 text-white hover:bg-blue-600 rounded-xl p-2 transition-colors">
-          📞
+        <button 
+          onClick={() => setIsBookingModalOpen(true)}
+          className="flex-1 bg-orange-500 text-white hover:bg-orange-600 rounded-xl py-2 px-4 font-medium transition-colors"
+        >
+          {t("booking.title")}
         </button>
       </div>
+
+      {/* Modal de réservation */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        providerName={provider.name}
+        onConfirm={handleBooking}
+      />
     </div>
   );
 } 

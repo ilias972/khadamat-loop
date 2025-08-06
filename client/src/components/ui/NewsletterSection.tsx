@@ -81,12 +81,11 @@ export default function NewsletterSection() {
           
           {/* Titre et description */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Restez informé des nouveautés et des offres dans votre région
+            {t("newsletter.stay_informed")}
           </h2>
           
           <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Inscrivez-vous gratuitement et ne manquez aucune actualité de Khadamat. 
-            Recevez des offres personnalisées pour {userLocation || "votre région"}.
+            {t("newsletter.description")} {userLocation || t("newsletter.your_region")}.
           </p>
           
           {/* Formulaire d'inscription */}
@@ -97,7 +96,7 @@ export default function NewsletterSection() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Entrez votre adresse email"
+                  placeholder={t("newsletter.email_placeholder")}
                   className="flex-1 px-6 py-4 text-lg border-none focus:outline-none focus:ring-2 focus:ring-orange-300 rounded-xl"
                   required
                 />
@@ -106,7 +105,7 @@ export default function NewsletterSection() {
                   disabled={isSubscribing || !email}
                   className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubscribing ? "Inscription..." : "S'inscrire"}
+                  {isSubscribing ? t("newsletter.subscribing") : t("newsletter.subscribe_button")}
                 </Button>
               </div>
             </div>
@@ -116,7 +115,7 @@ export default function NewsletterSection() {
           {isSubscribed && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-8 animate-fade-in">
               <p className="text-green-800 font-medium">
-                ✅ Inscription réussie ! Vous recevrez bientôt nos actualités personnalisées pour {userLocation || "votre région"}.
+                {t("newsletter.success_message")} {userLocation || t("newsletter.your_region")}.
               </p>
             </div>
           )}
@@ -124,7 +123,7 @@ export default function NewsletterSection() {
           {/* Avantages */}
           <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-orange-100 max-w-3xl mx-auto">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-8 text-center">
-              Ce que vous recevrez :
+              {t("newsletter.what_you_get")}
             </h3>
             
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
@@ -133,9 +132,9 @@ export default function NewsletterSection() {
                   <Bell className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Actualités du site</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">{t("newsletter.site_news_title")}</h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Nouvelles fonctionnalités et améliorations de la plateforme
+                    {t("newsletter.site_news_desc")}
                   </p>
                 </div>
               </div>
@@ -145,9 +144,9 @@ export default function NewsletterSection() {
                   <MapPin className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Offres localisées</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">{t("newsletter.local_offers_title")}</h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Promotions et prestataires disponibles dans votre région
+                    {t("newsletter.local_offers_desc")}
                   </p>
                 </div>
               </div>
@@ -157,9 +156,9 @@ export default function NewsletterSection() {
                   <Lightbulb className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Conseils utiles</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">{t("newsletter.useful_tips_title")}</h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Astuces et guides pratiques pour vos projets
+                    {t("newsletter.useful_tips_desc")}
                   </p>
                 </div>
               </div>
@@ -169,9 +168,9 @@ export default function NewsletterSection() {
                   <Shield className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Sécurité garantie</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">{t("newsletter.security_title")}</h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Vos données sont protégées et ne seront jamais partagées
+                    {t("newsletter.security_desc")}
                   </p>
                 </div>
               </div>
@@ -181,7 +180,7 @@ export default function NewsletterSection() {
           {/* Note de confidentialité */}
           <p className="text-sm text-gray-500 mt-8 flex items-center justify-center gap-2">
             <Shield className="w-4 h-4" />
-            Pas de spam, désabonnement en un clic
+            {t("newsletter.no_spam")}
           </p>
         </div>
       </div>

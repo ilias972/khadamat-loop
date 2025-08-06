@@ -81,6 +81,7 @@ const translations = {
     "providers.online": "En ligne",
     "providers.contact": "Contacter",
     "providers.reviews": "avis",
+    "providers.view_profile": "Profil",
     
     // Chat
     "chat.title": "Messagerie Instantanée",
@@ -297,6 +298,94 @@ const translations = {
     "common.loading": "Chargement...",
     "common.error": "Une erreur s'est produite",
     "common.retry": "Réessayer",
+    
+    // Statistics
+    "stats.providers": "Prestataires",
+    "stats.missions": "Missions",
+    "stats.satisfaction": "Satisfaction",
+    "stats.support": "Support",
+    
+    // Testimonials
+    "testimonials.review1": "Excellent service ! Le prestataire était ponctuel, professionnel et le travail était parfait. Je recommande vivement.",
+    "testimonials.review2": "Très satisfait de la qualité du service. Prix raisonnable et délais respectés. Je ferai appel à nouveau.",
+    "testimonials.review3": "Plateforme très pratique pour trouver des prestataires fiables. L'interface est intuitive et le service client réactif.",
+    "testimonials.user1": "Fatima Z.",
+    "testimonials.user2": "Ahmed M.",
+    "testimonials.user3": "Khadija L.",
+    "testimonials.city1": "Casablanca",
+    "testimonials.city2": "Rabat",
+    "testimonials.city3": "Marrakech",
+    
+    // Newsletter
+    "newsletter.stay_informed": "Restez informé des nouveautés et des offres dans votre région",
+    "newsletter.description": "Inscrivez-vous gratuitement et ne manquez aucune actualité de Khadamat. Recevez des offres personnalisées pour",
+    "newsletter.email_placeholder": "Entrez votre adresse email",
+    "newsletter.subscribing": "Inscription...",
+    "newsletter.subscribe_button": "S'inscrire",
+    "newsletter.success_message": "✅ Inscription réussie ! Vous recevrez bientôt nos actualités personnalisées pour",
+    "newsletter.what_you_get": "Ce que vous recevrez :",
+    "newsletter.site_news_title": "Actualités du site",
+    "newsletter.site_news_desc": "Nouvelles fonctionnalités et améliorations de la plateforme",
+    "newsletter.local_offers_title": "Offres localisées",
+    "newsletter.local_offers_desc": "Promotions et prestataires disponibles dans votre région",
+    "newsletter.useful_tips_title": "Conseils utiles",
+    "newsletter.useful_tips_desc": "Astuces et guides pratiques pour vos projets",
+    "newsletter.security_title": "Sécurité garantie",
+    "newsletter.security_desc": "Vos données sont protégées et ne seront jamais partagées",
+    "newsletter.no_spam": "Pas de spam, désabonnement en un clic",
+    "newsletter.your_region": "votre région",
+    
+    // Join Providers
+    "join_providers.title": "Rejoignez notre communauté de professionnels certifiés",
+    "join_providers.subtitle": "Développez votre activité, gagnez la confiance des clients et accédez à de nouveaux projets avec notre plateforme de confiance.",
+    "join_providers.become_provider": "Devenir prestataire",
+    "join_providers.club_pro": "Club Pro",
+    "join_providers.develop_activity_title": "Développez votre activité",
+    "join_providers.develop_activity_desc": "Accédez à de nouveaux clients et projets réguliers",
+    "join_providers.gain_trust_title": "Gagnez la confiance",
+    "join_providers.gain_trust_desc": "Badge de vérification et avis clients pour vous démarquer",
+    "join_providers.competitive_prices_title": "Tarifs compétitifs",
+    "join_providers.competitive_prices_desc": "Fixez vos prix et maximisez vos revenus",
+    
+    // Booking Modal
+    "booking.title": "Réserver",
+    "booking.description_label": "Description de votre demande",
+    "booking.description_placeholder": "Décrivez en détail ce que vous souhaitez faire (ex: réparation de robinet, installation électrique, nettoyage complet...)",
+    "booking.confirm": "Confirmer la réservation",
+    
+    // Common
+    "common.cancel": "Annuler",
+    "common.language": "fr",
+    
+    // Prestataires page
+    "prestataires.title": "Trouvez un Prestataire près de chez vous",
+    "prestataires.subtitle": "Découvrez nos prestataires vérifiés et qualifiés pour tous vos besoins",
+    "prestataires.search_placeholder": "Rechercher un prestataire...",
+    "prestataires.filters": "Filtres",
+    "prestataires.service_label": "Service",
+    "prestataires.all_services": "Tous les services",
+    "prestataires.city_label": "Ville",
+    "prestataires.all_cities": "Toutes les villes",
+    "prestataires.rating_label": "Note minimum",
+    "prestataires.all_ratings": "Toutes les notes",
+    "prestataires.stars": "étoiles",
+    "prestataires.clear_filters": "Effacer les filtres",
+    "prestataires.results_count": "prestataire trouvé",
+    "prestataires.results_count_plural": "prestataires trouvés",
+    "prestataires.no_results_title": "Aucun prestataire trouvé",
+    "prestataires.no_results_desc": "Essayez de modifier vos critères de recherche ou de supprimer certains filtres.",
+    "prestataires.clear_all_filters": "Effacer tous les filtres",
+    
+    // Provider Profile
+    "provider_profile.book_provider": "Réserver ce prestataire",
+    "provider_profile.contact_description": "Contactez le prestataire pour discuter de votre projet",
+    "provider_profile.book_now": "Réserver maintenant",
+    "provider_profile.message": "Message",
+    "provider_profile.call": "Appeler",
+    "provider_profile.mission_description": "Description de la mission",
+    "provider_profile.mission_placeholder": "Décrivez votre projet...",
+    "provider_profile.cancel": "Annuler",
+    "provider_profile.confirm": "Confirmer",
   },
   ar: {
     // Navigation
@@ -373,6 +462,7 @@ const translations = {
     "providers.online": "متصل",
     "providers.contact": "اتصل",
     "providers.reviews": "مراجعة",
+    "providers.view_profile": "الملف الشخصي",
     
     // Chat
     "chat.title": "المراسلة الفورية",
@@ -585,6 +675,94 @@ const translations = {
     "common.loading": "جاري التحميل...",
     "common.error": "حدث خطأ",
     "common.retry": "أعد المحاولة",
+    
+    // Statistics
+    "stats.providers": "مقدمو الخدمات",
+    "stats.missions": "المهام",
+    "stats.satisfaction": "الرضا",
+    "stats.support": "الدعم",
+    
+    // Testimonials
+    "testimonials.review1": "خدمة ممتازة! كان مقدم الخدمة دقيقاً ومهنياً والعمل كان مثالياً. أوصي بشدة.",
+    "testimonials.review2": "راضٍ جداً من جودة الخدمة. السعر معقول والمواعيد محترمة. سألجأ مرة أخرى.",
+    "testimonials.review3": "منصة مفيدة جداً للعثور على مقدمي خدمات موثوقين. الواجهة بديهية وخدمة العملاء متجاوبة.",
+    "testimonials.user1": "فاطمة ز.",
+    "testimonials.user2": "أحمد م.",
+    "testimonials.user3": "خديجة ل.",
+    "testimonials.city1": "الدار البيضاء",
+    "testimonials.city2": "الرباط",
+    "testimonials.city3": "مراكش",
+    
+    // Newsletter
+    "newsletter.stay_informed": "ابق على اطلاع بالأخبار والعروض في منطقتك",
+    "newsletter.description": "اشترك مجاناً ولا تفوت أي أخبار من خدمات. احصل على عروض مخصصة لـ",
+    "newsletter.email_placeholder": "أدخل بريدك الإلكتروني",
+    "newsletter.subscribing": "جاري التسجيل...",
+    "newsletter.subscribe_button": "اشترك",
+    "newsletter.success_message": "✅ تم التسجيل بنجاح! ستصلك قريباً أخبارنا المخصصة لـ",
+    "newsletter.what_you_get": "ما ستحصل عليه:",
+    "newsletter.site_news_title": "أخبار الموقع",
+    "newsletter.site_news_desc": "ميزات جديدة وتحسينات للمنصة",
+    "newsletter.local_offers_title": "عروض محلية",
+    "newsletter.local_offers_desc": "عروض ومقدمي خدمات متاحون في منطقتك",
+    "newsletter.useful_tips_title": "نصائح مفيدة",
+    "newsletter.useful_tips_desc": "حيل وأدلة عملية لمشاريعك",
+    "newsletter.security_title": "أمان مضمون",
+    "newsletter.security_desc": "بياناتك محمية ولن يتم مشاركتها أبداً",
+    "newsletter.no_spam": "لا بريد مزعج، إلغاء الاشتراك بنقرة واحدة",
+    "newsletter.your_region": "منطقتك",
+    
+    // Join Providers
+    "join_providers.title": "انضم إلى مجتمعنا من المحترفين المعتمدين",
+    "join_providers.subtitle": "طور نشاطك، اكسب ثقة العملاء واحصل على مشاريع جديدة مع منصتنا الموثوقة.",
+    "join_providers.become_provider": "أصبح مقدم خدمة",
+    "join_providers.club_pro": "نادي المحترفين",
+    "join_providers.develop_activity_title": "طور نشاطك",
+    "join_providers.develop_activity_desc": "احصل على عملاء ومشاريع جديدة منتظمة",
+    "join_providers.gain_trust_title": "اكسب الثقة",
+    "join_providers.gain_trust_desc": "شارة التحقق ومراجعات العملاء للتميز",
+    "join_providers.competitive_prices_title": "أسعار تنافسية",
+    "join_providers.competitive_prices_desc": "حدد أسعارك واعظم أرباحك",
+    
+    // Booking Modal
+    "booking.title": "حجز",
+    "booking.description_label": "وصف طلبك",
+    "booking.description_placeholder": "صف بالتفصيل ما تريد القيام به (مثل: إصلاح الصنبور، تركيب كهربائي، تنظيف شامل...)",
+    "booking.confirm": "تأكيد الحجز",
+    
+    // Common
+    "common.cancel": "إلغاء",
+    "common.language": "ar",
+    
+    // Prestataires page
+    "prestataires.title": "اعثر على مقدم خدمة قريب منك",
+    "prestataires.subtitle": "اكتشف مقدمي الخدمات المعتمدين والمؤهلين لجميع احتياجاتك",
+    "prestataires.search_placeholder": "البحث عن مقدم خدمة...",
+    "prestataires.filters": "المرشحات",
+    "prestataires.service_label": "الخدمة",
+    "prestataires.all_services": "جميع الخدمات",
+    "prestataires.city_label": "المدينة",
+    "prestataires.all_cities": "جميع المدن",
+    "prestataires.rating_label": "الحد الأدنى للتقييم",
+    "prestataires.all_ratings": "جميع التقييمات",
+    "prestataires.stars": "نجوم",
+    "prestataires.clear_filters": "مسح المرشحات",
+    "prestataires.results_count": "مقدم خدمة وجد",
+    "prestataires.results_count_plural": "مقدمو خدمات وجدوا",
+    "prestataires.no_results_title": "لم يتم العثور على مقدم خدمة",
+    "prestataires.no_results_desc": "حاول تعديل معايير البحث أو إزالة بعض المرشحات.",
+    "prestataires.clear_all_filters": "مسح جميع المرشحات",
+    
+    // Provider Profile
+    "provider_profile.book_provider": "حجز هذا مقدم الخدمة",
+    "provider_profile.contact_description": "تواصل مع مقدم الخدمة لمناقشة مشروعك",
+    "provider_profile.book_now": "احجز الآن",
+    "provider_profile.message": "رسالة",
+    "provider_profile.call": "اتصال",
+    "provider_profile.mission_description": "وصف المهمة",
+    "provider_profile.mission_placeholder": "صف مشروعك...",
+    "provider_profile.cancel": "إلغاء",
+    "provider_profile.confirm": "تأكيد",
   },
 };
 

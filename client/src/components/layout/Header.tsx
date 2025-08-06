@@ -106,64 +106,64 @@ export default function Header() {
             )}
           </button>
         </div>
-      </div>
 
-      {/* Menu Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-orange-100 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            {/* Navigation Mobile */}
-            <nav className="space-y-2 mb-6">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
-                >
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Actions Mobile */}
-            <div className="space-y-2 pt-4 border-t border-gray-100">
-              <div className="flex items-center justify-between px-4 py-2">
-                <span className="text-sm text-gray-600">Langue</span>
-                <LanguageToggle />
-              </div>
-              
-              {!isUserLoggedIn ? (
-                <>
+        {/* Menu Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-orange-100 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              {/* Navigation Mobile */}
+              <nav className="space-y-2 mb-6">
+                {navigationItems.map((item) => (
                   <Link
-                    href="/login"
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
+                  >
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Actions Mobile */}
+              <div className="space-y-2 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between px-4 py-2">
+                  <span className="text-sm text-gray-600">Langue</span>
+                  <LanguageToggle />
+                </div>
+                
+                {!isUserLoggedIn ? (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
+                    >
+                      {t("nav.login")}
+                    </Link>
+                    
+                    <Link
+                      href="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-4 py-3 gradient-orange text-white rounded-lg font-semibold transition-all text-center"
+                    >
+                      {t("nav.register")}
+                    </Link>
+                  </>
+                ) : (
+                  <Link
+                    href="/profile"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
                   >
-                    {t("nav.login")}
+                    {t("nav.profile")}
                   </Link>
-                  
-                  <Link
-                    href="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 gradient-orange text-white rounded-lg font-semibold transition-all text-center"
-                  >
-                    {t("nav.register")}
-                  </Link>
-                </>
-              ) : (
-                <Link
-                  href="/profile"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
-                >
-                  {t("nav.profile")}
-                </Link>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   );
 }

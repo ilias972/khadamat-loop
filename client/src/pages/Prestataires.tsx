@@ -171,12 +171,21 @@ export default function Prestataires() {
   const [selectedDate, setSelectedDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Récupérer le filtre de service depuis l'URL si présent
+  // Récupérer les filtres depuis l'URL si présents
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const serviceFilter = urlParams.get('service');
+    const locationFilter = urlParams.get('location');
+    const providerFilter = urlParams.get('provider');
+    
     if (serviceFilter) {
       setSelectedService(decodeURIComponent(serviceFilter));
+    }
+    if (locationFilter) {
+      setSelectedCity(decodeURIComponent(locationFilter));
+    }
+    if (providerFilter) {
+      setSearchTerm(decodeURIComponent(providerFilter));
     }
   }, []);
 
@@ -285,10 +294,10 @@ export default function Prestataires() {
         {/* Header */}
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            Trouvez un Prestataire près de chez vous
+            {t("prestataires.title")}
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Découvrez nos prestataires vérifiés et qualifiés pour tous vos besoins
+            {t("prestataires.subtitle")}
           </p>
         </div>
 
@@ -301,7 +310,7 @@ export default function Prestataires() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Rechercher un prestataire..."
+                  placeholder={t("prestataires.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -315,7 +324,7 @@ export default function Prestataires() {
               className="lg:hidden px-4 py-3 bg-orange-500 text-white rounded-lg font-medium flex items-center gap-2"
             >
               <Filter className="w-4 h-4" />
-              Filtres
+              {t("prestataires.filters")}
             </button>
           </div>
 
@@ -325,13 +334,13 @@ export default function Prestataires() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {/* Service */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("prestataires.service_label")}</label>
                   <select
                     value={selectedService}
                     onChange={(e) => setSelectedService(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
-                    <option value="">Tous les services</option>
+                    <option value="">{t("prestataires.all_services")}</option>
                     {services.map(service => (
                       <option key={service} value={service}>{service}</option>
                     ))}
@@ -340,13 +349,13 @@ export default function Prestataires() {
 
                 {/* Ville */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("prestataires.city_label")}</label>
                   <select
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
-                    <option value="">Toutes les villes</option>
+                    <option value="">{t("prestataires.all_cities")}</option>
                     {cities.map(city => (
                       <option key={city} value={city}>{city}</option>
                     ))}
@@ -355,15 +364,15 @@ export default function Prestataires() {
 
                 {/* Note */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Note minimum</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("prestataires.rating_label")}</label>
                   <select
                     value={selectedRating || ""}
                     onChange={(e) => setSelectedRating(e.target.value ? Number(e.target.value) : null)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
-                    <option value="">Toutes les notes</option>
+                    <option value="">{t("prestataires.all_ratings")}</option>
                     {ratings.map(rating => (
-                      <option key={rating} value={rating}>{rating}+ étoiles</option>
+                      <option key={rating} value={rating}>{rating}+ {t("prestataires.stars")}</option>
                     ))}
                   </select>
                 </div>
@@ -374,7 +383,7 @@ export default function Prestataires() {
                     onClick={clearFilters}
                     className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                   >
-                    Effacer les filtres
+                    {t("prestataires.clear_filters")}
                   </button>
                 </div>
               </div>
@@ -386,7 +395,7 @@ export default function Prestataires() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              {filteredProviders.length} prestataire{filteredProviders.length !== 1 ? 's' : ''} trouvé{filteredProviders.length !== 1 ? 's' : ''}
+              {filteredProviders.length} {filteredProviders.length === 1 ? t("prestataires.results_count") : t("prestataires.results_count_plural")}
             </h2>
           </div>
 
@@ -426,15 +435,15 @@ export default function Prestataires() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun prestataire trouvé</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("prestataires.no_results_title")}</h3>
               <p className="text-gray-600 mb-4">
-                Essayez de modifier vos critères de recherche ou de supprimer certains filtres.
+                {t("prestataires.no_results_desc")}
               </p>
               <button
                 onClick={clearFilters}
                 className="px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
               >
-                Effacer tous les filtres
+                {t("prestataires.clear_all_filters")}
               </button>
             </div>
           )}

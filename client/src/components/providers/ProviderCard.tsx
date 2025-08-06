@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Star, MapPin } from "lucide-react";
 import type { ProviderWithUser } from "@shared/schema";
+import BookingModal from "@/components/ui/BookingModal";
 
 interface ProviderCardProps {
   provider: ProviderWithUser;
@@ -19,6 +20,14 @@ export default function ProviderCard({
   isFavorite = false 
 }: ProviderCardProps) {
   const { t } = useLanguage();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const handleBooking = (date: string, description: string) => {
+    // Ici vous pouvez ajouter la logique pour envoyer la réservation à l'API
+    console.log("Réservation:", { provider: `${provider.user.firstName} ${provider.user.lastName}`, date, description });
+    // Simuler une confirmation
+    alert(`${t("booking.confirm")} pour ${provider.user.firstName} ${provider.user.lastName} le ${date}`);
+  };
   
   return (
     <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover-scale">
@@ -83,7 +92,13 @@ export default function ProviderCard({
                 onClick={onContact}
                 className="flex-1 gradient-orange text-white py-3 px-6 rounded-xl font-semibold transition-all hover:shadow-lg border-0"
               >
-                Profil
+                {t("providers.view_profile")}
+              </Button>
+              <Button 
+                onClick={() => setIsBookingModalOpen(true)}
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-xl font-semibold transition-all hover:shadow-lg border-0"
+              >
+                {t("booking.title")}
               </Button>
               <Button 
                 onClick={onToggleFavorite}
@@ -98,6 +113,14 @@ export default function ProviderCard({
                 />
               </Button>
             </div>
+
+            {/* Modal de réservation */}
+            <BookingModal
+              isOpen={isBookingModalOpen}
+              onClose={() => setIsBookingModalOpen(false)}
+              providerName={`${provider.user.firstName} ${provider.user.lastName}`}
+              onConfirm={handleBooking}
+            />
           </div>
         </div>
       </div>

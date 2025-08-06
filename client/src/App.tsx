@@ -12,6 +12,7 @@ import MobileHeader from "@/components/layout/MobileHeader";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import MobileTabBar from "@/components/layout/MobileTabBar";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollManager from "@/components/ui/ScrollManager";
 
 // Pages
 import Index from "@/pages/Index";
@@ -49,6 +50,7 @@ import MesFavoris from "@/pages/MesFavoris";
 function Router() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <ScrollManager />
       <ScrollToTop />
       <Header />
       <MobileHeader />

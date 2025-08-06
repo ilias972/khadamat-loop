@@ -110,19 +110,19 @@ export default function Index() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">10K+</div>
-              <div className="text-gray-600 font-medium">Prestataires</div>
+              <div className="text-gray-600 font-medium">{t("stats.providers")}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">50K+</div>
-              <div className="text-gray-600 font-medium">Missions</div>
+              <div className="text-gray-600 font-medium">{t("stats.missions")}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">4.8/5</div>
-              <div className="text-gray-600 font-medium">Satisfaction</div>
+              <div className="text-gray-600 font-medium">{t("stats.satisfaction")}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">24/7</div>
-              <div className="text-gray-600 font-medium">Support</div>
+              <div className="text-gray-600 font-medium">{t("stats.support")}</div>
             </div>
           </div>
         </div>
@@ -155,8 +155,8 @@ export default function Index() {
                 const Icon = service.icon;
                 return (
                 <Link key={index} href="/services">
-                                      <div className="group cursor-pointer relative">
-                      <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                  <div className="group cursor-pointer relative">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
                       
                       <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
                         <Icon className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
@@ -239,10 +239,7 @@ export default function Index() {
       {/* Prestataires en vedette */}
       <FeaturedProvidersCarousel />
 
-      {/* Newsletter - Repositionnée plus haut */}
-      <NewsletterSection />
-
-      {/* Rejoindre les prestataires - Pleine largeur */}
+      {/* Rejoindre les prestataires - Club Pro - Repositionné plus haut */}
       <JoinProviders />
 
       {/* Témoignages */}
@@ -267,15 +264,15 @@ export default function Index() {
                 </div>
               </div>
               <p className="text-gray-700 mb-4 leading-relaxed">
-                "Excellent service ! Le prestataire était ponctuel, professionnel et le travail était parfait. Je recommande vivement."
+                "{t("testimonials.review1")}"
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
                   <User className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Fatima Z.</div>
-                  <div className="text-sm text-gray-600">Casablanca</div>
+                  <div className="font-semibold text-gray-900">{t("testimonials.user1")}</div>
+                  <div className="text-sm text-gray-600">{t("testimonials.city1")}</div>
                 </div>
               </div>
             </div>
@@ -289,15 +286,15 @@ export default function Index() {
                 </div>
               </div>
               <p className="text-gray-700 mb-4 leading-relaxed">
-                "Très satisfait de la qualité du service. Prix raisonnable et délais respectés. Je ferai appel à nouveau."
+                "{t("testimonials.review2")}"
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
                   <User className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Ahmed M.</div>
-                  <div className="text-sm text-gray-600">Rabat</div>
+                  <div className="font-semibold text-gray-900">{t("testimonials.user2")}</div>
+                  <div className="text-sm text-gray-600">{t("testimonials.city2")}</div>
                 </div>
               </div>
             </div>
@@ -311,21 +308,24 @@ export default function Index() {
                 </div>
               </div>
               <p className="text-gray-700 mb-4 leading-relaxed">
-                "Plateforme très pratique pour trouver des prestataires fiables. L'interface est intuitive et le service client réactif."
+                "{t("testimonials.review3")}"
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
                   <User className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Khadija L.</div>
-                  <div className="text-sm text-gray-600">Marrakech</div>
+                  <div className="font-semibold text-gray-900">{t("testimonials.user3")}</div>
+                  <div className="text-sm text-gray-600">{t("testimonials.city3")}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Newsletter - Repositionnée après les témoignages */}
+      <NewsletterSection />
     </div>
   );
 }

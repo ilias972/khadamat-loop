@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { Star, MapPin, CheckCircle, Crown, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useState } from "react";
+import BookingModal from "@/components/ui/BookingModal";
 
 interface ArtisanProfileCardProps {
   provider: {
@@ -19,8 +21,17 @@ interface ArtisanProfileCardProps {
 
 export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps) {
   const { t, language } = useLanguage();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const handleBooking = (date: string, description: string) => {
+    // Ici vous pouvez ajouter la logique pour envoyer la réservation à l'API
+    console.log("Réservation:", { provider: provider.name, date, description });
+    // Simuler une confirmation
+    alert(`${t("booking.confirm")} pour ${provider.name} le ${date}`);
+  };
+
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 min-h-[320px] flex flex-col">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-3 rtl:space-x-reverse">
           <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
@@ -55,7 +66,7 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
       </div>
       <div className="text-orange-600 font-semibold text-sm mb-1">{provider.service}</div>
       {provider.description && (
-        <div className="text-gray-600 text-sm mb-2 line-clamp-2">{provider.description}</div>
+        <div className="text-gray-600 text-sm mb-2 line-clamp-2 flex-1">{provider.description}</div>
       )}
       <div className="flex items-center space-x-2 rtl:space-x-reverse mb-2">
         <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -68,16 +79,27 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
       </div>
       
       {/* Boutons d'action */}
-      <div className="flex space-x-2 rtl:space-x-reverse mt-3">
+      <div className="flex space-x-2 rtl:space-x-reverse mt-auto">
         <Link href={`/providers/${provider.id}`} className="flex-1">
           <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-xl font-semibold transition-all">
-            Profil
+            {t("providers.view_profile")}
           </button>
         </Link>
-        <button className="flex-1 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-xl font-semibold transition-all">
-          Réserver
+        <button 
+          onClick={() => setIsBookingModalOpen(true)}
+          className="flex-1 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-xl font-semibold transition-all"
+        >
+          {t("booking.title")}
         </button>
       </div>
+
+      {/* Modal de réservation */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        providerName={provider.name}
+        onConfirm={handleBooking}
+      />
     </div>
   );
 } 
