@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Eye, EyeOff, Lock, Mail, User, Phone, MapPin, IdCard, AlertTriangle } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { isAdult, getAgeValidationMessage, getMinimumBirthDate } from "@/lib/ageValidation";
 
 // Schéma de validation renforcé pour inscription
 const registerSchema = z.object({
@@ -56,12 +57,11 @@ const registerSchema = z.object({
   path: ["nationalId"]
 }).refine((data) => {
   if (data.birthDate) {
-    const age = new Date().getFullYear() - new Date(data.birthDate).getFullYear();
-    return age >= 18;
+    return isAdult(data.birthDate);
   }
   return false;
 }, {
-  message: "Vous devez être majeur (18+ ans) pour créer un compte",
+  message: "Vous devez être majeur (18+ ans) pour créer un compte. Vérifiez votre date de naissance.",
   path: ["birthDate"]
 });
 

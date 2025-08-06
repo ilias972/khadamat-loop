@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +38,7 @@ interface SecurityAlert {
 
 export default function SecurityDashboard() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
   const [user, setUser] = useState<any>(null);
   const [sessions, setSessions] = useState<SecuritySession[]>([]);
   const [alerts, setAlerts] = useState<SecurityAlert[]>([]);
@@ -287,7 +289,11 @@ export default function SecurityDashboard() {
                     </div>
                   </div>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation("/profil/client/securite")}
+                >
                   Modifier
                 </Button>
               </div>
@@ -303,15 +309,27 @@ export default function SecurityDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full justify-start gap-2" variant="outline">
+              <Button 
+                className="w-full justify-start gap-2" 
+                variant="outline"
+                onClick={() => setLocation("/reglages")}
+              >
                 <Download className="w-4 h-4" />
                 Exporter mes données
               </Button>
-              <Button className="w-full justify-start gap-2" variant="outline">
+              <Button 
+                className="w-full justify-start gap-2" 
+                variant="outline"
+                onClick={() => setLocation("/profil/client/securite")}
+              >
                 <Eye className="w-4 h-4" />
                 Historique de connexion
               </Button>
-              <Button className="w-full justify-start gap-2" variant="outline">
+              <Button 
+                className="w-full justify-start gap-2" 
+                variant="outline"
+                onClick={() => setLocation("/contact")}
+              >
                 <AlertTriangle className="w-4 h-4" />
                 Signaler un problème
               </Button>

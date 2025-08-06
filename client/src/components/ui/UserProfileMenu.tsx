@@ -31,6 +31,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   const { t } = useLanguage();
   const { isClient, isPrestataire } = useUserRole();
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Données mockées de l'utilisateur
@@ -65,6 +66,21 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   }, []);
 
   const toggleMenu = () => {
+    if (!isOpen) {
+      // Vérifier la position avant d'ouvrir le menu
+      const button = menuRef.current?.querySelector('button');
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const menuWidth = 256; // w-64 = 16rem = 256px
+        
+        if (rect.right + menuWidth > windowWidth) {
+          setMenuPosition('left');
+        } else {
+          setMenuPosition('right');
+        }
+      }
+    }
     setIsOpen(!isOpen);
   };
 
@@ -126,7 +142,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
 
       {/* Menu déroulant */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+        <div className={`absolute ${menuPosition === 'right' ? 'right-0' : 'left-0'} mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in max-h-96 overflow-y-auto`}>
           {/* En-tête du menu */}
           <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white rounded-t-xl">
             <div className="flex items-center space-x-3">

@@ -1,9 +1,11 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Heart, Star, MapPin, Phone, MessageCircle } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Favorites() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   // Données mockées pour les favoris
   const favorites = [
@@ -115,11 +117,17 @@ export default function Favorites() {
 
                   {/* Actions */}
                   <div className="flex space-x-2">
-                    <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                    <button 
+                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                      onClick={() => window.open(`tel:+212612345678`)}
+                    >
                       <Phone className="w-4 h-4" />
                       <span className="text-sm">Appeler</span>
                     </button>
-                    <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    <button 
+                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      onClick={() => setLocation(`/messages/${favorite.id}`)}
+                    >
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-sm">Message</span>
                     </button>

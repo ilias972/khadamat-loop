@@ -147,7 +147,11 @@ export default function ClubPro() {
             </div>
           </div>
 
-          <Button variant="outline" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
+          <Button 
+            variant="outline" 
+            className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl"
+            onClick={() => setLocation("/club-pro/checkout")}
+          >
             Rejoindre le Club Pro
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
@@ -291,10 +295,13 @@ export default function ClubPro() {
               </div>
               
               <div className="text-center">
-                <Button className="w-full bg-white text-orange-600 hover:bg-gray-100 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-xl">
-                  Rejoindre maintenant
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
+                              <Button 
+                className="w-full bg-white text-orange-600 hover:bg-gray-100 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-xl"
+                onClick={() => setLocation("/club-pro/checkout")}
+              >
+                Rejoindre maintenant
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
                 
                 <p className="text-sm text-orange-100 mt-4">
                   Paiement sécurisé - Carte bancaire, PayPal, Orange Money
@@ -369,7 +376,11 @@ export default function ClubPro() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="outline" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl">
+            <Button 
+              variant="outline" 
+              className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl"
+              onClick={() => setLocation("/club-pro/checkout")}
+            >
               Rejoindre le Club Pro
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>

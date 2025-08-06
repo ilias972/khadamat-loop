@@ -1,8 +1,10 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Package, Clock, CheckCircle, XCircle } from "lucide-react";
 
 export default function Orders() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   // Données mockées pour les commandes
   const orders = [
@@ -127,11 +129,17 @@ export default function Orders() {
                     </div>
                     
                     <div className="flex space-x-2">
-                      <button className="px-4 py-2 text-sm text-orange-600 hover:text-orange-700 font-medium">
+                      <button 
+                        className="px-4 py-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
+                        onClick={() => setLocation(`/orders/${order.id}`)}
+                      >
                         Voir détails
                       </button>
                       {order.status === "pending" && (
-                        <button className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        <button 
+                          className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                          onClick={() => console.log("Annuler commande", order.id)}
+                        >
                           Annuler
                         </button>
                       )}
@@ -149,7 +157,10 @@ export default function Orders() {
               <p className="text-gray-600 mb-6">
                 Vous n'avez pas encore passé de commande.
               </p>
-              <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
+              <button 
+                className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                onClick={() => setLocation("/services")}
+              >
                 Découvrir nos services
               </button>
             </div>

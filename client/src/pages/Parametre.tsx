@@ -1,15 +1,20 @@
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Settings, Bell, Shield, User, Globe, Moon, Sun } from "lucide-react";
+import { useLocation } from "wouter";
+import { Settings, Bell, Shield, User, Globe, Moon, Sun, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Parametre() {
   const { t, language, toggleLanguage } = useLanguage();
+  const [, setLocation] = useLocation();
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
     push: true
   });
+
+
 
   return (
     <div className="min-h-screen pt-20">
@@ -47,9 +52,15 @@ export default function Parametre() {
                     <h3 className="font-medium text-gray-900">Nom complet</h3>
                     <p className="text-sm text-gray-500">Ahmed Ben Ali</p>
                   </div>
-                  <button className="text-orange-500 hover:text-orange-600 font-medium">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setLocation("/profil/client/info")}
+                    className="text-orange-500 hover:text-orange-600"
+                  >
                     Modifier
-                  </button>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
                 
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
@@ -57,9 +68,15 @@ export default function Parametre() {
                     <h3 className="font-medium text-gray-900">Email</h3>
                     <p className="text-sm text-gray-500">ahmed.benali@email.com</p>
                   </div>
-                  <button className="text-orange-500 hover:text-orange-600 font-medium">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setLocation("/profil/client/info")}
+                    className="text-orange-500 hover:text-orange-600"
+                  >
                     Modifier
-                  </button>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
                 
                 <div className="flex items-center justify-between py-3">
@@ -67,9 +84,15 @@ export default function Parametre() {
                     <h3 className="font-medium text-gray-900">Téléphone</h3>
                     <p className="text-sm text-gray-500">+212 6 12 34 56 78</p>
                   </div>
-                  <button className="text-orange-500 hover:text-orange-600 font-medium">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setLocation("/profil/client/info")}
+                    className="text-orange-500 hover:text-orange-600"
+                  >
                     Modifier
-                  </button>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -181,29 +204,41 @@ export default function Parametre() {
               </div>
               
               <div className="space-y-4">
-                <button className="w-full flex items-center justify-between py-3 border-b border-gray-100 hover:bg-gray-50 rounded-lg px-3 transition-colors">
+                <Button 
+                  variant="ghost"
+                  className="w-full flex items-center justify-between py-3 border-b border-gray-100 hover:bg-gray-50 rounded-lg px-3 transition-colors"
+                  onClick={() => setLocation("/profil/client/securite")}
+                >
                   <div>
                     <h3 className="font-medium text-gray-900">Changer le mot de passe</h3>
                     <p className="text-sm text-gray-500">Mettre à jour votre mot de passe</p>
                   </div>
-                  <span className="text-gray-400">→</span>
-                </button>
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </Button>
                 
-                <button className="w-full flex items-center justify-between py-3 border-b border-gray-100 hover:bg-gray-50 rounded-lg px-3 transition-colors">
+                <Button 
+                  variant="ghost"
+                  className="w-full flex items-center justify-between py-3 border-b border-gray-100 hover:bg-gray-50 rounded-lg px-3 transition-colors"
+                  onClick={() => setLocation("/profil/client/securite")}
+                >
                   <div>
                     <h3 className="font-medium text-gray-900">Authentification à deux facteurs</h3>
                     <p className="text-sm text-gray-500">Ajouter une couche de sécurité</p>
                   </div>
-                  <span className="text-gray-400">→</span>
-                </button>
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </Button>
                 
-                <button className="w-full flex items-center justify-between py-3 hover:bg-gray-50 rounded-lg px-3 transition-colors">
+                <Button 
+                  variant="ghost"
+                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 rounded-lg px-3 transition-colors"
+                  onClick={() => setLocation("/profil/client/securite")}
+                >
                   <div>
                     <h3 className="font-medium text-gray-900">Sessions actives</h3>
                     <p className="text-sm text-gray-500">Gérer vos connexions</p>
                   </div>
-                  <span className="text-gray-400">→</span>
-                </button>
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </Button>
               </div>
             </div>
           </div>

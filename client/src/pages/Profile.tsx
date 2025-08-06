@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Star, MapPin, CheckCircle, Edit, Settings, LogOut, FileText, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,6 +56,7 @@ const clientData = {
 
 export default function Profile() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -99,7 +101,11 @@ export default function Profile() {
               )}
               
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation("/profile/info")}
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Modifier
                 </Button>

@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, ChevronDown } from "lucide-react";
+import { Search, MapPin, ChevronDown, User } from "lucide-react";
 import Fuse from "fuse.js";
 import { getSuggestionsByLanguage, parseSuggestionText } from "@/lib/suggestions";
 import { useGeolocation } from "@/hooks/use-geolocation";
@@ -35,6 +35,25 @@ const CITIES = {
   ar: ["الدار البيضاء", "الرباط", "فاس", "مراكش", "أكادير", "طنجة", "وجدة"]
 };
 
+// Liste de prestataires fictifs pour l'autocomplétion
+const PROVIDERS = [
+  "Ahmed Benali - Plombier",
+  "Fatima Zahra - Nettoyage",
+  "Mohammed Idrissi - Électricien",
+  "Amina El Fassi - Jardinier",
+  "Hassan Alami - Peintre",
+  "Karim Bennis - Maçon",
+  "Sara Mansouri - Ménage",
+  "Omar Tazi - Menuisier",
+  "Leila Benjelloun - Plombier",
+  "Youssef El Kaddouri - Électricien",
+  "Nadia Ait Benhaddou - Nettoyage",
+  "Rachid El Amrani - Jardinier",
+  "Samira El Fassi - Peintre",
+  "Abdelkader Benjelloun - Maçon",
+  "Hakima El Mansouri - Ménage"
+];
+
 export default function SmartSearch({ 
   onSearch, 
   placeholder, 
@@ -50,6 +69,7 @@ export default function SmartSearch({
   // Suggestions dynamiques
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [showProviderSuggestions, setShowProviderSuggestions] = useState(false);
   
   // Utiliser le hook de géolocalisation
   const { city: userCity, isLoading: locationLoading } = useGeolocation();
@@ -65,7 +85,7 @@ export default function SmartSearch({
   const currentServices = SERVICES[language as keyof typeof SERVICES] || SERVICES.fr;
   const currentCities = CITIES[language as keyof typeof CITIES] || CITIES.fr;
 
-  // Fuse.js pour services et villes avec configuration améliorée
+  // Fuse.js pour services, villes et prestataires avec configuration améliorée
   const fuseServices = new Fuse(currentServices, { 
     threshold: 0.3,
     includeScore: true,
@@ -73,6 +93,11 @@ export default function SmartSearch({
   });
   const fuseCities = new Fuse(currentCities, { 
     threshold: 0.3,
+    includeScore: true,
+    keys: ['name']
+  });
+  const fuseProviders = new Fuse(PROVIDERS, {
+    threshold: 0.4,
     includeScore: true,
     keys: ['name']
   });
@@ -157,6 +182,9 @@ export default function SmartSearch({
     : [];
   const citySuggestions = location && !currentCities.includes(location)
     ? fuseCities.search(location).map((r) => r.item).slice(0, 5)
+    : [];
+  const providerSuggestions = provider
+    ? fuseProviders.search(provider).map((r) => r.item).slice(0, 5)
     : [];
 
   const handleSearch = () => {
@@ -287,15 +315,39 @@ export default function SmartSearch({
         </button>
       </div>
       
-      {/* Second row: Provider Search - Optional */}
-      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl mt-4">
+      {/* Second row: Provider Search - Enhanced with autocomplete */}
+      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl mt-4 relative">
+        <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <input 
           className="flex-1 py-2 text-base placeholder-gray-400 bg-transparent border-none focus:outline-none"
-          placeholder="Rechercher un prestataire par nom"
+          placeholder="Recherche prestataire"
           value={provider}
-          onChange={(e) => setProvider(e.target.value)}
+          onChange={(e) => {
+            setProvider(e.target.value);
+            setShowProviderSuggestions(true);
+          }}
+          onFocus={() => setShowProviderSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 150)}
           onKeyPress={handleKeyPress}
+          autoComplete="off"
         />
+        {/* Suggestions dynamiques prestataires */}
+        {showProviderSuggestions && providerSuggestions.length > 0 && (
+          <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
+            {providerSuggestions.map((suggestion, idx) => (
+              <div
+                key={idx}
+                className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
+                onClick={() => {
+                  setProvider(suggestion);
+                  setShowProviderSuggestions(false);
+                }}
+              >
+                {suggestion}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Suggestions intelligentes - MAINTENANT EN BAS dans le cadre blanc */}

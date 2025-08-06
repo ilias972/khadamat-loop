@@ -1,7 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { MessageCircle, Send, Search, MoreVertical, Phone, Video, Image, Paperclip, Smile } from "lucide-react";
+import { 
+  MessageCircle, 
+  Send, 
+  Search, 
+  MoreVertical, 
+  Phone, 
+  Video, 
+  Image, 
+  Paperclip, 
+  Smile,
+  Download,
+  Trash2,
+  Archive,
+  Ban,
+  Flag,
+  Settings,
+  FileText,
+  Camera
+} from "lucide-react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 interface Message {
   id: string;
@@ -10,6 +36,13 @@ interface Message {
   content: string;
   timestamp: Date;
   isRead: boolean;
+  attachments?: Array<{
+    id: string;
+    name: string;
+    type: 'image' | 'file' | 'document';
+    url: string;
+    size: string;
+  }>;
 }
 
 interface Conversation {
@@ -30,6 +63,9 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Données mockées des conversations
   const [conversations] = useState<Conversation[]>([
@@ -109,6 +145,29 @@ export default function Messages() {
     }
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      // Simulation d'upload de fichier
+      console.log("Upload de fichiers:", files);
+      // Ici on enverrait les fichiers à l'API /messages/upload
+    }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      // Simulation d'upload d'images
+      console.log("Upload d'images:", files);
+      // Ici on enverrait les images à l'API /messages/upload
+    }
+  };
+
+  const handleMenuAction = (action: string) => {
+    console.log("Action du menu:", action);
+    setShowMenu(false);
+  };
+
   const formatTime = (date: Date) => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -138,9 +197,28 @@ export default function Messages() {
             <div className="p-4 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-xl font-bold text-gray-900">Messages</h1>
-                <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
-                  <MoreVertical className="w-5 h-5 text-gray-600" />
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <MoreVertical className="w-5 h-5 text-gray-600" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleMenuAction('search')}>
+                      <Search className="w-4 h-4 mr-2" />
+                      Recherche avancée
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMenuAction('archive')}>
+                      <Archive className="w-4 h-4 mr-2" />
+                      Archiver les conversations
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleMenuAction('settings')}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Paramètres de messagerie
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               
               {/* Barre de recherche */}
@@ -288,9 +366,32 @@ export default function Messages() {
                       <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <Video className="w-5 h-5 text-gray-600" />
                       </button>
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <MoreVertical className="w-5 h-5 text-gray-600" />
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="p-2">
+                            <MoreVertical className="w-5 h-5 text-gray-600" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleMenuAction('download')}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Télécharger la conversation
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleMenuAction('block')}>
+                            <Ban className="w-4 h-4 mr-2" />
+                            Bloquer le prestataire
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleMenuAction('report')}>
+                            <Flag className="w-4 h-4 mr-2" />
+                            Signaler un problème
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleMenuAction('delete')}>
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Supprimer la conversation
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -326,11 +427,42 @@ export default function Messages() {
                 {/* Zone de saisie */}
                 <div className="p-4 border-t border-gray-200 bg-white">
                   <div className="flex items-center space-x-2">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.txt,.zip,.rar"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <input
+                      ref={imageInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    
+                    <button 
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={() => fileInputRef.current?.click()}
+                      title="Joindre un fichier"
+                    >
                       <Paperclip className="w-5 h-5 text-gray-600" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <button 
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={() => imageInputRef.current?.click()}
+                      title="Joindre une image"
+                    >
                       <Image className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <button 
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      title="Prendre une photo"
+                    >
+                      <Camera className="w-5 h-5 text-gray-600" />
                     </button>
                     <div className="flex-1 relative">
                       <input

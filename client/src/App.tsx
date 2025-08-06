@@ -19,12 +19,20 @@ import Index from "@/pages/Index";
 import Services from "@/pages/Services";
 import Providers from "@/pages/Providers";
 import ClubPro from "@/pages/ClubPro";
+import ClubProCheckout from "@/pages/ClubProCheckout";
 import Project from "@/pages/Project";
 import SOS from "@/pages/SOS";
 // Auth pages imported below with aliases
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Profile from "@/pages/Profile";
+import ProfileInfo from "@/pages/ProfileInfo";
+import Reglages from "@/pages/Reglages";
+import ProfileClient from "@/pages/ProfileClient";
+import ProfileClientInfo from "@/pages/ProfileClientInfo";
+import ProfileClientSecurity from "@/pages/ProfileClientSecurity";
+import ProfileClientNotifications from "@/pages/ProfileClientNotifications";
+import ProfileProvider from "@/pages/ProfileProvider";
 import Messages from "@/pages/Messages";
 import PostService from "@/pages/PostService";
 import FAQ from "@/pages/FAQ";
@@ -45,6 +53,7 @@ import Favorites from "@/pages/Favorites";
 import Missions from "@/pages/Missions";
 import Parametre from "@/pages/Parametre";
 import MesReservations from "@/pages/MesReservations";
+import ReservationDetails from "@/pages/ReservationDetails";
 import MesFavoris from "@/pages/MesFavoris";
 
 function Router() {
@@ -60,12 +69,20 @@ function Router() {
           <Route path="/services" component={Services} />
           <Route path="/providers" component={Providers} />
           <Route path="/club-pro" component={ClubPro} />
+          <Route path="/club-pro/checkout" component={ClubProCheckout} />
           <Route path="/project" component={Project} />
           <Route path="/sos" component={SOS} />
           {/* Auth routes handled below */}
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
-          <Route path="/profile" component={Profile} />
+                      <Route path="/profile" component={Profile} />
+            <Route path="/profile/info" component={ProfileInfo} />
+            <Route path="/reglages" component={Reglages} />
+            <Route path="/profil/client" component={ProfileClient} />
+          <Route path="/profil/client/info" component={ProfileClientInfo} />
+          <Route path="/profil/client/securite" component={ProfileClientSecurity} />
+          <Route path="/profil/client/notifications" component={ProfileClientNotifications} />
+          <Route path="/profil/prestataire" component={ProfileProvider} />
           <Route path="/messages" component={Messages} />
           <Route path="/post-service" component={PostService} />
           <Route path="/faq" component={FAQ} />
@@ -85,6 +102,7 @@ function Router() {
           <Route path="/mes-commandes" component={Orders} />
           <Route path="/favoris" component={Favorites} />
           <Route path="/mes-reservations" component={MesReservations} />
+          <Route path="/reservations/:id" component={ReservationDetails} />
           <Route path="/mes-favoris" component={MesFavoris} />
           <Route path="/mes-missions" component={Missions} />
           <Route path="/reglages" component={Parametre} />

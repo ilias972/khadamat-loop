@@ -1,11 +1,13 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, User, Star, MessageCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Star, MessageCircle, Eye } from "lucide-react";
 
 export default function MesReservations() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   // Données mockées des réservations
   const reservations = [
@@ -135,11 +137,19 @@ export default function MesReservations() {
                     {reservation.price}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setLocation(`/messages/${reservation.provider}`)}
+                    >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Contacter
                     </Button>
-                    <Button size="sm">
+                    <Button 
+                      size="sm"
+                      onClick={() => setLocation(`/reservations/${reservation.id}`)}
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
                       Voir détails
                     </Button>
                   </div>

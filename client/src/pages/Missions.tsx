@@ -1,8 +1,10 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { FileText, Clock, CheckCircle, XCircle, AlertCircle, MapPin, Calendar } from "lucide-react";
 
 export default function Missions() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   // Données mockées pour les missions
   const missions = [
@@ -195,21 +197,33 @@ export default function Missions() {
                     </div>
                     
                     <div className="flex space-x-2">
-                      <button className="px-4 py-2 text-sm text-orange-600 hover:text-orange-700 font-medium">
+                      <button 
+                        className="px-4 py-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
+                        onClick={() => setLocation(`/missions/${mission.id}`)}
+                      >
                         Voir détails
                       </button>
                       {mission.status === "pending" && (
                         <>
-                          <button className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                          <button 
+                            className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                            onClick={() => console.log("Accepter mission", mission.id)}
+                          >
                             Accepter
                           </button>
-                          <button className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                          <button 
+                            className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                            onClick={() => console.log("Refuser mission", mission.id)}
+                          >
                             Refuser
                           </button>
                         </>
                       )}
                       {mission.status === "completed" && (
-                        <button className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <button 
+                          className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                          onClick={() => setLocation(`/billing/${mission.id}`)}
+                        >
                           Facturer
                         </button>
                       )}
@@ -227,7 +241,10 @@ export default function Missions() {
               <p className="text-gray-600 mb-6">
                 Vous n'avez pas encore de missions assignées.
               </p>
-              <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
+              <button 
+                className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                onClick={() => setLocation("/prestataires")}
+              >
                 Voir les demandes
               </button>
             </div>

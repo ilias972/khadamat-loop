@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 
 export default function About() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   const values = [
     {
@@ -117,10 +119,17 @@ export default function About() {
           </p>
 
           <div className="flex justify-center space-x-4">
-            <Button className="gradient-orange text-white px-8 py-3 rounded-xl font-semibold border-0">
+            <Button 
+              className="gradient-orange text-white px-8 py-3 rounded-xl font-semibold border-0"
+              onClick={() => setLocation("/register")}
+            >
               Rejoindre Khadamat
             </Button>
-            <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 px-8 py-3 rounded-xl font-semibold">
+            <Button 
+              variant="outline" 
+              className="border-orange-200 text-orange-600 hover:bg-orange-50 px-8 py-3 rounded-xl font-semibold"
+              onClick={() => setLocation("/services")}
+            >
               Découvrir nos Services
             </Button>
           </div>
@@ -288,11 +297,18 @@ export default function About() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white text-orange-600 px-8 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-all">
+            <Button 
+              className="bg-white text-orange-600 px-8 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-all"
+              onClick={() => setLocation("/register")}
+            >
               <Users className="w-5 h-5 mr-2" />
               Devenir Prestataire
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-3 rounded-xl font-semibold">
+            <Button 
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-3 rounded-xl font-semibold"
+              onClick={() => setLocation("/contact")}
+            >
               <Mail className="w-5 h-5 mr-2" />
               Nous Contacter
             </Button>

@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Heart, Star, MapPin, Phone, MessageCircle, User, Crown } from "lucide-r
 
 export default function MesFavoris() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   // Données mockées des favoris
   const favorites = [
@@ -19,7 +21,8 @@ export default function MesFavoris() {
       isOnline: true,
       isClubPro: true,
       price: "À partir de 200 DH",
-      specialties: ["Installation", "Réparation", "Débouchage"]
+      specialties: ["Installation", "Réparation", "Débouchage"],
+      phone: "+212 6 12 34 56 78"
     },
     {
       id: 2,
@@ -31,7 +34,8 @@ export default function MesFavoris() {
       isOnline: false,
       isClubPro: false,
       price: "À partir de 300 DH",
-      specialties: ["Installation électrique", "Dépannage", "Éclairage"]
+      specialties: ["Installation électrique", "Dépannage", "Éclairage"],
+      phone: "+212 6 98 76 54 32"
     },
     {
       id: 3,
@@ -43,7 +47,8 @@ export default function MesFavoris() {
       isOnline: true,
       isClubPro: true,
       price: "À partir de 150 DH",
-      specialties: ["Ménage régulier", "Nettoyage profond", "Repassage"]
+      specialties: ["Ménage régulier", "Nettoyage profond", "Repassage"],
+      phone: "+212 6 45 67 89 01"
     }
   ];
 
@@ -164,11 +169,20 @@ export default function MesFavoris() {
                   )}
                   
                   <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => setLocation(`/messages/${favorite.id}`)}
+                    >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Message
                     </Button>
-                    <Button size="sm" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => window.open(`tel:${favorite.phone}`)}
+                    >
                       <Phone className="w-4 h-4 mr-2" />
                       Appeler
                     </Button>
