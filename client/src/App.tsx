@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { LanguageProvider } from "@/contexts/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 
 // Layout components
 import Header from "@/components/layout/Header";
@@ -57,8 +57,9 @@ import ReservationDetails from "@/pages/ReservationDetails";
 import MesFavoris from "@/pages/MesFavoris";
 
 function Router() {
+  const { language } = useLanguage();
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir={language === "ar" ? "rtl" : "ltr"}>
       <ScrollManager />
       <ScrollToTop />
       <Header />
