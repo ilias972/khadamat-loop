@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { isValidDay, isFutureOrTodayDay } from '../utils/day';
 import { notifyUser } from '../utils/notify';
 import { createSystemMessage } from '../utils/messages';
+import { sendBookingSMS } from '../services/smsEvents';
 
 const prisma = new PrismaClient();
 
@@ -53,7 +54,8 @@ export async function createBooking(req: Request, res: Response, next: NextFunct
       content: 'Réservation créée — en attente de votre confirmation.',
     });
 
-    await notifyUser(providerId, 'booking_created', 'Nouvelle réservation', 'Réservation créée — en attente de votre confirmation.', { bookingId: booking.id });
+    notifyUser(providerId, 'BOOKING_REQUEST', 'Nouvelle réservation', `Un client a demandé une prestation le ${booking.scheduledDay}`, { bookingId: booking.id });
+    sendBookingSMS(providerId, 'BOOKING_REQUEST', booking.id).catch((err) => console.error(err));
 
     res.status(201).json({ success: true, data: { booking } });
   } catch (err) {
@@ -82,7 +84,8 @@ export async function confirmBooking(req: Request, res: Response, next: NextFunc
       content: 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
     });
 
-    await notifyUser(updated.clientId, 'booking_confirmed', 'Réservation acceptée', 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.', { bookingId: updated.id });
+    notifyUser(updated.clientId, 'BOOKING_CONFIRMED', 'Réservation acceptée', 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.', { bookingId: updated.id });
+    sendBookingSMS(updated.clientId, 'BOOKING_CONFIRMED', updated.id).catch((err) => console.error(err));
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -119,7 +122,8 @@ export async function proposeDay(req: Request, res: Response, next: NextFunction
       content: `Nouveau jour propos\u00e9 : ${proposedDay}.`,
     });
 
-    await notifyUser(updated.clientId, 'booking_reschedule_proposed', 'Proposition de nouveau jour', `Nouveau jour propos\u00e9 : ${proposedDay}.`, { bookingId: updated.id });
+    notifyUser(updated.clientId, 'BOOKING_RESCHEDULE_PROPOSED', 'Proposition de nouveau jour', `Nouveau jour proposé: ${proposedDay}.`, { bookingId: updated.id });
+    sendBookingSMS(updated.clientId, 'BOOKING_RESCHEDULE_PROPOSED', updated.id).catch((err) => console.error(err));
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -155,7 +159,8 @@ export async function acceptReschedule(req: Request, res: Response, next: NextFu
       content: `Le client a accept\u00e9 le nouveau jour : ${updated.scheduledDay}.`,
     });
 
-    await notifyUser(updated.providerId, 'booking_reschedule_accepted', 'Nouveau jour accept\u00e9', `Le client a accept\u00e9 le nouveau jour : ${updated.scheduledDay}.`, { bookingId: updated.id });
+    notifyUser(updated.providerId, 'BOOKING_RESCHEDULE_ACCEPTED', 'Nouveau jour accepté', `Le client a accepté le nouveau jour : ${updated.scheduledDay}.`, { bookingId: updated.id });
+    sendBookingSMS(updated.providerId, 'BOOKING_RESCHEDULE_ACCEPTED', updated.id).catch((err) => console.error(err));
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -186,7 +191,8 @@ export async function rejectBooking(req: Request, res: Response, next: NextFunct
       content: 'Le prestataire a refus\u00e9 la r\u00e9servation.',
     });
 
-    await notifyUser(updated.clientId, 'booking_rejected', 'R\u00e9servation refus\u00e9e', 'Le prestataire a refus\u00e9 la r\u00e9servation.', { bookingId: updated.id });
+    notifyUser(updated.clientId, 'BOOKING_REJECTED', 'Réservation refusée', 'Le prestataire a refusé la réservation.', { bookingId: updated.id });
+    sendBookingSMS(updated.clientId, 'BOOKING_REJECTED', updated.id).catch((err) => console.error(err));
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -221,7 +227,8 @@ export async function cancelBooking(req: Request, res: Response, next: NextFunct
       content: 'Le client a annul\u00e9 la r\u00e9servation.',
     });
 
-    await notifyUser(updated.providerId, 'booking_cancelled', 'R\u00e9servation annul\u00e9e', 'Le client a annul\u00e9 la r\u00e9servation.', { bookingId: updated.id });
+    notifyUser(updated.providerId, 'BOOKING_CANCELLED', 'Réservation annulée', 'Le client a annulé la réservation.', { bookingId: updated.id });
+    sendBookingSMS(updated.providerId, 'BOOKING_CANCELLED', updated.id).catch((err) => console.error(err));
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {

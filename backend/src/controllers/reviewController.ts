@@ -40,7 +40,7 @@ export async function createReview(req: Request, res: Response, next: NextFuncti
         return created;
       });
 
-      await notifyUser(
+      notifyUser(
         booking.providerId,
         'review_created',
         'Nouvel avis',
