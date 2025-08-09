@@ -15,35 +15,35 @@ import {
 export default function SOS() {
   const { t } = useLanguage();
 
-  const emergencyServices = [
-    {
-      id: "police",
-      name: t("sos.police"),
-      number: "19",
-      icon: Shield,
-      color: "blue",
-      description: "Urgences de sécurité, accidents et situations d'urgence nécessitant une intervention policière",
-      available: "24h/24, 7j/7",
-    },
-    {
-      id: "fire",
-      name: t("sos.fire"),
-      number: "15",
-      icon: Flame,
-      color: "red",
-      description: "Urgences médicales, incendies et situations nécessitant une intervention des secours",
-      available: "24h/24, 7j/7",
-    },
-    {
-      id: "gendarmerie",
-      name: t("sos.gendarmerie"),
-      number: "177",
-      icon: ShieldQuestion,
-      color: "green",
-      description: "Urgences en zones rurales et situations nécessitant l'intervention de la gendarmerie",
-      available: "24h/24, 7j/7",
-    },
-  ];
+    const emergencyServices = [
+      {
+        id: "police",
+        name: t("sos.police"),
+        number: "19",
+        icon: Shield,
+        color: "blue",
+        description: t("sos.police_desc"),
+        available: t("sos.available_always"),
+      },
+      {
+        id: "fire",
+        name: t("sos.fire"),
+        number: "15",
+        icon: Flame,
+        color: "red",
+        description: t("sos.fire_desc"),
+        available: t("sos.available_always"),
+      },
+      {
+        id: "gendarmerie",
+        name: t("sos.gendarmerie"),
+        number: "177",
+        icon: ShieldQuestion,
+        color: "green",
+        description: t("sos.gendarmerie_desc"),
+        available: t("sos.available_always"),
+      },
+    ];
 
 
 
@@ -99,18 +99,18 @@ export default function SOS() {
             {t("sos.description")}
           </p>
 
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 rtl:space-x-reverse text-gray-600 text-sm px-4">
+            <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 rtl:space-x-reverse text-gray-600 text-sm px-4">
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <Clock className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
-              <span>Disponible 24h/24</span>
+              <span>{t("sos.available_24")}</span>
             </div>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <MapPin className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
-              <span>Géolocalisation automatique</span>
+              <span>{t("sos.auto_geolocation")}</span>
             </div>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <Phone className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
-              <span>Appel direct</span>
+              <span>{t("sos.direct_call")}</span>
             </div>
           </div>
         </div>
@@ -119,14 +119,14 @@ export default function SOS() {
       {/* Main Emergency Services */}
       <section className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
-              Numéros d'Urgence Officiels
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600">
-              Contacts directs avec les services de secours marocains
-            </p>
-          </div>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+                {t("sos.emergency_numbers_title")}
+              </h2>
+              <p className="text-lg md:text-xl text-gray-600">
+                {t("sos.emergency_numbers_desc")}
+              </p>
+            </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {emergencyServices.map((service) => {
@@ -176,29 +176,29 @@ export default function SOS() {
       {/* Premiers Secours */}
       <section className="py-12 md:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
-              Gestes de premiers secours à connaître
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600">
-              Instructions simples et claires pour réagir en cas d'urgence
-            </p>
-          </div>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+                {t("sos.first_aid_title")}
+              </h2>
+              <p className="text-lg md:text-xl text-gray-600">
+                {t("sos.first_aid_desc")}
+              </p>
+            </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 h-full">
               <CardContent className="p-6 md:p-8 h-full flex flex-col">
                 <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
                   <span className="text-white text-xl font-bold">🫁</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Étouffement
+                  {t("sos.choking.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Demandez à la personne de tousser fort</p>
-                  <p><strong>2.</strong> Donnez 5 tapes dans le dos</p>
-                  <p><strong>3.</strong> Si ça ne marche pas, faites la manœuvre de Heimlich</p>
-                  <p><strong>4.</strong> Appelez les secours si ça continue</p>
+                  <p><strong>1.</strong> {t("sos.choking.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.choking.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.choking.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.choking.step4")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -209,30 +209,30 @@ export default function SOS() {
                   <span className="text-white text-xl font-bold">🔥</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Brûlure
+                  {t("sos.burn.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Refroidissez avec de l'eau (15-20 minutes)</p>
-                  <p><strong>2.</strong> Ne mettez pas de glace directement</p>
-                  <p><strong>3.</strong> Couvrez avec un linge propre</p>
-                  <p><strong>4.</strong> Appelez les secours si c'est grave</p>
+                  <p><strong>1.</strong> {t("sos.burn.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.burn.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.burn.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.burn.step4")}</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 h-full">
               <CardContent className="p-6 md:p-8 h-full flex flex-col">
                 <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
                   <span className="text-white text-xl font-bold">💤</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Perte de connaissance
+                  {t("sos.unconscious.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Vérifiez si la personne respire</p>
-                  <p><strong>2.</strong> Mettez-la en position latérale de sécurité</p>
-                  <p><strong>3.</strong> Appelez immédiatement les secours</p>
-                  <p><strong>4.</strong> Restez avec elle jusqu'à l'arrivée</p>
+                  <p><strong>1.</strong> {t("sos.unconscious.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.unconscious.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.unconscious.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.unconscious.step4")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -243,13 +243,13 @@ export default function SOS() {
                   <span className="text-white text-xl font-bold">🩸</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Saignement
+                  {t("sos.bleeding.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Appuyez directement sur la blessure</p>
-                  <p><strong>2.</strong> Utilisez un linge propre</p>
-                  <p><strong>3.</strong> Surélevez le membre si possible</p>
-                  <p><strong>4.</strong> Appelez les secours si c'est important</p>
+                  <p><strong>1.</strong> {t("sos.bleeding.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.bleeding.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.bleeding.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.bleeding.step4")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -260,13 +260,13 @@ export default function SOS() {
                   <span className="text-white text-xl font-bold">⚡</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Électrocution
+                  {t("sos.electrocution.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Ne touchez pas la personne directement</p>
-                  <p><strong>2.</strong> Coupez le courant si possible</p>
-                  <p><strong>3.</strong> Utilisez un objet non conducteur</p>
-                  <p><strong>4.</strong> Appelez immédiatement les secours</p>
+                  <p><strong>1.</strong> {t("sos.electrocution.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.electrocution.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.electrocution.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.electrocution.step4")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -277,13 +277,13 @@ export default function SOS() {
                   <span className="text-white text-xl font-bold">🌡️</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Coup de chaleur
+                  {t("sos.heatstroke.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700 text-sm md:text-base flex-1">
-                  <p><strong>1.</strong> Mettez la personne à l'ombre</p>
-                  <p><strong>2.</strong> Donnez-lui de l'eau à boire</p>
-                  <p><strong>3.</strong> Refroidissez avec de l'eau</p>
-                  <p><strong>4.</strong> Appelez les secours si nécessaire</p>
+                  <p><strong>1.</strong> {t("sos.heatstroke.step1")}</p>
+                  <p><strong>2.</strong> {t("sos.heatstroke.step2")}</p>
+                  <p><strong>3.</strong> {t("sos.heatstroke.step3")}</p>
+                  <p><strong>4.</strong> {t("sos.heatstroke.step4")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -294,14 +294,14 @@ export default function SOS() {
       {/* Safety Tips */}
       <section className="py-12 md:py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4">
-              Conseils de Sécurité
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600">
-              Comment bien utiliser les services d'urgence
-            </p>
-          </div>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4">
+                {t("sos.safety_tips_title")}
+              </h2>
+              <p className="text-lg md:text-xl text-gray-600">
+                {t("sos.safety_tips_desc")}
+              </p>
+            </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 h-full">
@@ -309,23 +309,23 @@ export default function SOS() {
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
                   <Phone className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Avant d'Appeler
-                </h3>
-                <ul className="space-y-2 text-gray-700 text-sm md:text-base flex-1">
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Gardez votre calme et parlez clairement</span>
-                  </li>
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Préparez votre adresse exacte</span>
-                  </li>
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Décrivez précisément la situation</span>
-                  </li>
-                </ul>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
+                    {t("sos.before_call.title")}
+                  </h3>
+                  <ul className="space-y-2 text-gray-700 text-sm md:text-base flex-1">
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.before_call.tip1")}</span>
+                    </li>
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.before_call.tip2")}</span>
+                    </li>
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.before_call.tip3")}</span>
+                    </li>
+                  </ul>
               </CardContent>
             </Card>
 
@@ -334,23 +334,23 @@ export default function SOS() {
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-red-500 rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
                   <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  Informations à Donner
-                </h3>
-                <ul className="space-y-2 text-gray-700 text-sm md:text-base flex-1">
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Votre nom et numéro de téléphone</span>
-                  </li>
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Adresse précise avec points de repère</span>
-                  </li>
-                  <li className="flex items-start space-x-2 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Nature de l'urgence et nombre de personnes impliquées</span>
-                  </li>
-                </ul>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
+                    {t("sos.info_to_give.title")}
+                  </h3>
+                  <ul className="space-y-2 text-gray-700 text-sm md:text-base flex-1">
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.info_to_give.tip1")}</span>
+                    </li>
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.info_to_give.tip2")}</span>
+                    </li>
+                    <li className="flex items-start space-x-2 rtl:space-x-reverse">
+                      <span className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{t("sos.info_to_give.tip3")}</span>
+                    </li>
+                  </ul>
               </CardContent>
             </Card>
           </div>
@@ -358,18 +358,17 @@ export default function SOS() {
       </section>
 
       {/* Important Notice */}
-      <section className="py-8 md:py-12 bg-gradient-to-r from-red-500 to-red-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <AlertTriangle className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6" />
-          <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">
-            Avertissement Important
-          </h2>
-          <p className="text-lg md:text-xl text-red-100 leading-relaxed">
-            Les numéros d'urgence sont réservés aux situations d'urgence réelle. 
-            L'utilisation abusive de ces services est passible d'amendes et de poursuites.
-          </p>
-        </div>
-      </section>
+        <section className="py-8 md:py-12 bg-gradient-to-r from-red-500 to-red-600 text-white">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <AlertTriangle className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6" />
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">
+              {t("sos.notice_title")}
+            </h2>
+            <p className="text-lg md:text-xl text-red-100 leading-relaxed">
+              {t("sos.notice_desc")}
+            </p>
+          </div>
+        </section>
     </div>
   );
 }
