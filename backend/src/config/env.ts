@@ -7,5 +7,10 @@ export const env = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   stripePriceId: process.env.STRIPE_PRICE_ID,
-  currency: process.env.CURRENCY || 'mad'
+  currency: process.env.CURRENCY || 'mad',
+  logLevel: process.env.LOG_LEVEL || 'info',
+  sentryDsn: process.env.SENTRY_DSN || '',
+  redisUrl: process.env.REDIS_URL,
+  healthReadyDelayMs: parseInt(process.env.HEALTH_READY_DELAY_MS || '0', 10),
+  appVersion: process.env.APP_VERSION || '0.0.0'
 };
