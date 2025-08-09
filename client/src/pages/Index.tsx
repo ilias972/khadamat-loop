@@ -76,8 +76,9 @@ export default function Index() {
   ];
 
   const handleSuggestionClick = (service: string) => {
-    // Rediriger vers la page Prestataires avec le filtre de service
-    setLocation(`/prestataires?service=${encodeURIComponent(service)}`);
+    // Rediriger vers la page Prestataires avec le service et la localisation détectée
+    const locationParam = encodeURIComponent(userLocation || "Casablanca");
+    setLocation(`/prestataires?service=${encodeURIComponent(service)}&location=${locationParam}`);
   };
 
   return (
@@ -154,7 +155,10 @@ export default function Index() {
               ].map((service, index) => {
                 const Icon = service.icon;
                 return (
-                <Link key={index} href="/services">
+                <Link
+                  key={index}
+                  href={`/prestataires?service=${encodeURIComponent(service.serviceName)}&location=${encodeURIComponent(userLocation || "Casablanca")}`}
+                >
                   <div className="group cursor-pointer relative">
                     <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
                       
