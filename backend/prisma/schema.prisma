@@ -115,6 +115,10 @@ model Message {
   content    String
   isSystem   Boolean   @default(false)
   isRead     Boolean   @default(false)
+  // Pièces jointes (optionnelles)
+  fileUrl    String?
+  fileType   String?
+  fileSize   Int?
   createdAt  DateTime  @default(now())
 
   booking    Booking?  @relation(fields: [bookingId], references: [id])
@@ -123,4 +127,5 @@ model Message {
 
   @@index([bookingId])
   @@index([senderId, receiverId, createdAt])
+  @@index([receiverId, isRead, createdAt])
 }
