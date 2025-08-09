@@ -9,7 +9,7 @@ export default function JoinProviders() {
     <section className="py-16 bg-gradient-to-br from-orange-500 to-orange-600 text-white w-full">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
-          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 aspect-square bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Users className="w-10 h-10" />
           </div>
           
@@ -27,7 +27,7 @@ export default function JoinProviders() {
           <Link href="/register">
             <button  className="bg-white text-orange-600 hover:bg-orange-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all flex items-center space-x-2 shadow-lg hover:shadow-xl">
               <span>{t("join_providers.become_provider")}</span>
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </button>
           </Link>
           
@@ -40,9 +40,9 @@ export default function JoinProviders() {
         </div>
 
         {/* Avantages */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16">
+          <div className="grid md:grid-cols-3 gap-8 mt-16">
           <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 aspect-square bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">🚀</span>
             </div>
             <h3 className="text-xl font-bold mb-2">{t("join_providers.develop_activity_title")}</h3>
@@ -50,7 +50,7 @@ export default function JoinProviders() {
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 aspect-square bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">✅</span>
             </div>
             <h3 className="text-xl font-bold mb-2">{t("join_providers.gain_trust_title")}</h3>
@@ -58,7 +58,7 @@ export default function JoinProviders() {
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 aspect-square bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">💰</span>
             </div>
             <h3 className="text-xl font-bold mb-2">{t("join_providers.competitive_prices_title")}</h3>

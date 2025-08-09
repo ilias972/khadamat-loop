@@ -34,12 +34,14 @@ export default function ArtisanProfileCard({ provider }: ArtisanProfileCardProps
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 min-h-[320px] flex flex-col">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-3 rtl:space-x-reverse">
-          <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
+          <div className="w-14 h-14 aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg relative overflow-hidden">
             {provider.avatar ? (
               <img
                 src={provider.avatar}
                 alt={provider.name}
-                className="w-14 h-14 rounded-full object-cover"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <User className="w-7 h-7" />

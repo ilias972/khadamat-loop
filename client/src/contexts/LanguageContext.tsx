@@ -47,6 +47,7 @@ const translations = {
     "hero.location": "Casablanca",
     "hero.city_placeholder": "Ville (ex: Casablanca, Rabat...)",
     "hero.provider_placeholder": "Rechercher un prestataire spécifique (optionnel)",
+    "home.find_provider": "Trouver un prestataire",
     
     // Services
     "services.title": "Nos services populaires",
@@ -220,6 +221,8 @@ const translations = {
     "search.available": "Disponible",
     "search.club_pro": "Club Pro",
     "search.date": "Date",
+    "toast.search_launched": "Recherche lancée à {{city}}",
+    "toast.search_launched_generic": "Recherche lancée",
     "calendar.available": "Disponible",
     "calendar.unavailable": "Indisponible",
     "calendar.selected": "Sélectionné",
@@ -355,6 +358,7 @@ const translations = {
     // Testimonials
     "testimonials.title": "Ce que disent nos utilisateurs",
     "testimonials.subtitle": "Des milliers de clients satisfaits nous font confiance",
+    "testimonials.verified_badge": "Client vérifié",
     
     // Newsletter
     "newsletter.title": "Restez informé avec notre newsletter",
@@ -594,6 +598,7 @@ const translations = {
     "hero.location": "الدار البيضاء",
     "hero.city_placeholder": "المدينة (مثل: الدار البيضاء، الرباط...)",
     "hero.provider_placeholder": "البحث عن مقدم خدمة محدد (اختياري)",
+    "home.find_provider": "ابحث عن مقدم خدمة",
     
     // Services
     "services.title": "خدماتنا الشائعة",
@@ -624,6 +629,7 @@ const translations = {
     // Testimonials
     "testimonials.title": "ماذا يقول عملاؤنا",
     "testimonials.subtitle": "آلاف العملاء الراضين يثقون بنا",
+    "testimonials.verified_badge": "عميل موثوق",
     
     // Providers
     "providers.title": "مقدمو خدمات معتمدون",
@@ -742,6 +748,8 @@ const translations = {
     "search.available": "متاح",
     "search.club_pro": "نادي المحترفين",
     "search.date": "تاريخ",
+    "toast.search_launched": "تم بدء البحث في {{city}}",
+    "toast.search_launched_generic": "تم بدء البحث",
     "calendar.available": "متاح",
     "calendar.unavailable": "غير متاح",
     "calendar.selected": "محدد",

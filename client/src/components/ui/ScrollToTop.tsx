@@ -9,7 +9,7 @@ export default function ScrollToTop() {
   // Détecter quand l'utilisateur a scrollé suffisamment
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
+      if (window.pageYOffset > 600) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
@@ -36,15 +36,13 @@ export default function ScrollToTop() {
 
   return (
     <>
-      {isVisible && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-orange-500 to-orange-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
-          aria-label="Remonter en haut de la page"
-        >
-          <ChevronUp className="w-6 h-6" />
-        </button>
-      )}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-4 right-4 z-50 hidden md:flex bg-gradient-to-r from-orange-500 to-orange-600 text-white p-3 rounded-full shadow-lg transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        aria-label="Remonter en haut de la page"
+      >
+        <ChevronUp className="w-6 h-6" />
+      </button>
     </>
   );
 }

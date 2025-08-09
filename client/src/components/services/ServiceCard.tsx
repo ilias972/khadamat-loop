@@ -19,7 +19,7 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-orange-200 transition-all duration-300 hover-scale cursor-pointer"
       onClick={onClick}
     >
-      <div className="w-16 h-16 bg-white border border-gray-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+      <div className="w-16 h-16 aspect-square bg-white border border-gray-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
         {(service.category === 'plomberie' || service.name === 'Plomberie' || service.category === 'electricite' || service.name === 'Électricité') && (
           <ServiceIcon serviceName={service.category || service.name} className="w-12 h-12" />
         )}
@@ -35,7 +35,7 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       
       <div className="text-orange-500 font-semibold hover:text-orange-600 transition-colors flex items-center space-x-2 rtl:space-x-reverse">
         <span>{t("services.explore")}</span>
-        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform" />
       </div>
     </div>
   );

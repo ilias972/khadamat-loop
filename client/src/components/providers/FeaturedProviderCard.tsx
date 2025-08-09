@@ -36,12 +36,14 @@ export default function FeaturedProviderCard({ provider }: FeaturedProviderCardP
       <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-3 mb-3 border border-orange-100">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
+            <div className="w-12 h-12 aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg relative overflow-hidden">
               {provider.avatar ? (
-                <img 
-                  src={provider.avatar} 
+                <img
+                  src={provider.avatar}
                   alt={provider.name}
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <User className="w-6 h-6" />

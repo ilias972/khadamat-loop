@@ -388,7 +388,7 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-orange-200 rounded-full p-3 shadow-lg hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 -ml-4 md:-ml-6"
             aria-label="Précédent"
           >
-            <ChevronLeft aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500" />
+            <ChevronLeft aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500 rtl:rotate-180" />
           </button>
 
           <button
@@ -397,7 +397,7 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-orange-200 rounded-full p-3 shadow-lg hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 -mr-4 md:-mr-6"
             aria-label="Suivant"
           >
-            <ChevronRight aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500" />
+            <ChevronRight aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500 rtl:rotate-180" />
           </button>
 
           {/* Conteneur des prestataires */}
