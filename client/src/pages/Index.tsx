@@ -9,7 +9,9 @@ import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkle
 import { Link, useLocation } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 export default function Index() {
   const { t, language } = useLanguage();
@@ -17,6 +19,8 @@ export default function Index() {
   const { city: userLocation } = useGeolocation();
   const numberFormatter = new Intl.NumberFormat(language);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const { toast } = useToast();
+  const [showTop, setShowTop] = useState(false);
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
@@ -32,7 +36,10 @@ export default function Index() {
   ];
 
   const handleSuggestionClick = (service: string) => {
-    // Rediriger vers la page Prestataires avec le service et la localisation détectée
+    const message = language === "ar"
+      ? `تم إطلاق البحث في ${userLocation || ""}`
+      : `Recherche lancée à ${userLocation || ""}`;
+    toast({ description: message });
     const params = new URLSearchParams({ service });
     if (userLocation) {
       params.set('location', userLocation);
@@ -58,10 +65,17 @@ export default function Index() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-32 md:pt-36 pb-12 md:pb-16 pattern-bg">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-100 pt-32 md:pt-36 pb-12 md:pb-16">
+        <div className="absolute inset-0 hidden md:block pattern-bg opacity-100" aria-hidden="true" />
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 text-center">
           <div className="animate-slide-up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
@@ -77,7 +91,9 @@ export default function Index() {
           </div>
           
           {/* Smart Search Bar avec suggestions */}
-          <SmartSearch showSuggestions={true} />
+          <div id="search">
+            <SmartSearch showSuggestions={true} />
+          </div>
 
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {[
@@ -273,29 +289,14 @@ export default function Index() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
               <div className="flex items-center mb-4">
-                <div className="flex space-x-1" aria-label="Note 5 sur 5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4 leading-relaxed">
-                "{t("testimonials.review1")}"
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
-                </div>
+                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user1")}</div>
-                  <div className="text-sm text-gray-600">{t("testimonials.city1")}</div>
+                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
                 </div>
               </div>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
               <div className="flex items-center mb-4">
                 <div className="flex space-x-1" aria-label="Note 5 sur 5">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -303,21 +304,21 @@ export default function Index() {
                   ))}
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 leading-relaxed">
-                "{t("testimonials.review2")}"
+              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
+                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
+                {t("testimonials.review1")}
+                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
               </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
-                </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
+              <div className="flex items-center mb-4">
+                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user2")}</div>
-                  <div className="text-sm text-gray-600">{t("testimonials.city2")}</div>
+                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
                 </div>
               </div>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
               <div className="flex items-center mb-4">
                 <div className="flex space-x-1" aria-label="Note 5 sur 5">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -325,18 +326,33 @@ export default function Index() {
                   ))}
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 leading-relaxed">
-                "{t("testimonials.review3")}"
+              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
+                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
+                {t("testimonials.review2")}
+                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
               </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
-                </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
+              <div className="flex items-center mb-4">
+                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user3")}</div>
-                  <div className="text-sm text-gray-600">{t("testimonials.city3")}</div>
+                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
                 </div>
               </div>
+              <div className="flex items-center mb-4">
+                <div className="flex space-x-1" aria-label="Note 5 sur 5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+              </div>
+              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
+                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
+                {t("testimonials.review3")}
+                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
+              </p>
             </div>
           </div>
         </div>
@@ -344,6 +360,25 @@ export default function Index() {
 
       {/* Newsletter - Repositionnée après les témoignages */}
       <NewsletterSection />
+
+      {/* Bottom CTA mobile */}
+      <a
+        href="#search"
+        className="md:hidden fixed bottom-4 inset-x-4 z-50"
+      >
+        <Button className="w-full">
+          {language === "ar" ? "البحث عن مقدم خدمة" : "Trouver un prestataire"}
+        </Button>
+      </a>
+
+      {/* Back to top button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-4 right-4 hidden md:flex w-10 h-10 items-center justify-center rounded-full bg-orange-500 text-white transition-opacity ${showTop ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        aria-label={language === "ar" ? "العودة إلى الأعلى" : "Retour en haut"}
+      >
+        ↑
+      </button>
     </div>
   );
 }
