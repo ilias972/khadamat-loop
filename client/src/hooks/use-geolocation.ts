@@ -21,7 +21,7 @@ export function useGeolocation() {
         // Vérifier si la géolocalisation est supportée
         if (!navigator.geolocation) {
           setState({
-            city: "Casablanca",
+            city: "",
             isLoading: false,
             error: "Géolocalisation non supportée",
           });
@@ -44,11 +44,11 @@ export function useGeolocation() {
               }
               
               const data = await response.json();
-              const city = data.address?.city || 
-                          data.address?.town || 
-                          data.address?.village || 
+              const city = data.address?.city ||
+                          data.address?.town ||
+                          data.address?.village ||
                           data.address?.municipality ||
-                          "Casablanca";
+                          "";
               
               setState({
                 city,
@@ -58,7 +58,7 @@ export function useGeolocation() {
             } catch (error) {
               console.error("Erreur géocodage:", error);
               setState({
-                city: "Casablanca",
+                city: "",
                 isLoading: false,
                 error: "Erreur lors de la détection de la ville",
               });
@@ -81,7 +81,7 @@ export function useGeolocation() {
             }
             
             setState({
-              city: "Casablanca",
+              city: "",
               isLoading: false,
               error: errorMessage,
             });
@@ -95,7 +95,7 @@ export function useGeolocation() {
       } catch (error) {
         console.error("Erreur détection localisation:", error);
         setState({
-          city: "Casablanca",
+          city: "",
           isLoading: false,
           error: "Erreur lors de la détection de la localisation",
         });
