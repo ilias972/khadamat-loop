@@ -4,5 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-.env
-dev.db
+**/.env
+**/dev.db
+**/dev.db-journal
