@@ -59,6 +59,19 @@ export default function MesReservations() {
     }
   };
 
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmée":
+        return t("reservations.status.confirmed");
+      case "en attente":
+        return t("reservations.status.pending");
+      case "terminée":
+        return t("reservations.status.completed");
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -68,23 +81,23 @@ export default function MesReservations() {
             {t("profile.menu.reservations")}
           </h1>
           <p className="text-gray-600">
-            Gérez vos réservations et suivez l'état de vos services
+            {t("reservations.manage")}
           </p>
         </div>
 
         {/* Filtres */}
         <div className="mb-6 flex flex-wrap gap-2">
           <Badge variant="secondary" className="cursor-pointer">
-            Toutes
+            {t("reservations.filters.all")}
           </Badge>
           <Badge variant="outline" className="cursor-pointer">
-            En attente
+            {t("reservations.filters.pending")}
           </Badge>
           <Badge variant="outline" className="cursor-pointer">
-            Confirmées
+            {t("reservations.filters.confirmed")}
           </Badge>
           <Badge variant="outline" className="cursor-pointer">
-            Terminées
+            {t("reservations.filters.completed")}
           </Badge>
         </div>
 
@@ -105,7 +118,7 @@ export default function MesReservations() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge className={getStatusColor(reservation.status)}>
-                      {reservation.status}
+                      {translateStatus(reservation.status)}
                     </Badge>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -143,14 +156,14 @@ export default function MesReservations() {
                       onClick={() => setLocation(`/messages/${reservation.provider}`)}
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
-                      Contacter
+                      {t("reservations.contact")}
                     </Button>
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={() => setLocation(`/reservations/${reservation.id}`)}
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      Voir détails
+                      {t("reservations.details")}
                     </Button>
                   </div>
                 </div>
@@ -166,13 +179,13 @@ export default function MesReservations() {
               <Calendar className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Aucune réservation
+              {t("reservations.empty.title")}
             </h3>
             <p className="text-gray-600 mb-4">
-              Vous n'avez pas encore de réservations. Commencez par rechercher un service !
+              {t("reservations.empty.desc")}
             </p>
             <Button>
-              Rechercher un service
+              {t("reservations.empty.cta")}
             </Button>
           </div>
         )}

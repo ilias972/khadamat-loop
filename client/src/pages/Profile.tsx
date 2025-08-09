@@ -102,7 +102,7 @@ export default function Profile() {
               {clientData.isVerified && (
                 <div className="flex items-center space-x-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
                   <CheckCircle className="w-4 h-4" />
-                  <span>Vérifié</span>
+                  <span>{t("profile.verified")}</span>
                 </div>
               )}
             </div>
@@ -113,14 +113,14 @@ export default function Profile() {
         <div className="space-y-8">
           {/* Section Aperçu */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Aperçu</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("profile.overview")}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-bold text-orange-500 mb-2">
                     {clientData.completedMissions}
                   </div>
-                  <div className="text-sm text-gray-600">Missions terminées</div>
+                  <div className="text-sm text-gray-600">{t("profile.completed_missions")}</div>
                 </CardContent>
               </Card>
               
@@ -129,7 +129,7 @@ export default function Profile() {
                   <div className="text-3xl font-bold text-orange-500 mb-2">
                     {clientData.favoriteProviders}
                   </div>
-                  <div className="text-sm text-gray-600">Prestataires favoris</div>
+                  <div className="text-sm text-gray-600">{t("profile.favorite_providers")}</div>
                 </CardContent>
               </Card>
               
@@ -138,7 +138,7 @@ export default function Profile() {
                   <div className="text-3xl font-bold text-orange-500 mb-2">
                     {clientData.rating}
                   </div>
-                  <div className="text-sm text-gray-600">Note moyenne reçue</div>
+                  <div className="text-sm text-gray-600">{t("profile.average_rating")}</div>
                 </CardContent>
               </Card>
             </div>
@@ -146,7 +146,7 @@ export default function Profile() {
 
           {/* Section Missions */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Missions réservées</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("profile.reserved_missions")}</h2>
             <div className="space-y-4">
               {clientData.missions.map((mission) => (
                 <Card key={mission.id}>
@@ -176,7 +176,7 @@ export default function Profile() {
 
           {/* Section Avis */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Avis reçus des prestataires</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("profile.reviews_received")}</h2>
             <div className="space-y-4">
               {clientData.reviews.map((review) => (
                 <Card key={review.id}>

@@ -12,28 +12,28 @@ export default function ClubPro() {
   const features = [
     {
       icon: Shield,
-      title: "Vérification Premium",
-      description: "Badge vérifié et profil certifié pour inspirer confiance",
-      color: "from-blue-500 to-blue-600"
+      titleKey: "club_pro.verification.title",
+      descKey: "club_pro.verification.desc",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: TrendingUp,
-      title: "Visibilité Prioritaire",
-      description: "Apparaissez en premier dans les résultats de recherche",
-      color: "from-green-500 to-green-600"
+      titleKey: "club_pro.visibility.title",
+      descKey: "club_pro.visibility.desc",
+      color: "from-green-500 to-green-600",
     },
     {
       icon: Crown,
-      title: "Support Premium",
-      description: "Assistance dédiée et réponse en moins d'1 heure",
-      color: "from-purple-500 to-purple-600"
+      titleKey: "club_pro.trust.title",
+      descKey: "club_pro.trust.desc",
+      color: "from-purple-500 to-purple-600",
     },
     {
       icon: Zap,
-      title: "Accès Premium",
-      description: "Clients de qualité et projets exclusifs",
-      color: "from-orange-500 to-orange-600"
-    }
+      titleKey: "club_pro.exclusive_access",
+      descKey: "club_pro.large_projects",
+      color: "from-orange-500 to-orange-600",
+    },
   ];
 
   const benefits = [
@@ -120,32 +120,29 @@ export default function ClubPro() {
         <div className="relative max-w-7xl mx-auto px-4 text-center">
           <div className="inline-flex items-center space-x-3 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-white/30">
             <Crown className="w-5 h-5" />
-            <span className="font-bold text-lg">Club Pro</span>
+            <span className="font-bold text-lg">{t("nav.club_pro")}</span>
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Rejoignez l'
-            <span className="bg-gradient-to-r from-yellow-300 to-yellow-100 bg-clip-text text-transparent">
-              Élite
-            </span>
+            {t("club_pro.title")}
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-orange-100 max-w-4xl mx-auto leading-relaxed mb-12">
-            Développez votre activité, gagnez la confiance des clients et accédez à de nouveaux projets avec notre plateforme de confiance
+            {t("club_pro.join_elite")}
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-6 text-orange-100 text-sm mb-12">
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
               <CheckCircle className="w-5 h-5" />
-              <span>Vérification 24h</span>
+              <span>{t("club_pro.verification_24h")}</span>
             </div>
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
               <CheckCircle className="w-5 h-5" />
-              <span>Support prioritaire</span>
+              <span>{t("club_pro.priority_support")}</span>
             </div>
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
               <CheckCircle className="w-5 h-5" />
-              <span>Badge premium</span>
+              <span>{t("club_pro.premium_badge")}</span>
             </div>
           </div>
 
@@ -154,7 +151,7 @@ export default function ClubPro() {
             className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl"
             onClick={() => setLocation("/club-pro/checkout")}
           >
-            Rejoindre le Club Pro
+            {t("club_pro.join_button")}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
@@ -185,10 +182,10 @@ export default function ClubPro() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Pourquoi choisir le Club Pro ?
+              {t("club_pro.why_choose")}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Rejoignez l'élite des prestataires et bénéficiez d'avantages exclusifs
+              {t("club_pro.join_elite")}
             </p>
           </div>
           
@@ -202,10 +199,10 @@ export default function ClubPro() {
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      {feature.title}
+                      {t(feature.titleKey)}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">
-                      {feature.description}
+                      {t(feature.descKey)}
                     </p>
                   </CardContent>
                 </Card>
