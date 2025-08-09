@@ -5,15 +5,15 @@ export interface Suggestion {
 }
 
 export const suggestions: Suggestion[] = [
-  { service: 'Plombier', city: 'Casablanca', displayText: 'Plombier Casablanca' },
+  { service: 'Plomberie', city: 'Casablanca', displayText: 'Plomberie Casablanca' },
   { service: 'Ménage', city: 'Rabat', displayText: 'Ménage Rabat' },
-  { service: 'Électricien', city: 'Marrakech', displayText: 'Électricien Marrakech' },
+  { service: 'Électricité', city: 'Marrakech', displayText: 'Électricité Marrakech' },
   { service: 'Jardinage', city: 'Fès', displayText: 'Jardinage Fès' },
-  { service: 'Peintre', city: 'Tanger', displayText: 'Peintre Tanger' },
-  { service: 'Cuisinière', city: 'Agadir', displayText: 'Cuisinière Agadir' },
-  { service: 'Plombier', city: 'Rabat', displayText: 'Plombier Rabat' },
+  { service: 'Peinture', city: 'Tanger', displayText: 'Peinture Tanger' },
+  { service: 'Menuiserie', city: 'Agadir', displayText: 'Menuiserie Agadir' },
+  { service: 'Plomberie', city: 'Rabat', displayText: 'Plomberie Rabat' },
   { service: 'Ménage', city: 'Casablanca', displayText: 'Ménage Casablanca' },
-  { service: 'Électricien', city: 'Fès', displayText: 'Électricien Fès' },
+  { service: 'Électricité', city: 'Fès', displayText: 'Électricité Fès' },
   { service: 'Jardinage', city: 'Marrakech', displayText: 'Jardinage Marrakech' }
 ];
 

@@ -27,8 +27,26 @@ interface IntelligentSuggestion {
 
 // Listes de services et villes (personnalisables)
 const SERVICES = {
-  fr: ["Plombier", "Électricien", "Jardinier", "Peintre", "Maçon", "Menuisier", "Déboucheur", "Ménage", "Nettoyage"],
-  ar: ["سباك", "كهربائي", "بستاني", "رسام", "بناء", "نجار", "مفتح مجاري", "تنظيف", "تنظيف"]
+  fr: [
+    "Plomberie",
+    "Électricité",
+    "Ménage",
+    "Jardinage",
+    "Peinture",
+    "Menuiserie",
+    "Réparation",
+    "Nettoyage",
+  ],
+  ar: [
+    "السباكة",
+    "الكهرباء",
+    "تنظيف المنازل",
+    "البستنة",
+    "الطلاء",
+    "النجارة",
+    "الإصلاح",
+    "التنظيف",
+  ],
 };
 const CITIES = {
   fr: ["Casablanca", "Rabat", "Fès", "Marrakech", "Agadir", "Tanger", "Oujda"],
@@ -53,6 +71,13 @@ const PROVIDERS = [
   "Abdelkader Benjelloun - Maçon",
   "Hakima El Mansouri - Ménage"
 ];
+
+const normalizeService = (service: string) =>
+  service
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
 
 export default function SmartSearch({ 
   onSearch, 
@@ -107,13 +132,13 @@ export default function SmartSearch({
     // Suggestions populaires toujours visibles
     const popularCombinations = [
       { service: 'Ménage', city: 'Casablanca' },
-      { service: 'Jardinier', city: 'Rabat' },
-      { service: 'Plombier', city: 'Marrakech' },
-      { service: 'Électricien', city: 'Fès' },
-      { service: 'Peintre', city: 'Agadir' },
-      { service: 'Maçon', city: 'Tanger' },
+      { service: 'Jardinage', city: 'Rabat' },
+      { service: 'Plomberie', city: 'Marrakech' },
+      { service: 'Électricité', city: 'Fès' },
+      { service: 'Peinture', city: 'Agadir' },
+      { service: 'Menuiserie', city: 'Tanger' },
       { service: 'Nettoyage', city: 'Casablanca' },
-      { service: 'Menuisier', city: 'Rabat' }
+      { service: 'Réparation', city: 'Rabat' }
     ];
     
     const suggestions: IntelligentSuggestion[] = [];
@@ -189,7 +214,7 @@ export default function SmartSearch({
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (query) params.append('service', query);
+    if (query) params.append('service', normalizeService(query));
     if (location) params.append('location', location);
     if (provider) params.append('provider', provider);
     const searchUrl = `/prestataires${params.toString() ? '?' + params.toString() : ''}`;
@@ -207,7 +232,7 @@ export default function SmartSearch({
       // Rediriger vers la page prestataires avec les filtres pré-remplis
       const params = new URLSearchParams();
       if (suggestion.service) {
-        params.append('service', suggestion.service);
+        params.append('service', normalizeService(suggestion.service));
         setQuery(suggestion.service); // Mettre à jour aussi les champs de recherche
       }
       if (suggestion.city) {
@@ -219,7 +244,7 @@ export default function SmartSearch({
       setQuery(suggestion.service || suggestion.text);
       // Rediriger directement vers prestataires avec le service sélectionné
       const params = new URLSearchParams();
-      params.append('service', suggestion.service || suggestion.text);
+      params.append('service', normalizeService(suggestion.service || suggestion.text));
       setLocation(`/prestataires?${params.toString()}`);
     } else if (suggestion.type === 'city') {
       setLocationState(suggestion.city || suggestion.text);
