@@ -14,7 +14,8 @@
     "test": "jest",
     "test:db": "npm run db:test:reset && npm test",
     "test:watch": "jest --watch",
-    "e2e:clubpro:curl": "node scripts/print-e2e-curls.js"
+    "e2e:clubpro:curl": "node scripts/print-e2e-curls.js",
+    "test:cov": "jest --coverage"
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",

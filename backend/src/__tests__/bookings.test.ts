@@ -9,7 +9,7 @@ function dayPlus(n: number) {
 }
 
 describe('Booking flow', () => {
-  it('client create pending -> provider confirm', async () => {
+  it('client create -> provider confirm -> propose day -> client accept', async () => {
     const pEmail = `p${Date.now()}@test.io`;
     const cEmail = `c${Date.now()}@test.io`;
 
@@ -56,6 +56,18 @@ describe('Booking flow', () => {
     await request(app)
       .put(`/api/bookings/${bookingId}/confirm`)
       .set('Authorization', `Bearer ${pToken}`)
+      .expect(200);
+
+    const newDay = dayPlus(3);
+    await request(app)
+      .put(`/api/bookings/${bookingId}/propose-day`)
+      .set('Authorization', `Bearer ${pToken}`)
+      .send({ proposedDay: newDay })
+      .expect(200);
+
+    await request(app)
+      .put(`/api/bookings/${bookingId}/accept-reschedule`)
+      .set('Authorization', `Bearer ${cToken}`)
       .expect(200);
   });
 });
