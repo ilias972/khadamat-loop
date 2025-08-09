@@ -10,7 +10,9 @@
     "db:migrate": "echo \"db migrate not implemented\"",
     "db:seed": "echo \"db seed not implemented\"",
     "db:generate": "npx prisma generate",
+    "db:test:reset": "prisma db push --force-reset --accept-data-loss",
     "test": "jest",
+    "test:db": "npm run db:test:reset && npm test",
     "test:watch": "jest --watch",
     "e2e:clubpro:curl": "node scripts/print-e2e-curls.js"
   },
