@@ -5,11 +5,13 @@ type Language = "fr" | "ar";
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
-  t: (key: string) => string;
+  t: (key: string, options?: { count?: number; formattedCount?: string }) => string;
   isRTL: boolean;
 }
 
-const translations = {
+type TranslationDict = Record<string, string | Record<string, string>>;
+
+const translations: Record<Language, TranslationDict> = {
   fr: {
     // Navigation
     "nav.home": "Accueil",
@@ -63,16 +65,20 @@ const translations = {
     "services.installation": "Installation",
     "services.deep_cleaning": "Nettoyage approfondi",
     "services.moving": "Déménagement",
+    "services.providers_count": {
+      one: "{{count}} prestataire",
+      other: "{{count}} prestataires"
+    },
     
     // How it works
     "how_it_works.title": "Comment ça marche ?",
     "how_it_works.subtitle": "Trouvez le bon prestataire en 3 étapes simples",
     "how_it_works.step1": "1. Recherchez",
-    "how_it_works.step1_desc": "Décrivez votre besoin et votre localisation",
+    "how_it_works.step1_desc": "Décrivez votre besoin. Indiquez votre localisation. On s'occupe du reste.",
     "how_it_works.step2": "2. Comparez",
-    "how_it_works.step2_desc": "Consultez les profils et avis des prestataires",
+    "how_it_works.step2_desc": "Comparez les profils. Lisez les avis. Choisissez le bon prestataire.",
     "how_it_works.step3": "3. Contactez",
-    "how_it_works.step3_desc": "Échangez directement et planifiez votre service",
+    "how_it_works.step3_desc": "Contactez directement. Discutez des détails. Planifiez votre service.",
     
     // Providers
     "providers.title": "Prestataires Vérifiés",
@@ -610,16 +616,23 @@ const translations = {
     "services.installation": "التركيب",
     "services.deep_cleaning": "التنظيف العميق",
     "services.moving": "النقل",
+    "services.providers_count": {
+      one: "{{count}} مقدم خدمة",
+      two: "{{count}} مقدمي خدمة",
+      few: "{{count}} مقدمي خدمة",
+      many: "{{count}} مقدم خدمة",
+      other: "{{count}} مقدمي خدمة"
+    },
     
     // How it works
     "how_it_works.title": "كيف يعمل؟",
     "how_it_works.subtitle": "اعثر على مقدم الخدمة المناسب في 3 خطوات بسيطة",
     "how_it_works.step1": "1. ابحث",
-    "how_it_works.step1_desc": "صف احتياجك وموقعك",
+    "how_it_works.step1_desc": "صف ما تحتاجه. اذكر موقعك. وسنقوم بالباقي.",
     "how_it_works.step2": "2. قارن",
-    "how_it_works.step2_desc": "راجع ملفات تعريف مقدمي الخدمات وآرائهم",
+    "how_it_works.step2_desc": "قارن الملفات. اقرأ الآراء. اختر الأنسب.",
     "how_it_works.step3": "3. تواصل",
-    "how_it_works.step3_desc": "تواصل مباشرة ونسق خدمتك",
+    "how_it_works.step3_desc": "تواصل مباشرة. اتفق على التفاصيل. احجز خدمتك.",
     
     // Testimonials
     "testimonials.title": "ماذا يقول عملاؤنا",
@@ -1134,8 +1147,25 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguage(prev => prev === "fr" ? "ar" : "fr");
   };
 
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
+  const t = (key: string, options?: { count?: number; formattedCount?: string }): string => {
+    const translation = translations[language][key];
+    if (!translation) return key;
+    if (typeof translation === "object" && options?.count !== undefined) {
+      const pluralForm = new Intl.PluralRules(language).select(options.count);
+      const template = translation[pluralForm] || translation.other;
+      const countStr =
+        options.formattedCount ?? new Intl.NumberFormat(language).format(options.count);
+      return template.replace("{{count}}", countStr);
+    }
+    if (typeof translation === "string") {
+      if (options?.count !== undefined) {
+        const countStr =
+          options.formattedCount ?? new Intl.NumberFormat(language).format(options.count);
+        return translation.replace("{{count}}", countStr);
+      }
+      return translation;
+    }
+    return key;
   };
 
   const isRTL = language === "ar";

@@ -9,11 +9,14 @@ import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkle
 import { Link, useLocation } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
+import { useRef, useEffect } from "react";
 
 export default function Index() {
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
   const { city: userLocation } = useGeolocation();
+  const numberFormatter = new Intl.NumberFormat(language);
+  const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
@@ -37,6 +40,24 @@ export default function Index() {
     setLocation(`/prestataires?${params.toString()}`);
   };
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("opacity-100", "translate-y-0");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    stepsRef.current.forEach(el => el && observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -57,7 +78,28 @@ export default function Index() {
           
           {/* Smart Search Bar avec suggestions */}
           <SmartSearch showSuggestions={true} />
-          
+
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {[
+              { key: "services.plumbing", service: "plomberie" },
+              { key: "services.electricity", service: "electricite" },
+              { key: "services.cleaning", service: "nettoyage" },
+              { key: "services.gardening", service: "jardinage" },
+            ].map(({ key, service }) => (
+              <button
+                key={service}
+                onClick={() => handleSuggestionClick(service)}
+                className="inline-flex items-center rounded-full border px-4 h-10 text-sm bg-white hover:bg-orange-50 hover:border-orange-300 transition-colors"
+              >
+                {t(key)}
+              </button>
+            ))}
+            {userLocation && (
+              <span className="inline-flex items-center rounded-full border px-4 h-10 text-sm bg-white">
+                📍 {userLocation}
+              </span>
+            )}
+          </div>
         </div>
       </section>
 
@@ -109,30 +151,29 @@ export default function Index() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
                 {[
-                  { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 prestataires', popular: true, icon: Droplets },
-                  { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 prestataires', popular: true, icon: Sparkles },
-                  { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 prestataires', popular: false, icon: Lightbulb },
-                  { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 prestataires', popular: false, icon: Wrench },
-                  { nameKey: 'services.painting', serviceName: 'peinture', count: '92 prestataires', popular: true, icon: Palette },
-                  { nameKey: 'services.repair', serviceName: 'reparation', count: '78 prestataires', popular: false, icon: Hammer },
+                  { nameKey: 'services.plumbing', serviceName: 'plomberie', count: 156, popular: true, icon: Droplets },
+                  { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: 89, popular: true, icon: Sparkles },
+                  { nameKey: 'services.electricity', serviceName: 'electricite', count: 134, popular: false, icon: Lightbulb },
+                  { nameKey: 'services.gardening', serviceName: 'jardinage', count: 67, popular: false, icon: Wrench },
+                  { nameKey: 'services.painting', serviceName: 'peinture', count: 92, popular: true, icon: Palette },
+                  { nameKey: 'services.repair', serviceName: 'reparation', count: 78, popular: false, icon: Hammer },
                 ].map((service, index) => {
                   const Icon = service.icon;
                   return (
                   <Link
                     key={index}
                     href={`/prestataires?service=${encodeURIComponent(service.serviceName)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
+                    className="group block cursor-pointer relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl md:rounded-2xl"
                   >
-                    <div className="group cursor-pointer relative">
-                      <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-[transform,box-shadow,border-color] duration-300 transform hover:-translate-y-1 shadow-md service-card-pulse">
 
-                        <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
                         <Icon aria-hidden="true" focusable="false" className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
-                        </div>
-                        <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
-                          {t(service.nameKey)}
-                        </h3>
-                        <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
                       </div>
+                      <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                        {t(service.nameKey)}
+                      </h3>
+                      <p className="text-xs md:text-sm text-gray-500">{t("services.providers_count", { count: service.count, formattedCount: numberFormatter.format(service.count) })}</p>
                     </div>
                   </Link>
                   );
@@ -165,7 +206,10 @@ export default function Index() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-            <div className="text-center">
+            <div
+              ref={el => (stepsRef.current[0] = el)}
+              className="text-center opacity-0 translate-y-2 transition-all duration-200 ease-out"
+            >
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
@@ -176,8 +220,11 @@ export default function Index() {
                 {t("how_it_works.step1_desc")}
               </p>
             </div>
-            
-            <div className="text-center">
+
+            <div
+              ref={el => (stepsRef.current[1] = el)}
+              className="text-center opacity-0 translate-y-2 transition-all duration-200 ease-out"
+            >
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <User aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
@@ -188,8 +235,11 @@ export default function Index() {
                 {t("how_it_works.step2_desc")}
               </p>
             </div>
-            
-            <div className="text-center">
+
+            <div
+              ref={el => (stepsRef.current[2] = el)}
+              className="text-center opacity-0 translate-y-2 transition-all duration-200 ease-out"
+            >
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <MessageCircle aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
