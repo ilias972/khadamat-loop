@@ -15,7 +15,8 @@
     "test:db": "npm run db:test:reset && npm test",
     "test:watch": "jest --watch",
     "e2e:clubpro:curl": "node scripts/print-e2e-curls.js",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "admin:create": "ts-node scripts/create-admin.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",
@@ -28,7 +29,8 @@
     "stripe": "^16.7.0",
     "winston": "^3.10.0",
     "redis": "^4.6.13",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
@@ -37,6 +39,7 @@
     "ts-jest": "^29.1.1",
     "@types/jest": "^29.5.14",
     "supertest": "^6.3.4",
-    "@types/supertest": "^2.0.16"
+    "@types/supertest": "^2.0.16",
+    "ts-node": "^10.9.2"
   }
 }
