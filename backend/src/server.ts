@@ -17,6 +17,9 @@ import notificationsRouter from './routes/notifications';
 import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import statsRouter from './routes/stats';
+import kycRoutes from './routes/kyc';
+import piiRoutes from './routes/pii';
+import { kycWebhook } from './controllers/kycWebhookController';
 import { authenticate, requireRole } from './middlewares/auth';
 import { logger } from './config/logger';
 import { maintenanceGuard } from './middlewares/maintenance';
@@ -36,6 +39,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
 
 app.use(express.json());
 app.use(
@@ -95,6 +99,8 @@ app.use('/api/messages', messagesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/favorites', favoritesRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/kyc', kycRoutes);
+app.use('/api/pii', piiRoutes);
 app.use('/api/sms', smsRouter);
 app.use('/api/admin', authenticate, requireRole('admin'), adminRouter);
 app.use('/api/stats', statsRouter);
