@@ -4,5 +4,8 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL || '',
   jwtSecret: process.env.JWT_SECRET || '',
   stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '',
-  stripeSecretKey: process.env.STRIPE_SECRET_KEY || ''
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  stripePriceId: process.env.STRIPE_PRICE_ID,
+  currency: process.env.CURRENCY || 'mad'
 };

@@ -5,8 +5,12 @@ import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
 import authRoutes from './routes/auth';
 import subscriptionRoutes from './routes/subscriptions';
+import paymentRoutes from './routes/payments';
+import { handleStripeWebhook } from './controllers/paymentController';
 
 const app = express();
+
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use(express.json());
 app.use(helmet());
@@ -18,6 +22,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use(errorHandler);
 
