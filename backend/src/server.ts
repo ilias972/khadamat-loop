@@ -4,6 +4,7 @@ import cors from 'cors';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
 import authRoutes from './routes/auth';
+import subscriptionRoutes from './routes/subscriptions';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 app.use(errorHandler);
 
