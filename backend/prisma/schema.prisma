@@ -23,6 +23,7 @@ model User {
   providerBookings Booking[] @relation("providerBookings")
   sentMessages     Message[] @relation("MessageSender")
   receivedMessages Message[] @relation("MessageReceiver")
+  reviews          Review[]
 }
 
 model Subscription {
@@ -101,6 +102,7 @@ model Booking {
   service  Service @relation(fields: [serviceId], references: [id])
 
   messages Message[]
+  reviews  Review[]
 
   @@index([clientId, status], map: "idx_booking_client_status")
   @@index([providerId, status], map: "idx_booking_provider_status")
@@ -128,4 +130,20 @@ model Message {
   @@index([bookingId])
   @@index([senderId, receiverId, createdAt])
   @@index([receiverId, isRead, createdAt])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  bookingId  Int
+  userId     Int
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([bookingId, userId], map: "uniq_review_booking_user")
+  @@index([userId])
 }
