@@ -233,6 +233,13 @@ const translations = {
     "profile.menu.verification_desc": "Vérifiez votre identité",
     "profile.menu.payments": "Paiements",
     "profile.menu.payments_desc": "Moyens de paiement et facturation",
+
+    "profile.overview": "Aperçu",
+    "profile.completed_missions": "Missions terminées",
+    "profile.favorite_providers": "Prestataires favoris",
+    "profile.average_rating": "Note moyenne reçue",
+    "profile.reserved_missions": "Missions réservées",
+    "profile.reviews_received": "Avis reçus des prestataires",
     
     // Common
     "common.configure": "Configurer",
@@ -386,6 +393,57 @@ const translations = {
     "provider_profile.mission_placeholder": "Décrivez votre projet...",
     "provider_profile.cancel": "Annuler",
     "provider_profile.confirm": "Confirmer",
+
+    // Reservations page
+    "reservations.manage": "Gérez vos réservations et suivez l'état de vos services",
+    "reservations.filters.all": "Toutes",
+    "reservations.filters.pending": "En attente",
+    "reservations.filters.confirmed": "Confirmées",
+    "reservations.filters.completed": "Terminées",
+    "reservations.status.confirmed": "confirmée",
+    "reservations.status.pending": "en attente",
+    "reservations.status.completed": "terminée",
+    "reservations.contact": "Contacter",
+    "reservations.details": "Voir détails",
+    "reservations.empty.title": "Aucune réservation",
+    "reservations.empty.desc": "Vous n'avez pas encore de réservations. Commencez par rechercher un service !",
+    "reservations.empty.cta": "Rechercher un service",
+
+    // Favorites page
+    "favorites.description": "Vos prestataires préférés et les services que vous aimez",
+    "favorites.stats.total": "Total favoris",
+    "favorites.stats.online": "En ligne",
+    "favorites.stats.club_pro": "Club Pro",
+    "favorites.message": "Message",
+    "favorites.call": "Appeler",
+    "favorites.empty.title": "Aucun favori",
+    "favorites.empty.desc": "Vous n'avez pas encore ajouté de prestataires à vos favoris. Commencez par explorer nos services !",
+    "favorites.empty.cta": "Découvrir des prestataires",
+
+    // Messages page
+    "messages.search_placeholder": "Rechercher...",
+    "messages.just_now": "À l'instant",
+
+    // Settings page
+    "settings.title": "Réglages",
+    "settings.description": "Gérez vos préférences et paramètres de compte",
+    "settings.profile_section": "Profil et informations",
+    "settings.profile.personal": "Informations personnelles",
+    "settings.profile.avatar": "Avatar et photo",
+    "settings.profile.language": "Préférences de langue",
+    "settings.security_section": "Sécurité et accès",
+    "settings.security.password": "Mot de passe",
+    "settings.security.2fa": "Authentification à deux facteurs",
+    "settings.security.sessions": "Sessions actives",
+    "settings.notifications_section": "Notifications",
+    "settings.notifications.manage": "Paramètres de notifications",
+    "settings.notifications.email": "Email",
+    "settings.notifications.sms": "SMS",
+    "settings.notifications.push": "Notifications push",
+    "settings.theme.dark_mode": "Mode sombre",
+    "settings.actions.logout": "Se déconnecter",
+    "settings.actions.delete_account": "Supprimer le compte",
+    "settings.actions.export_data": "Exporter les données",
   },
   ar: {
     // Navigation
@@ -614,7 +672,14 @@ const translations = {
     "profile.menu.verification_desc": "تحقق من هويتك",
     "profile.menu.payments": "المدفوعات",
     "profile.menu.payments_desc": "وسائل الدفع والفواتير",
-    
+
+    "profile.overview": "نظرة عامة",
+    "profile.completed_missions": "المهام المنجزة",
+    "profile.favorite_providers": "المقدّمون المفضلون",
+    "profile.average_rating": "متوسط التقييم",
+    "profile.reserved_missions": "المهام المحجوزة",
+    "profile.reviews_received": "التقييمات المستلمة من مقدمي الخدمات",
+
     // Common
     "common.configure": "تكوين",
     "common.search": "بحث",
@@ -763,6 +828,57 @@ const translations = {
     "provider_profile.mission_placeholder": "صف مشروعك...",
     "provider_profile.cancel": "إلغاء",
     "provider_profile.confirm": "تأكيد",
+
+    // Reservations page
+    "reservations.manage": "قم بإدارة حجوزاتك وتتبع حالة خدماتك",
+    "reservations.filters.all": "الكل",
+    "reservations.filters.pending": "قيد الانتظار",
+    "reservations.filters.confirmed": "مؤكدة",
+    "reservations.filters.completed": "منتهية",
+    "reservations.status.confirmed": "مؤكدة",
+    "reservations.status.pending": "قيد الانتظار",
+    "reservations.status.completed": "منتهية",
+    "reservations.contact": "اتصل",
+    "reservations.details": "عرض التفاصيل",
+    "reservations.empty.title": "لا توجد حجوزات",
+    "reservations.empty.desc": "ليس لديك أي حجوزات بعد. ابدأ بالبحث عن خدمة!",
+    "reservations.empty.cta": "ابحث عن خدمة",
+
+    // Favorites page
+    "favorites.description": "مقدمو الخدمات المفضلون لديك والخدمات التي تحبها",
+    "favorites.stats.total": "إجمالي المفضلة",
+    "favorites.stats.online": "متصل",
+    "favorites.stats.club_pro": "نادي المحترفين",
+    "favorites.message": "رسالة",
+    "favorites.call": "اتصال",
+    "favorites.empty.title": "لا توجد مفضلة",
+    "favorites.empty.desc": "لم تقم بإضافة أي مقدمي خدمات إلى المفضلة بعد. ابدأ باستكشاف خدماتنا!",
+    "favorites.empty.cta": "اكتشف مقدمي الخدمات",
+
+    // Messages page
+    "messages.search_placeholder": "ابحث...",
+    "messages.just_now": "الآن",
+
+    // Settings page
+    "settings.title": "الإعدادات",
+    "settings.description": "إدارة تفضيلاتك وإعدادات الحساب",
+    "settings.profile_section": "الملف الشخصي والمعلومات",
+    "settings.profile.personal": "المعلومات الشخصية",
+    "settings.profile.avatar": "الصورة الرمزية والصورة",
+    "settings.profile.language": "تفضيلات اللغة",
+    "settings.security_section": "الأمان والوصول",
+    "settings.security.password": "كلمة المرور",
+    "settings.security.2fa": "المصادقة الثنائية",
+    "settings.security.sessions": "الجلسات النشطة",
+    "settings.notifications_section": "الإشعارات",
+    "settings.notifications.manage": "إعدادات الإشعارات",
+    "settings.notifications.email": "البريد الإلكتروني",
+    "settings.notifications.sms": "رسائل SMS",
+    "settings.notifications.push": "إشعارات دفع",
+    "settings.theme.dark_mode": "الوضع الداكن",
+    "settings.actions.logout": "تسجيل الخروج",
+    "settings.actions.delete_account": "حذف الحساب",
+    "settings.actions.export_data": "تصدير البيانات",
   },
 };
 

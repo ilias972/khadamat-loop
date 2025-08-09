@@ -54,10 +54,10 @@ export default function Reglages() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Réglages
+            {t("settings.title")}
           </h1>
           <p className="text-gray-600">
-            Gérez vos préférences et paramètres de compte
+            {t("settings.description")}
           </p>
         </div>
 
@@ -67,49 +67,49 @@ export default function Reglages() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <User className="w-5 h-5 text-orange-600" />
-                <span>Profil et informations</span>
+                <span>{t("settings.profile_section")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Informations personnelles</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.profile.personal")}</h3>
                   <p className="text-sm text-gray-500">Nom, email, téléphone, localisation</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profile/info")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Modifier
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Avatar et photo</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.profile.avatar")}</h3>
                   <p className="text-sm text-gray-500">Changer votre photo de profil</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profile/info")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Modifier
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <h3 className="font-medium text-gray-900">Préférences de langue</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.profile.language")}</h3>
                   <p className="text-sm text-gray-500">Français / العربية</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={toggleLanguage}
                   className="text-orange-500 hover:text-orange-600"
@@ -126,54 +126,54 @@ export default function Reglages() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="w-5 h-5 text-orange-600" />
-                <span>Sécurité et accès</span>
+                <span>{t("settings.security_section")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Mot de passe</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.security.password")}</h3>
                   <p className="text-sm text-gray-500">Changer votre mot de passe</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profil/client/securite")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Modifier
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Authentification à deux facteurs</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.security.2fa")}</h3>
                   <p className="text-sm text-gray-500">Sécurisez votre compte</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profil/client/securite")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Configurer
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <h3 className="font-medium text-gray-900">Sessions actives</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.security.sessions")}</h3>
                   <p className="text-sm text-gray-500">Gérer vos connexions</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profil/client/securite")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Voir
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
@@ -185,29 +185,29 @@ export default function Reglages() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Bell className="w-5 h-5 text-orange-600" />
-                <span>Notifications</span>
+                <span>{t("settings.notifications_section")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Paramètres de notifications</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.notifications.manage")}</h3>
                   <p className="text-sm text-gray-500">Email, SMS, push notifications</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setLocation("/profil/client/notifications")}
                   className="text-orange-500 hover:text-orange-600"
                 >
-                  Configurer
+                  {t("common.configure")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <h3 className="font-medium text-gray-900">Mode sombre</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.theme.dark_mode")}</h3>
                   <p className="text-sm text-gray-500">Activer le thème sombre</p>
                 </div>
                 <Switch
@@ -309,55 +309,55 @@ export default function Reglages() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Settings className="w-5 h-5 text-orange-600" />
-                <span>Gestion du compte</span>
+                <span>{t("profile.account_settings")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Exporter mes données</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.actions.export_data")}</h3>
                   <p className="text-sm text-gray-500">Télécharger vos informations</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={handleExportData}
                   className="text-orange-500 hover:text-orange-600"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Exporter
+                  {t("settings.actions.export_data")}
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-medium text-gray-900">Se déconnecter</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.actions.logout")}</h3>
                   <p className="text-sm text-gray-500">Fermer votre session</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={handleLogout}
                   className="text-red-500 hover:text-red-600"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Déconnexion
+                  {t("settings.actions.logout")}
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <h3 className="font-medium text-gray-900">Supprimer mon compte</h3>
+                  <h3 className="font-medium text-gray-900">{t("settings.actions.delete_account")}</h3>
                   <p className="text-sm text-gray-500">Action irréversible</p>
                 </div>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={handleDeleteAccount}
                   className="text-red-500 hover:text-red-600"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Supprimer
+                  {t("settings.actions.delete_account")}
                 </Button>
               </div>
             </CardContent>

@@ -176,7 +176,7 @@ export default function Messages() {
 
     if (days > 0) return `${days}j`;
     if (hours > 0) return `${hours}h`;
-    return "À l'instant";
+    return t("messages.just_now");
   };
 
   const filteredConversations = conversations.filter(conv =>
@@ -196,7 +196,7 @@ export default function Messages() {
             {/* Header */}
             <div className="p-4 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-bold text-gray-900">Messages</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t("messages.title")}</h1>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="p-2">
@@ -226,7 +226,7 @@ export default function Messages() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Rechercher une conversation..."
+                  placeholder={t("messages.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-300"
@@ -467,7 +467,7 @@ export default function Messages() {
                     <div className="flex-1 relative">
                       <input
                         type="text"
-                        placeholder="Tapez votre message..."
+                        placeholder={t("chat.input_placeholder")}
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}

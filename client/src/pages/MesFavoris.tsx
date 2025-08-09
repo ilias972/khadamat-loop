@@ -61,7 +61,7 @@ export default function MesFavoris() {
             {t("profile.menu.favorites")}
           </h1>
           <p className="text-gray-600">
-            Vos prestataires préférés et les services que vous aimez
+            {t("favorites.description")}
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function MesFavoris() {
                   <Heart className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total favoris</p>
+                  <p className="text-sm text-gray-600">{t("favorites.stats.total")}</p>
                   <p className="text-2xl font-bold text-gray-900">{favorites.length}</p>
                 </div>
               </div>
@@ -88,7 +88,7 @@ export default function MesFavoris() {
                   <User className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">En ligne</p>
+                  <p className="text-sm text-gray-600">{t("favorites.stats.online")}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {favorites.filter(f => f.isOnline).length}
                   </p>
@@ -104,7 +104,7 @@ export default function MesFavoris() {
                   <Crown className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Club Pro</p>
+                  <p className="text-sm text-gray-600">{t("favorites.stats.club_pro")}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {favorites.filter(f => f.isClubPro).length}
                   </p>
@@ -176,15 +176,15 @@ export default function MesFavoris() {
                       onClick={() => setLocation(`/messages/${favorite.id}`)}
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
-                      Message
+                      {t("favorites.message")}
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="flex-1"
                       onClick={() => window.open(`tel:${favorite.phone}`)}
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                      Appeler
+                      {t("favorites.call")}
                     </Button>
                   </div>
                 </div>
@@ -200,14 +200,13 @@ export default function MesFavoris() {
               <Heart className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Aucun favori
+              {t("favorites.empty.title")}
             </h3>
             <p className="text-gray-600 mb-4">
-              Vous n'avez pas encore ajouté de prestataires à vos favoris. 
-              Commencez par explorer nos services !
+              {t("favorites.empty.desc")}
             </p>
             <Button>
-              Découvrir des prestataires
+              {t("favorites.empty.cta")}
             </Button>
           </div>
         )}
