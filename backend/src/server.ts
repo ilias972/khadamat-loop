@@ -9,6 +9,7 @@ import paymentRoutes from './routes/payments';
 import { handleStripeWebhook } from './controllers/paymentController';
 import providersRouter from './routes/providers';
 import servicesRouter from './routes/services';
+import bookingsRouter from './routes/bookings';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/providers', providersRouter);
 app.use('/api/services', servicesRouter);
+app.use('/api/bookings', bookingsRouter);
 
 app.use(errorHandler);
 
