@@ -171,18 +171,54 @@ export default function Prestataires() {
   const [selectedDate, setSelectedDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
+  const serviceDisplayMap: Record<string, string> = {
+    plomberie: "Plomberie",
+    electricite: "Électricité",
+    nettoyage: "Nettoyage",
+    menage: "Ménage",
+    jardinage: "Jardinage",
+    peinture: "Peinture",
+    reparation: "Réparation",
+    menuiserie: "Menuiserie",
+  };
+
+  const services = [
+    "Plomberie",
+    "Électricité",
+    "Ménage",
+    "Jardinage",
+    "Peinture",
+    "Menuisier",
+    "Nettoyage",
+    "Jardinier",
+  ];
+
+  const cities = [
+    "Casablanca",
+    "Rabat",
+    "Marrakech",
+    "Fès",
+    "Agadir",
+    "Tanger",
+    "Autre",
+  ];
+
+  const ratings = [4.5, 4.0, 3.5, 3.0];
+
   // Récupérer les filtres depuis l'URL si présents
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const serviceFilter = urlParams.get('service');
     const locationFilter = urlParams.get('location');
     const providerFilter = urlParams.get('provider');
-    
+
     if (serviceFilter) {
-      setSelectedService(decodeURIComponent(serviceFilter));
+      const decodedService = decodeURIComponent(serviceFilter).toLowerCase();
+      setSelectedService(serviceDisplayMap[decodedService] || decodedService);
     }
     if (locationFilter) {
-      setSelectedCity(decodeURIComponent(locationFilter));
+      const decodedCity = decodeURIComponent(locationFilter);
+      setSelectedCity(cities.includes(decodedCity) ? decodedCity : "Autre");
     }
     if (providerFilter) {
       setSearchTerm(decodeURIComponent(providerFilter));
@@ -271,7 +307,9 @@ export default function Prestataires() {
       const matchesService = selectedService === "" || 
         provider.specialties?.some(specialty => specialty.toLowerCase().includes(selectedService.toLowerCase()));
       
-      const matchesCity = selectedCity === "" || 
+      const matchesCity =
+        selectedCity === "" ||
+        selectedCity === "Autre" ||
         provider.city.toLowerCase().includes(selectedCity.toLowerCase());
       
       const matchesRating = selectedRating === null || 
@@ -281,12 +319,11 @@ export default function Prestataires() {
     });
 
     // Appliquer le tri selon la logique Club Pro
-    return getFilteredAndSortedProviders(filtered, selectedCity);
+    return getFilteredAndSortedProviders(
+      filtered,
+      selectedCity === "Autre" ? undefined : selectedCity
+    );
   }, [searchTerm, selectedService, selectedCity, selectedRating]);
-
-  const services = ["Plomberie", "Électricité", "Ménage", "Jardinage", "Peinture", "Menuisier", "Nettoyage", "Jardinier"];
-  const cities = ["Casablanca", "Rabat", "Marrakech", "Fès", "Agadir", "Tanger"];
-  const ratings = [4.5, 4.0, 3.5, 3.0];
 
   return (
     <div className="min-h-screen pt-20">
