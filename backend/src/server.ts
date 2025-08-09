@@ -12,6 +12,7 @@ import servicesRouter from './routes/services';
 import bookingsRouter from './routes/bookings';
 import messagesRouter from './routes/messages';
 import reviewsRouter from './routes/reviews';
+import favoritesRouter from './routes/favorites';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/favorites', favoritesRouter);
 
 app.use(errorHandler);
 
