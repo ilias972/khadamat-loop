@@ -11,6 +11,7 @@ import providersRouter from './routes/providers';
 import servicesRouter from './routes/services';
 import bookingsRouter from './routes/bookings';
 import messagesRouter from './routes/messages';
+import reviewsRouter from './routes/reviews';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/providers', providersRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/messages', messagesRouter);
+app.use('/api/reviews', reviewsRouter);
 
 app.use(errorHandler);
 
