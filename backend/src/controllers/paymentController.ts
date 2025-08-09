@@ -4,6 +4,8 @@ import { PrismaClient } from '@prisma/client';
 import { stripe } from '../config/stripe';
 import { env } from '../config/env';
 import { addMonths } from '../utils/date';
+import { createNotification } from '../services/notifications';
+import { sendSubscriptionSMS } from '../services/smsEvents';
 
 const prisma = new PrismaClient();
 
@@ -91,6 +93,8 @@ export async function handleStripeWebhook(req: Request, res: Response, _next: Ne
             stripeId: session.id
           }
         });
+        createNotification(subscription.userId, 'SUBSCRIPTION_ACTIVATED', 'Abonnement Club Pro activé', 'Votre abonnement est maintenant actif.').catch((err) => console.error(err));
+        sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED').catch((err) => console.error(err));
       }
     }
   }

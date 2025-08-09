@@ -125,7 +125,7 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
 
     const message = await prisma.message.create({ data });
 
-    await notifyUser(receiverId, 'MESSAGE_RECEIVED', 'Nouveau message', '...');
+    notifyUser(receiverId, 'MESSAGE_RECEIVED', 'Nouveau message', '...');
 
     res.status(201).json({ success: true, data: { message } });
   } catch (err) {

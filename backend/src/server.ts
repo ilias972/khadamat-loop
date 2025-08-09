@@ -13,6 +13,8 @@ import bookingsRouter from './routes/bookings';
 import messagesRouter from './routes/messages';
 import reviewsRouter from './routes/reviews';
 import favoritesRouter from './routes/favorites';
+import notificationsRouter from './routes/notifications';
+import smsRouter from './routes/sms';
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.use('/api/bookings', bookingsRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/sms', smsRouter);
 
 app.use(errorHandler);
 
