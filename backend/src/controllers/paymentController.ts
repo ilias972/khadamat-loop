@@ -35,13 +35,16 @@ export async function createClubProCheckout(req: Request, res: Response, next: N
         cancel_url: `${env.frontendUrl}/club-pro?status=cancel`
       });
     } else {
+      const currency = process.env.CURRENCY ?? 'mad';
+      const amount = Number(process.env.CLUB_PRO_AMOUNT ?? 5000);
+
       session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: [{
           price_data: {
-            currency: process.env.CURRENCY ?? 'mad',
+            currency,
             product_data: { name: 'Abonnement Club Pro (12 mois)' },
-            unit_amount: 5000
+            unit_amount: amount
           },
           quantity: 1
         }],
