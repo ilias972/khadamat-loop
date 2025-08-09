@@ -460,7 +460,11 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
         {/* Bouton voir plus */}
         <div className="text-center mt-12">
           <Link href="/prestataires">
-            <Button asChild variant="outline" className="h-11 px-5 rounded-xl">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 px-5 rounded-xl border-orange-500 text-orange-500 hover:bg-orange-50"
+            >
               <span>{t("featured_providers.view_all")}</span>
             </Button>
           </Link>
