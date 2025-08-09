@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import type { UserRole } from '../middlewares/auth';
 
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
 const prisma = new PrismaClient();
+
+const ROUNDS = Number(process.env.BCRYPT_ROUNDS ?? 12);
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -21,7 +23,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
       return next({ status: 400, message: 'Email already registered' });
     }
 
-    const hashed = await bcrypt.hash(password, 12);
+    const hashed = await bcrypt.hash(password, ROUNDS);
     const newUser = await prisma.user.create({
       data: {
         email,
