@@ -24,6 +24,7 @@ model User {
   sentMessages     Message[] @relation("MessageSender")
   receivedMessages Message[] @relation("MessageReceiver")
   reviews          Review[]
+  favorites        Favorite[]
 }
 
 model Subscription {
@@ -59,6 +60,7 @@ model Provider {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   services     Service[]
+  favorites    Favorite[]
 
   @@index([userId], map: "idx_provider_user")
 }
@@ -145,5 +147,18 @@ model Review {
   user       User     @relation(fields: [userId], references: [id])
 
   @@unique([bookingId, userId], map: "uniq_review_booking_user")
+  @@index([userId])
+}
+
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  providerId Int
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  provider Provider @relation(fields: [providerId], references: [id])
+
+  @@unique([userId, providerId], name: "uniq_user_provider_fav")
   @@index([userId])
 }
