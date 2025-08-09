@@ -19,6 +19,8 @@ import adminRouter from './routes/admin';
 import statsRouter from './routes/stats';
 import { authenticate, requireRole } from './middlewares/auth';
 import { logger } from './config/logger';
+import { maintenanceGuard } from './middlewares/maintenance';
+import { startSchedulers } from './jobs/scheduler';
 
 if (process.env.SENTRY_DSN) {
   (async () => {
@@ -28,6 +30,10 @@ if (process.env.SENTRY_DSN) {
 }
 
 const app = express();
+
+if (process.env.NODE_ENV !== 'test') {
+  startSchedulers();
+}
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
@@ -76,6 +82,8 @@ app.get('/ready', (_req, res) => {
   }
   res.json({ status: 'ok' });
 });
+
+app.use(maintenanceGuard);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
