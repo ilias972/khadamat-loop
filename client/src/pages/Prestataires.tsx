@@ -188,9 +188,9 @@ export default function Prestataires() {
     "Ménage",
     "Jardinage",
     "Peinture",
-    "Menuisier",
+    "Menuiserie",
     "Nettoyage",
-    "Jardinier",
+    "Réparation",
   ];
 
   const cities = [
