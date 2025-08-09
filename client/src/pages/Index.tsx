@@ -1,17 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SmartSearch from "@/components/search/SmartSearch";
-import ServiceCard from "@/components/services/ServiceCard";
-import ProviderCard from "@/components/providers/ProviderCard";
 import FeaturedProvidersCarousel from "@/components/providers/FeaturedProvidersCarousel";
 import JoinProviders from "@/components/providers/JoinProviders";
 import NewsletterSection from "@/components/ui/NewsletterSection";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb, Search, User, MessageCircle, Star, Headphones, Building, Wrench, Droplets, Sparkles, Palette, Hammer } from "lucide-react";
+import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkles, Palette, Hammer } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import type { Service, ProviderWithUser } from "@shared/schema";
-import ServiceIcon from "@/components/ui/ServiceIcon";
+import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
 
 export default function Index() {
@@ -24,10 +20,6 @@ export default function Index() {
     queryKey: ["/api/services/popular"],
   });
 
-  // Fetch Club Pro providers
-  const { data: providers, isLoading: providersLoading } = useQuery<ProviderWithUser[]>({
-    queryKey: ["/api/providers?clubPro=true"],
-  });
 
   const popularCategories = [
     { name: t("services.plumbing"), service: "plomberie", icon: Droplets },
@@ -108,44 +100,52 @@ export default function Index() {
             </div>
             
             {/* Grid des services populaires */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
-              {[
-                { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 prestataires', popular: true, icon: Droplets },
-                { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 prestataires', popular: true, icon: Sparkles },
-                { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 prestataires', popular: false, icon: Lightbulb },
-                { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 prestataires', popular: false, icon: Wrench },
-                { nameKey: 'services.painting', serviceName: 'peinture', count: '92 prestataires', popular: true, icon: Palette },
-                { nameKey: 'services.repair', serviceName: 'reparation', count: '78 prestataires', popular: false, icon: Hammer },
-              ].map((service, index) => {
-                const Icon = service.icon;
-                return (
-                <Link
-                  key={index}
-                  href={`/prestataires?service=${encodeURIComponent(service.serviceName)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
-                >
-                  <div className="group cursor-pointer relative">
-                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
-                      
-                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
-                        <Icon className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
+            {servicesLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl h-32 md:h-40 animate-pulse bg-gray-200/70" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
+                {[
+                  { nameKey: 'services.plumbing', serviceName: 'plomberie', count: '156 prestataires', popular: true, icon: Droplets },
+                  { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: '89 prestataires', popular: true, icon: Sparkles },
+                  { nameKey: 'services.electricity', serviceName: 'electricite', count: '134 prestataires', popular: false, icon: Lightbulb },
+                  { nameKey: 'services.gardening', serviceName: 'jardinage', count: '67 prestataires', popular: false, icon: Wrench },
+                  { nameKey: 'services.painting', serviceName: 'peinture', count: '92 prestataires', popular: true, icon: Palette },
+                  { nameKey: 'services.repair', serviceName: 'reparation', count: '78 prestataires', popular: false, icon: Hammer },
+                ].map((service, index) => {
+                  const Icon = service.icon;
+                  return (
+                  <Link
+                    key={index}
+                    href={`/prestataires?service=${encodeURIComponent(service.serviceName)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
+                  >
+                    <div className="group cursor-pointer relative">
+                      <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
+
+                        <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                        <Icon aria-hidden="true" focusable="false" className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
+                        </div>
+                        <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                          {t(service.nameKey)}
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
                       </div>
-                      <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
-                        {t(service.nameKey)}
-                      </h3>
-                      <p className="text-xs md:text-sm text-gray-500">{service.count}</p>
                     </div>
-                  </div>
-                </Link>
-                );
-              })}
-            </div>
+                  </Link>
+                  );
+                })}
+              </div>
+            )}
             
             {/* Bouton voir plus */}
             <div className="text-center mt-12">
               <Link href="/services">
-                <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
-                  {t("services.explore")}
-                </button>
+                <Button asChild variant="outline" className="h-11 px-5 rounded-xl">
+                  <span>{t("services.explore")}</span>
+                </Button>
               </Link>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 md:gap-12">
             <div className="text-center">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
+                <Search aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                 {t("how_it_works.step1")}
@@ -179,7 +179,7 @@ export default function Index() {
             
             <div className="text-center">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <User className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
+                <User aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                 {t("how_it_works.step2")}
@@ -191,7 +191,7 @@ export default function Index() {
             
             <div className="text-center">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
+                <MessageCircle aria-hidden="true" focusable="false" className="w-8 h-8 md:w-10 md:h-10 text-orange-600" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                 {t("how_it_works.step3")}
@@ -225,9 +225,9 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
               <div className="flex items-center mb-4">
-                <div className="flex space-x-1">
+                <div className="flex space-x-1" aria-label="Note 5 sur 5">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
               </div>
@@ -236,7 +236,7 @@ export default function Index() {
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User className="w-5 h-5 text-orange-600" />
+                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user1")}</div>
@@ -247,9 +247,9 @@ export default function Index() {
             
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
               <div className="flex items-center mb-4">
-                <div className="flex space-x-1">
+                <div className="flex space-x-1" aria-label="Note 5 sur 5">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
               </div>
@@ -258,7 +258,7 @@ export default function Index() {
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User className="w-5 h-5 text-orange-600" />
+                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user2")}</div>
@@ -269,9 +269,9 @@ export default function Index() {
             
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
               <div className="flex items-center mb-4">
-                <div className="flex space-x-1">
+                <div className="flex space-x-1" aria-label="Note 5 sur 5">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
               </div>
@@ -280,7 +280,7 @@ export default function Index() {
               </p>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                  <User className="w-5 h-5 text-orange-600" />
+                  <User aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900">{t("testimonials.user3")}</div>
