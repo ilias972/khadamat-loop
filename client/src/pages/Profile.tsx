@@ -57,6 +57,12 @@ const clientData = {
 export default function Profile() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_data');
+    setLocation('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -91,7 +97,7 @@ export default function Profile() {
               </div>
             </div>
             
-            {/* Badges et actions */}
+            {/* Badges */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               {clientData.isVerified && (
                 <div className="flex items-center space-x-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
@@ -99,17 +105,6 @@ export default function Profile() {
                   <span>Vérifié</span>
                 </div>
               )}
-              
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setLocation("/profile/info")}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Modifier
-                </Button>
-              </div>
             </div>
           </div>
         </div>
@@ -214,37 +209,54 @@ export default function Profile() {
                   <h4 className="font-medium text-gray-900">Informations personnelles</h4>
                   <p className="text-sm text-gray-600">Nom, email, téléphone</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/profile/info')}
+                >
                   Modifier
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
                   <h4 className="font-medium text-gray-900">Sécurité</h4>
                   <p className="text-sm text-gray-600">Mot de passe, authentification</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/profil/client/securite')}
+                >
                   Modifier
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
                   <h4 className="font-medium text-gray-900">Notifications</h4>
                   <p className="text-sm text-gray-600">Préférences de notification</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/profil/client/notifications')}
+                >
                   Configurer
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
                 <div>
                   <h4 className="font-medium text-red-900">Déconnexion</h4>
                   <p className="text-sm text-red-600">Se déconnecter de votre compte</p>
                 </div>
-                <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                  onClick={handleLogout}
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Déconnexion
                 </Button>

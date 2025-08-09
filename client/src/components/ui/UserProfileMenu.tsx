@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   User, 
   Package, 
@@ -33,6 +33,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
   const menuRef = useRef<HTMLDivElement>(null);
+  const [, setLocation] = useLocation();
 
   // Données mockées de l'utilisateur
   const user = {
@@ -85,9 +86,12 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   };
 
   const handleLogout = () => {
-    // Logique de déconnexion
-    console.log("Déconnexion...");
+    // Suppression des données d'authentification
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_data');
     setIsOpen(false);
+    setLocation('/login');
   };
 
   const menuItems = isClient ? [
