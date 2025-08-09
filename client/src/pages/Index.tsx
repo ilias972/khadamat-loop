@@ -12,51 +12,12 @@ import { CheckCircle, Crown, Tag, Rocket, Shield, Mail, Bell, MapPin, Lightbulb,
 import { Link, useLocation } from "wouter";
 import type { Service, ProviderWithUser } from "@shared/schema";
 import ServiceIcon from "@/components/ui/ServiceIcon";
-import { useState, useEffect } from "react";
+import { useGeolocation } from "@/hooks/use-geolocation";
 
 export default function Index() {
   const { t, language } = useLanguage();
-  const [userLocation, setUserLocation] = useState<string>("");
   const [, setLocation] = useLocation();
-
-  // Détection automatique de la localisation
-  useEffect(() => {
-    const detectUserLocation = async () => {
-      try {
-        // Essayer la géolocalisation du navigateur
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
-              try {
-                // Utiliser un service de géocodage inverse (exemple avec une API gratuite)
-                const response = await fetch(
-                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=fr`
-                );
-                const data = await response.json();
-                const city = data.address?.city || data.address?.town || data.address?.village || "Casablanca";
-                setUserLocation(city);
-              } catch (error) {
-                console.log("Erreur géocodage:", error);
-                setUserLocation("Casablanca"); // Fallback
-              }
-            },
-            (error) => {
-              console.log("Erreur géolocalisation:", error);
-              setUserLocation("Casablanca"); // Fallback
-            }
-          );
-        } else {
-          setUserLocation("Casablanca"); // Fallback si géolocalisation non supportée
-        }
-      } catch (error) {
-        console.log("Erreur détection localisation:", error);
-        setUserLocation("Casablanca"); // Fallback final
-      }
-    };
-
-    detectUserLocation();
-  }, []);
+  const { city: userLocation } = useGeolocation();
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
@@ -77,8 +38,11 @@ export default function Index() {
 
   const handleSuggestionClick = (service: string) => {
     // Rediriger vers la page Prestataires avec le service et la localisation détectée
-    const locationParam = encodeURIComponent(userLocation || "Casablanca");
-    setLocation(`/prestataires?service=${encodeURIComponent(service)}&location=${locationParam}`);
+    const params = new URLSearchParams({ service });
+    if (userLocation) {
+      params.set('location', userLocation);
+    }
+    setLocation(`/prestataires?${params.toString()}`);
   };
 
   return (
@@ -157,7 +121,7 @@ export default function Index() {
                 return (
                 <Link
                   key={index}
-                  href={`/prestataires?service=${encodeURIComponent(service.serviceName)}&location=${encodeURIComponent(userLocation || "Casablanca")}`}
+                  href={`/prestataires?service=${encodeURIComponent(service.serviceName)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
                 >
                   <div className="group cursor-pointer relative">
                     <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-2 shadow-md service-card-pulse">
