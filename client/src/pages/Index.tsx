@@ -6,20 +6,17 @@ import JoinProviders from "@/components/providers/JoinProviders";
 import NewsletterSection from "@/components/ui/NewsletterSection";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkles, Palette, Hammer } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useRef, useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 export default function Index() {
   const { t, language } = useLanguage();
-  const [, setLocation] = useLocation();
   const { city: userLocation } = useGeolocation();
   const numberFormatter = new Intl.NumberFormat(language);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const { toast } = useToast();
   const [showTop, setShowTop] = useState(false);
 
   // Fetch popular services
@@ -28,24 +25,6 @@ export default function Index() {
   });
 
 
-  const popularCategories = [
-    { name: t("services.plumbing"), service: "plomberie", icon: Droplets },
-    { name: t("services.electricity"), service: "electricite", icon: Lightbulb },
-    { name: t("services.cleaning"), service: "nettoyage", icon: Sparkles },
-    { name: t("services.gardening"), service: "jardinage", icon: Wrench },
-  ];
-
-  const handleSuggestionClick = (service: string) => {
-    const message = language === "ar"
-      ? `تم إطلاق البحث في ${userLocation || ""}`
-      : `Recherche lancée à ${userLocation || ""}`;
-    toast({ description: message });
-    const params = new URLSearchParams({ service });
-    if (userLocation) {
-      params.set('location', userLocation);
-    }
-    setLocation(`/prestataires?${params.toString()}`);
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,27 +74,6 @@ export default function Index() {
             <SmartSearch showSuggestions={true} />
           </div>
 
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {[
-              { key: "services.plumbing", service: "plomberie" },
-              { key: "services.electricity", service: "electricite" },
-              { key: "services.cleaning", service: "nettoyage" },
-              { key: "services.gardening", service: "jardinage" },
-            ].map(({ key, service }) => (
-              <button
-                key={service}
-                onClick={() => handleSuggestionClick(service)}
-                className="inline-flex items-center rounded-full border px-4 h-10 text-sm bg-white hover:bg-orange-50 hover:border-orange-300 transition-colors"
-              >
-                {t(key)}
-              </button>
-            ))}
-            {userLocation && (
-              <span className="inline-flex items-center rounded-full border px-4 h-10 text-sm bg-white">
-                📍 {userLocation}
-              </span>
-            )}
-          </div>
         </div>
       </section>
 
@@ -200,7 +158,11 @@ export default function Index() {
             {/* Bouton voir plus */}
             <div className="text-center mt-12">
               <Link href="/services">
-                <Button asChild variant="outline" className="h-11 px-5 rounded-xl">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11 px-5 rounded-xl border-orange-500 text-orange-500 hover:bg-orange-50"
+                >
                   <span>{t("services.explore")}</span>
                 </Button>
               </Link>
