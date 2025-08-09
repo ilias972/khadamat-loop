@@ -19,6 +19,10 @@ model User {
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]
   provider      Provider?
+  clientBookings   Booking[] @relation("clientBookings")
+  providerBookings Booking[] @relation("providerBookings")
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
 }
 
 model Subscription {
@@ -72,6 +76,51 @@ model Service {
   isPopular     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  bookings      Booking[]
 
   @@index([providerId, category], map: "idx_service_provider_category")
+}
+
+model Booking {
+  id              Int            @id @default(autoincrement())
+  clientId        Int
+  providerId      Int
+  serviceId       Int
+  title           String
+  description     String
+  scheduledDay    String
+  proposedDay     String?
+  agreedStartTime String?
+  price           Int            @default(0)
+  status          String         @default("PENDING")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  client   User    @relation("clientBookings", fields: [clientId], references: [id])
+  provider User    @relation("providerBookings", fields: [providerId], references: [id])
+  service  Service @relation(fields: [serviceId], references: [id])
+
+  messages Message[]
+
+  @@index([clientId, status], map: "idx_booking_client_status")
+  @@index([providerId, status], map: "idx_booking_provider_status")
+  @@index([scheduledDay], map: "idx_booking_scheduledDay")
+}
+
+model Message {
+  id         Int       @id @default(autoincrement())
+  bookingId  Int?
+  senderId   Int
+  receiverId Int
+  content    String
+  isSystem   Boolean   @default(false)
+  isRead     Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  booking    Booking?  @relation(fields: [bookingId], references: [id])
+  sender     User      @relation("MessageSender", fields: [senderId], references: [id])
+  receiver   User      @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  @@index([bookingId])
+  @@index([senderId, receiverId, createdAt])
 }
