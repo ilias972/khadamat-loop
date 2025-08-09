@@ -51,6 +51,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       return next({ status: 401, message: 'Invalid credentials' });
     }
 
+    if (user.isDisabled) {
+      return next({ status: 403, message: 'Account disabled' });
+    }
+
     const valid = await verifyPassword(password, user.password);
     if (!valid) {
       return next({ status: 401, message: 'Invalid credentials' });

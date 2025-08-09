@@ -15,6 +15,7 @@ model User {
   password      String
   role          String         @default("CLIENT")
   isVerified    Boolean        @default(true)
+  isDisabled    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]
@@ -31,6 +32,7 @@ model User {
   phoneVerified Boolean  @default(false)
   smsOptIn      Boolean  @default(false)
   preferredLang String?
+  auditLogs     AuditLog[]
 }
 
 model Subscription {
@@ -203,4 +205,21 @@ model SmsMessage {
 
   @@index([userId, createdAt], map: "idx_sms_user_date")
   @@unique([userId, bookingId, type], map: "uniq_sms_once_per_event")
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  action     String
+  resource   String
+  resourceId Int?
+  oldValues  String?
+  newValues  String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([resource, resourceId])
+  @@index([createdAt])
 }

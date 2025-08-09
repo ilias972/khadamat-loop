@@ -1,12 +1,13 @@
 import multer, { FileFilterCallback } from './multer';
 import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'crypto';
 import type { Request } from 'express';
 
 const uploadPath = process.env.UPLOAD_PATH || './uploads';
 
 if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
+  fs.mkdirSync(uploadPath, { recursive: true, mode: 0o700 });
 }
 
 const storage = multer.diskStorage({
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
     file: any,
     cb: (error: Error | null, filename: string) => void,
   ) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const unique = randomUUID();
     cb(null, unique + path.extname(file.originalname));
   },
 });
