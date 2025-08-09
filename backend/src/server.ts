@@ -18,6 +18,14 @@ import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import statsRouter from './routes/stats';
 import { authenticate, requireRole } from './middlewares/auth';
+import { logger } from './config/logger';
+
+if (process.env.SENTRY_DSN) {
+  (async () => {
+    const Sentry = await import('@sentry/node');
+    Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
+  })();
+}
 
 const app = express();
 
@@ -53,8 +61,20 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+let isReady = false;
+setTimeout(() => {
+  isReady = true;
+}, env.healthReadyDelayMs);
+
 app.get('/health', (_req, res) => {
-  res.json({ success: true });
+  res.json({ status: 'ok', uptime: process.uptime(), version: env.appVersion });
+});
+
+app.get('/ready', (_req, res) => {
+  if (!isReady) {
+    return res.status(503).json({ status: 'starting' });
+  }
+  res.json({ status: 'ok' });
 });
 
 app.use('/api/auth', authRoutes);
@@ -73,6 +93,18 @@ app.use('/api/stats', statsRouter);
 
 app.use(errorHandler);
 
-app.listen(env.port, () => {
-  console.log(`Server running on port ${env.port}`);
+export { app };
+
+if (require.main === module) {
+  app.listen(env.port, () => {
+    logger.info(`Server running on port ${env.port}`);
+  });
+}
+
+process.on('unhandledRejection', (r: any) =>
+  logger.error('unhandledRejection', { reason: String(r) })
+);
+process.on('uncaughtException', (e: any) => {
+  logger.error('uncaughtException', { error: String(e?.stack || e) });
+  process.exit(1);
 });
