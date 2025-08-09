@@ -809,7 +809,7 @@ const translations = {
     "prestataires.city_label": "المدينة",
     "prestataires.all_cities": "جميع المدن",
     "prestataires.rating_label": "الحد الأدنى للتقييم",
-    "prestataires.all_ratings": "جميع التقييمات",
+    "prestataires.all_ratings": "كل التقييمات",
     "prestataires.stars": "نجوم",
     "prestataires.clear_filters": "مسح المرشحات",
     "prestataires.results_count": "مقدم خدمة وجد",
