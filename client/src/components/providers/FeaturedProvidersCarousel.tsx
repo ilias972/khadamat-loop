@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { getSortedProviders } from "@/lib/providerSorting";
 import type { SortableProvider } from "@/lib/providerSorting";
@@ -259,6 +261,10 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
   const [currentSlide, setCurrentSlide] = useState(0);
   const [windowWidth, setWindowWidth] = useState(0);
 
+  const { data: providersData, isLoading } = useQuery<SortableProvider[]>({
+    queryKey: ["/api/providers?clubPro=true"],
+  });
+
   // Détection de la taille d'écran et gestion du clavier
   useEffect(() => {
     const handleResize = () => {
@@ -294,7 +300,8 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
   };
 
   const visibleCount = getVisibleCount();
-  const sortedProviders = getSortedProviders(mockProviders);
+  const providerList = providersData && providersData.length > 0 ? providersData : mockProviders;
+  const sortedProviders = getSortedProviders(providerList);
   const totalSlides = Math.ceil(sortedProviders.length / visibleCount);
   const canGoPrev = currentSlide > 0;
   const canGoNext = currentSlide < totalSlides - 1;
@@ -334,6 +341,31 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
     return sortedProviders.slice(startIndex, startIndex + visibleCount);
   };
 
+  if (isLoading) {
+    return (
+      <section className={`py-16 bg-gradient-to-br from-gray-50 to-orange-50 ${className}`}>
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {t("featured_providers.title")}
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              {t("featured_providers.subtitle")}
+            </p>
+          </div>
+
+          <div className="px-8 md:px-12">
+            <div className="grid gap-6 md:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="w-full rounded-2xl h-80 animate-pulse bg-gray-200/70" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={`py-16 bg-gradient-to-br from-gray-50 to-orange-50 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -356,7 +388,7 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-orange-200 rounded-full p-3 shadow-lg hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 -ml-4 md:-ml-6"
             aria-label="Précédent"
           >
-            <ChevronLeft className="w-5 h-5 text-orange-500" />
+            <ChevronLeft aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500" />
           </button>
 
           <button
@@ -365,7 +397,7 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-orange-200 rounded-full p-3 shadow-lg hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 -mr-4 md:-mr-6"
             aria-label="Suivant"
           >
-            <ChevronRight className="w-5 h-5 text-orange-500" />
+            <ChevronRight aria-hidden="true" focusable="false" className="w-5 h-5 text-orange-500" />
           </button>
 
           {/* Conteneur des prestataires */}
@@ -428,12 +460,12 @@ export default function FeaturedProvidersCarousel({ className = "" }: FeaturedPr
         {/* Bouton voir plus */}
         <div className="text-center mt-12">
           <Link href="/prestataires">
-            <button className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl font-semibold transition-all">
-              {t("featured_providers.view_all")}
-            </button>
+            <Button asChild variant="outline" className="h-11 px-5 rounded-xl">
+              <span>{t("featured_providers.view_all")}</span>
+            </Button>
           </Link>
         </div>
       </div>
     </section>
   );
-} 
+}
