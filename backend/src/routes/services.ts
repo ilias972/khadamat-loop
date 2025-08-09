@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   listServices,
@@ -43,7 +44,7 @@ const updateSchema = z.object({ params: idSchema.shape.params, body: serviceBody
 router.get('/', validate(listSchema), listServices);
 router.get('/popular', listPopularServices);
 router.get('/category/:cat', validate(z.object({ params: z.object({ cat: z.string() }) })), listServicesByCategory);
-router.post('/', authenticate, requireRole('provider'), validate(createSchema), createService);
+router.post('/', authenticate, requireRole('provider'), requireKycFor('PROVIDER'), validate(createSchema), createService);
 router.put('/:id', authenticate, validate(updateSchema), updateService);
 router.delete('/:id', authenticate, validate(idSchema), deleteService);
 

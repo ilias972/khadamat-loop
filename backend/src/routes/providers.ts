@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   listProviders,
@@ -40,7 +41,7 @@ const updateSchema = z.object({ params: idSchema.shape.params, body: providerBod
 router.get('/', validate(listSchema), listProviders);
 router.get('/categories', listCategories);
 router.get('/:id', validate(idSchema), getProvider);
-router.post('/', authenticate, requireRole('provider'), validate(createSchema), createProvider);
+router.post('/', authenticate, requireRole('provider'), requireKycFor('PROVIDER'), validate(createSchema), createProvider);
 router.put('/:id', authenticate, validate(updateSchema), updateProvider);
 
 export default router;
