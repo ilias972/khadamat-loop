@@ -9,3 +9,6 @@ vite.config.ts.*
 **/dev.db-journal
 **/test.db
 **/test.db-journal
+
+*.test.db
+test.db
