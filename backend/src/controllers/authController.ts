@@ -6,6 +6,8 @@ import type { UserRole } from '../middlewares/auth';
 import { decryptWithKeyId } from '../config/keyring';
 import { verifyTotp } from '../utils/totp';
 import crypto from 'node:crypto';
+import { sendEmail } from '../services/email';
+import { logAction } from '../middlewares/audit';
 
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
@@ -185,6 +187,69 @@ export async function profile(req: Request, res: Response, next: NextFunction) {
     }
 
     res.json({ success: true, data: { user } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+  const { email } = req.body as { email: string };
+  const generic = { success: true, message: 'If an account exists, an email has been sent.' };
+  try {
+    const hashedEmail = crypto.createHash('sha256').update(email).digest('hex');
+    await logAction({ action: 'PASSWORD_RESET_REQUEST', resource: 'user', newValues: { emailHash: hashedEmail }, ip: req.ip, ua: req.headers['user-agent'] });
+
+    const user = await prisma.user.findFirst({ where: { email, isDisabled: false } });
+    if (user) {
+      const since = new Date(Date.now() - 15 * 60 * 1000);
+      const recentCount = await prisma.passwordResetToken.count({ where: { userId: user.id, createdAt: { gte: since } } });
+      if (recentCount < 3) {
+        const raw = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(raw + (process.env.RESET_TOKEN_PEPPER || '')).digest('hex');
+        await prisma.passwordResetToken.create({
+          data: { userId: user.id, tokenHash, expiresAt: new Date(Date.now() + 60 * 60 * 1000) },
+        });
+        const link = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/forgot-password?token=${raw}`;
+        await sendEmail(user.email, 'Password reset', `Use this link to reset your password: ${link}`);
+      }
+    }
+    res.json(generic);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+  const { token, newPassword } = req.body as { token: string; newPassword: string };
+  try {
+    const hash = crypto.createHash('sha256').update(token + (process.env.RESET_TOKEN_PEPPER || '')).digest('hex');
+    const record = await prisma.passwordResetToken.findUnique({ where: { tokenHash: hash } });
+
+    if (!record || record.usedAt) {
+      await logAction({ action: 'PASSWORD_RESET_FAIL', resource: 'passwordReset', newValues: { reason: 'invalid' }, ip: req.ip, ua: req.headers['user-agent'] });
+      return res.status(400).json({
+        success: false,
+        error: { code: 'TOKEN_INVALID', message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+
+    if (record.expiresAt < new Date()) {
+      await logAction({ action: 'PASSWORD_RESET_FAIL', resource: 'passwordReset', resourceId: record.userId, newValues: { reason: 'expired' }, ip: req.ip, ua: req.headers['user-agent'] });
+      return res.status(410).json({
+        success: false,
+        error: { code: 'TOKEN_EXPIRED', message: 'Token expired', timestamp: new Date().toISOString() },
+      });
+    }
+
+    const hashed = await hashPassword(newPassword);
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: record.userId }, data: { password: hashed } }),
+      prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+    ]);
+
+    await logAction({ userId: record.userId, action: 'PASSWORD_RESET_SUCCESS', resource: 'user', resourceId: record.userId, ip: req.ip, ua: req.headers['user-agent'] });
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

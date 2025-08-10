@@ -44,6 +44,7 @@ import Careers from "@/pages/Careers";
 import Partners from "@/pages/Partners";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
 import SecurityDashboard from "@/pages/SecurityDashboard";
 import IdentityVerification from "@/pages/IdentityVerification";
 import Prestataires from "@/pages/Prestataires";
@@ -95,6 +96,7 @@ function Router() {
           <Route path="/partners" component={Partners} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
+          <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/security" component={SecurityDashboard} />
           <Route path="/identity-verification" component={IdentityVerification} />
           <Route path="/prestataires" component={Prestataires} />
