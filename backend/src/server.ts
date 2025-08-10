@@ -18,10 +18,12 @@ import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import adminDisclosure from './routes/adminDisclosure';
 import statsRouter from './routes/stats';
+import mfaRouter from './routes/mfa';
 import kycRoutes from './routes/kyc';
 import piiRoutes from './routes/pii';
 import { kycWebhook } from './controllers/kycWebhookController';
 import { authenticate, requireRole } from './middlewares/auth';
+import { requireMfa } from './middlewares/requireMfa';
 import { logger } from './config/logger';
 import { maintenanceGuard } from './middlewares/maintenance';
 import { startSchedulers } from './jobs/scheduler';
@@ -110,6 +112,7 @@ app.get('/ready', (_req, res) => {
 
 app.use(maintenanceGuard);
 
+app.use('/api/mfa', mfaRouter);
 app.use('/api/auth', authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -124,7 +127,7 @@ app.use('/api/kyc', kycRoutes);
 app.use('/api/pii', piiRoutes);
 app.use('/api/sms', smsRouter);
 app.use('/api/admin', adminDisclosure);
-app.use('/api/admin', authenticate, requireRole('admin'), adminRouter);
+app.use('/api/admin', authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
 
 app.use(errorHandler);

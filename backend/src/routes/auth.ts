@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { register, login, profile } from '../controllers/authController';
+import { register, login, profile, verifyMfa } from '../controllers/authController';
 import { validate } from '../middlewares/validation';
 import { authenticate } from '../middlewares/auth';
-import { loginLimiter } from '../middlewares/rateLimit';
+import { loginLimiter, mfaLimiter } from '../middlewares/rateLimit';
 
 const router = Router();
 
@@ -39,8 +39,18 @@ const loginSchema = z.object({
   }),
 });
 
+const mfaVerifySchema = z.object({
+  body: z.object({
+    code: z.string().optional(),
+    recoveryCode: z.string().optional(),
+  }).refine((d) => d.code || d.recoveryCode, {
+    message: 'code or recoveryCode required',
+  }),
+});
+
 router.post('/register', validate(RegisterSchema), register);
 router.post('/login', loginLimiter, validate(loginSchema), login);
+router.post('/mfa/verify', mfaLimiter, validate(mfaVerifySchema), verifyMfa);
 router.get('/profile', authenticate, profile);
 
 export default router;
