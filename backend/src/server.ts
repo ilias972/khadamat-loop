@@ -16,6 +16,7 @@ import favoritesRouter from './routes/favorites';
 import notificationsRouter from './routes/notifications';
 import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
+import adminDisclosure from './routes/adminDisclosure';
 import statsRouter from './routes/stats';
 import kycRoutes from './routes/kyc';
 import piiRoutes from './routes/pii';
@@ -102,6 +103,7 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/kyc', kycRoutes);
 app.use('/api/pii', piiRoutes);
 app.use('/api/sms', smsRouter);
+app.use('/api/admin', adminDisclosure);
 app.use('/api/admin', authenticate, requireRole('admin'), adminRouter);
 app.use('/api/stats', statsRouter);
 

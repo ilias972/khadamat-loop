@@ -4,5 +4,5 @@ import { runKycRetentionJob } from './kycRetention';
 export function startSchedulers() {
   const spec = process.env.CRON_EXPIRE_SCHEDULE || '*/15 * * * *';
   cron.schedule(spec, () => { runBookingExpiryJob().catch(()=>{}); });
-  cron.schedule('0 0 * * *', () => { runKycRetentionJob().catch(()=>{}); });
+  cron.schedule('0 3 * * *', () => runKycRetentionJob().catch(()=>{}));
 }
