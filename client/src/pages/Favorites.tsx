@@ -7,42 +7,8 @@ export default function Favorites() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées pour les favoris
-  const favorites = [
-    {
-      id: 1,
-      name: "Ahmed Ben Ali",
-      service: "Plomberie",
-      rating: 4.8,
-      reviews: 127,
-      location: "Casablanca",
-      verified: true,
-      avatar: null,
-      description: "Plombier professionnel avec 10 ans d'expérience"
-    },
-    {
-      id: 2,
-      name: "Fatima Zahra",
-      service: "Ménage",
-      rating: 4.9,
-      reviews: 89,
-      location: "Rabat",
-      verified: true,
-      avatar: null,
-      description: "Service de ménage de qualité, ponctuelle et fiable"
-    },
-    {
-      id: 3,
-      name: "Mohammed El Hassani",
-      service: "Électricité",
-      rating: 4.7,
-      reviews: 156,
-      location: "Marrakech",
-      verified: false,
-      avatar: null,
-      description: "Électricien certifié, installations sécurisées"
-    }
-  ];
+  // Favoris fournis par l'API
+  const favorites: any[] = [];
 
   return (
     <div className="min-h-screen pt-20">
@@ -75,7 +41,7 @@ export default function Favorites() {
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
                         <span className="text-lg font-semibold text-orange-600">
-                          {favorite.name.split(' ').map(n => n[0]).join('')}
+                          {favorite.name.split(' ').map((n: string) => n[0]).join('')}
                         </span>
                       </div>
                       <div>
@@ -119,7 +85,7 @@ export default function Favorites() {
                   <div className="flex space-x-2">
                     <button 
                       className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-                      onClick={() => window.open(`tel:+212612345678`)}
+                      onClick={() => window.open(`tel:${favorite.phone || ''}`)}
                     >
                       <Phone className="w-4 h-4" />
                       <span className="text-sm">Appeler</span>

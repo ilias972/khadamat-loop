@@ -8,55 +8,29 @@ import AvailabilitySection from "@/components/providers/AvailabilitySection";
 
 // Données mockées du prestataire (en réalité, cela viendrait de l'API)
 const providerData = {
-  id: "1",
-  name: "Ahmed Benali",
-  service: "Électricien",
-  location: "Rabat",
-  rating: 4.8,
-  reviewCount: 52,
-  isVerified: true,
-  isPro: true,
-  experience: 8,
-  responseTime: "2h",
-  missionsCompleted: 156,
-  description: "Électricien professionnel avec plus de 8 ans d'expérience. Spécialisé dans l'installation électrique résidentielle et commerciale. Travail soigné et respect des normes de sécurité.",
-  skills: ["Installation électrique", "Dépannage", "Mise aux normes", "Éclairage LED", "Tableaux électriques"],
-  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-  portfolio: [
-    "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-    "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-    "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200"
-  ],
-  reviews: [
-    {
-      id: 1,
-      name: "Fatima Z.",
-      rating: 5,
-      comment: "Excellent travail, très professionnel et ponctuel. Je recommande vivement !",
-      date: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Mohammed K.",
-      rating: 4,
-      comment: "Bon service, installation propre et fonctionnelle.",
-      date: "2024-01-10"
-    },
-    {
-      id: 3,
-      name: "Amina L.",
-      rating: 5,
-      comment: "Très satisfaite du travail réalisé. Prix correct et délais respectés.",
-      date: "2024-01-05"
-    }
-  ],
+  id: "",
+  name: "",
+  service: "",
+  location: "",
+  rating: 0,
+  reviewCount: 0,
+  isVerified: false,
+  isPro: false,
+  experience: 0,
+  responseTime: "",
+  missionsCompleted: 0,
+  description: "",
+  skills: [],
+  avatar: "",
+  portfolio: [],
+  reviews: [],
   availability: {
-    monday: ["09:00-12:00", "14:00-18:00"],
-    tuesday: ["09:00-12:00", "14:00-18:00"],
-    wednesday: ["09:00-12:00", "14:00-18:00"],
-    thursday: ["09:00-12:00", "14:00-18:00"],
-    friday: ["09:00-12:00", "14:00-18:00"],
-    saturday: ["09:00-12:00"],
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: [],
     sunday: []
   }
 };

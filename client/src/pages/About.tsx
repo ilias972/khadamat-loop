@@ -76,26 +76,7 @@ export default function About() {
     },
   ];
 
-  const team = [
-    {
-      name: "Youssef Benali",
-      role: "CEO & Fondateur",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-      description: "Expert en technologie avec 15 ans d'expérience dans le digital au Maroc",
-    },
-    {
-      name: "Aicha Alaoui",
-      role: "Directrice Technique",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-      description: "Ingénieure logiciel passionnée par l'innovation et les solutions durables",
-    },
-    {
-      name: "Omar Idrissi",
-      role: "Directeur Commercial",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-      description: "Spécialiste du développement commercial et des partenariats stratégiques",
-    },
-  ];
+  const team: Array<never> = [];
 
   return (
     <div className="min-h-screen pt-20">

@@ -26,13 +26,13 @@ export default function ProfileInfo() {
   const [, setLocation] = useLocation();
 
   const [profileInfo, setProfileInfo] = useState({
-    name: "Fatima Alami",
-    email: "fatima.alami@email.com",
-    phone: "+212 6 12 34 56 78",
-    location: "Casablanca",
-    birthDate: "1985-03-15",
-    rating: 4.2,
-    reviewCount: 8
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    birthDate: "",
+    rating: 0,
+    reviewCount: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);

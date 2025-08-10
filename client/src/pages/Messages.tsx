@@ -67,75 +67,11 @@ export default function Messages() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  // Données mockées des conversations
-  const [conversations] = useState<Conversation[]>([
-    {
-      id: "1",
-      providerId: "provider1",
-      providerName: "Ahmed Benali",
-      providerAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-      lastMessage: "Le devis sera prêt demain",
-      lastMessageTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 heures ago
-      unreadCount: 2,
-      isActive: true,
-      missionStatus: 'active',
-      missionTitle: "Réparation plomberie - Cuisine"
-    },
-    {
-      id: "2",
-      providerId: "provider2",
-      providerName: "Fatima Zahra",
-      providerAvatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-      lastMessage: "Parfait, je confirme pour jeudi",
-      lastMessageTime: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 jour ago
-      unreadCount: 0,
-      isActive: true,
-      missionStatus: 'active',
-      missionTitle: "Nettoyage appartement - 3 pièces"
-    },
-    {
-      id: "3",
-      providerId: "provider3",
-      providerName: "Mohammed Idrissi",
-      providerAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-      lastMessage: "Photos envoyées",
-      lastMessageTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 jours ago
-      unreadCount: 0,
-      isActive: false,
-      missionStatus: 'completed',
-      missionTitle: "Installation électrique - Bureau"
-    }
-  ]);
+  // Conversations fournies par l'API
+  const [conversations] = useState<Conversation[]>([]);
 
-  // Données mockées des messages
-  const [messages] = useState<{ [conversationId: string]: Message[] }>({
-    "1": [
-      {
-        id: "1",
-        senderId: "provider1",
-        senderName: "Ahmed Benali",
-        content: "Bonjour, j'ai bien reçu votre demande pour la réparation de plomberie",
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-        isRead: true
-      },
-      {
-        id: "2",
-        senderId: "user",
-        senderName: "Vous",
-        content: "Merci, quand pouvez-vous passer ?",
-        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
-        isRead: true
-      },
-      {
-        id: "3",
-        senderId: "provider1",
-        senderName: "Ahmed Benali",
-        content: "Le devis sera prêt demain",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        isRead: false
-      }
-    ]
-  });
+  // Messages fournis par l'API
+  const [messages] = useState<{ [conversationId: string]: Message[] }>({});
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedConversation) {
@@ -145,39 +81,10 @@ export default function Messages() {
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      // Simulation d'upload de fichier
-      console.log("Upload de fichiers:", files);
-      // Ici on enverrait les fichiers à l'API /messages/upload
-    }
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      // Simulation d'upload d'images
-      console.log("Upload d'images:", files);
-      // Ici on enverrait les images à l'API /messages/upload
-    }
-  };
-
-  const handleMenuAction = (action: string) => {
-    console.log("Action du menu:", action);
-    setShowMenu(false);
-  };
-
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days}j`;
-    if (hours > 0) return `${hours}h`;
-    return t("messages.just_now");
-  };
+  const formatTime = (_date: Date) => "";
+  const handleMenuAction = (_action: string) => {};
+  const handleFileUpload = (_e: any) => {};
+  const handleImageUpload = (_e: any) => {};
 
   const filteredConversations = conversations.filter(conv =>
     conv.providerName.toLowerCase().includes(searchTerm.toLowerCase()) ||

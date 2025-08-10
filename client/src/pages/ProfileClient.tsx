@@ -35,12 +35,12 @@ export default function ProfileClient() {
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: "Ahmed",
-    lastName: "Benali",
-    email: "ahmed.benali@email.com",
-    phone: "+212 6 12 34 56 78",
-    address: "123 Rue Hassan II, Casablanca",
-    birthDate: "1985-03-15"
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
   });
 
   const [securityInfo, setSecurityInfo] = useState({
@@ -48,12 +48,8 @@ export default function ProfileClient() {
     newPassword: "",
     confirmPassword: "",
     twoFactorEnabled: true,
-    lastLogin: "2024-01-15 14:30",
-    loginHistory: [
-      { date: "2024-01-15 14:30", device: "Chrome - MacBook Pro", location: "Casablanca, Maroc" },
-      { date: "2024-01-14 09:15", device: "Safari - iPhone", location: "Rabat, Maroc" },
-      { date: "2024-01-12 16:45", device: "Chrome - Windows", location: "Fès, Maroc" }
-    ]
+    lastLogin: "",
+    loginHistory: [] as any[],
   });
 
   const [notifications, setNotifications] = useState({

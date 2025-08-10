@@ -9,42 +9,8 @@ export default function MesReservations() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées des réservations
-  const reservations = [
-    {
-      id: 1,
-      service: "Plomberie",
-      provider: "Ahmed Ben Ali",
-      date: "2024-01-15",
-      time: "14:00",
-      location: "Casablanca, Maarif",
-      status: "confirmée",
-      rating: 4.8,
-      price: "300 DH"
-    },
-    {
-      id: 2,
-      service: "Électricité",
-      provider: "Mohammed El Fassi",
-      date: "2024-01-20",
-      time: "10:00",
-      location: "Casablanca, Anfa",
-      status: "en attente",
-      rating: 4.9,
-      price: "450 DH"
-    },
-    {
-      id: 3,
-      service: "Ménage",
-      provider: "Fatima Zahra",
-      date: "2024-01-18",
-      time: "09:00",
-      location: "Casablanca, Bourgogne",
-      status: "terminée",
-      rating: 4.7,
-      price: "200 DH"
-    }
-  ];
+  // Liste des réservations fournie par l'API
+  const reservations: any[] = [];
 
   const getStatusColor = (status: string) => {
     switch (status) {

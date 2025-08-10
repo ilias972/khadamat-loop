@@ -9,48 +9,8 @@ export default function MesFavoris() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées des favoris
-  const favorites = [
-    {
-      id: 1,
-      name: "Ahmed Ben Ali",
-      service: "Plomberie",
-      rating: 4.8,
-      reviews: 127,
-      location: "Casablanca, Maarif",
-      isOnline: true,
-      isClubPro: true,
-      price: "À partir de 200 DH",
-      specialties: ["Installation", "Réparation", "Débouchage"],
-      phone: "+212 6 12 34 56 78"
-    },
-    {
-      id: 2,
-      name: "Mohammed El Fassi",
-      service: "Électricité",
-      rating: 4.9,
-      reviews: 89,
-      location: "Casablanca, Anfa",
-      isOnline: false,
-      isClubPro: false,
-      price: "À partir de 300 DH",
-      specialties: ["Installation électrique", "Dépannage", "Éclairage"],
-      phone: "+212 6 98 76 54 32"
-    },
-    {
-      id: 3,
-      name: "Fatima Zahra",
-      service: "Ménage",
-      rating: 4.7,
-      reviews: 203,
-      location: "Casablanca, Bourgogne",
-      isOnline: true,
-      isClubPro: true,
-      price: "À partir de 150 DH",
-      specialties: ["Ménage régulier", "Nettoyage profond", "Repassage"],
-      phone: "+212 6 45 67 89 01"
-    }
-  ];
+  // Favoris fournis par l'API
+  const favorites: any[] = [];
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -154,7 +114,7 @@ export default function MesFavoris() {
                   </div>
                   
                   <div className="flex flex-wrap gap-1">
-                    {favorite.specialties.map((specialty, index) => (
+                    {favorite.specialties.map((specialty: string, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {specialty}
                       </Badge>

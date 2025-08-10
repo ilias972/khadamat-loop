@@ -6,53 +6,8 @@ export default function Missions() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées pour les missions
-  const missions = [
-    {
-      id: 1,
-      title: "Réparation fuite robinet cuisine",
-      client: "Fatima Z.",
-      location: "Casablanca, Maarif",
-      date: "2024-01-25",
-      time: "14:00",
-      status: "pending",
-      amount: "500 DH",
-      description: "Fuite d'eau sous l'évier de la cuisine, besoin d'intervention rapide"
-    },
-    {
-      id: 2,
-      title: "Installation prise électrique salon",
-      client: "Ahmed M.",
-      location: "Rabat, Hassan",
-      date: "2024-01-26",
-      time: "10:00",
-      status: "completed",
-      amount: "800 DH",
-      description: "Installation d'une nouvelle prise électrique dans le salon"
-    },
-    {
-      id: 3,
-      title: "Nettoyage appartement 3 pièces",
-      client: "Khadija L.",
-      location: "Marrakech, Guéliz",
-      date: "2024-01-27",
-      time: "09:00",
-      status: "cancelled",
-      amount: "300 DH",
-      description: "Nettoyage complet de l'appartement, 3 pièces + cuisine"
-    },
-    {
-      id: 4,
-      title: "Réparation climatisation",
-      client: "Omar S.",
-      location: "Agadir, Talborjt",
-      date: "2024-01-28",
-      time: "16:00",
-      status: "pending",
-      amount: "1200 DH",
-      description: "Climatisation qui ne refroidit plus, diagnostic nécessaire"
-    }
-  ];
+  // Liste des missions fournie par l'API
+  const missions: any[] = [];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
