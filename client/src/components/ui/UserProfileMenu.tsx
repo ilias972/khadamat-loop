@@ -35,12 +35,8 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   const menuRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
 
-  // Données mockées de l'utilisateur
-  const user = {
-    firstName: "Ahmed",
-    lastName: "Ben Ali",
-    avatar: null
-  };
+  // Aucune donnée utilisateur par défaut
+  const user = null;
 
   // Fermer le menu si on clique en dehors
   useEffect(() => {
@@ -108,6 +104,23 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
     { label: t("profile.menu.settings"), icon: Settings, href: "/reglages" },
   ];
 
+  if (!user) {
+    return (
+      <Link href="/login">
+        <button
+          className={`flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-orange-50 transition-all duration-200 ${className}`}
+        >
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
+            <User className="w-4 h-4 text-orange-600" />
+          </div>
+          <span className="text-sm font-medium text-gray-700 hidden md:block">
+            {t("profile.menu.account")}
+          </span>
+        </button>
+      </Link>
+    );
+  }
+
   return (
     <div className={`relative ${className}`} ref={menuRef}>
       {/* Bouton du menu */}
@@ -121,26 +134,26 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
         {/* Avatar ou icône par défaut */}
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
           {user.avatar ? (
-            <img 
-              src={user.avatar} 
-              alt="Avatar" 
+            <img
+              src={user.avatar}
+              alt="Avatar"
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
             <User className="w-4 h-4 text-orange-600" />
           )}
         </div>
-        
+
         {/* Nom de l'utilisateur */}
         <span className="text-sm font-medium text-gray-700 hidden md:block">
           {user.firstName} {user.lastName}
         </span>
-        
+
         {/* Icône de flèche */}
-        <ChevronDown 
+        <ChevronDown
           className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
-          }`} 
+          }`}
         />
       </button>
 
@@ -152,9 +165,9 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
                 {user.avatar ? (
-                  <img 
-                    src={user.avatar} 
-                    alt="Avatar" 
+                  <img
+                    src={user.avatar}
+                    alt="Avatar"
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
@@ -195,10 +208,10 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
                 </button>
               </Link>
             ))}
-            
+
             {/* Séparateur */}
             <div className="border-t border-gray-100 my-2 mx-2"></div>
-            
+
             {/* Bouton de déconnexion */}
             <button
               onClick={handleLogout}
