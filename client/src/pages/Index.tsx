@@ -10,7 +10,7 @@ import { Link } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useRef, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Index() {
   const { t, language } = useLanguage();
@@ -23,9 +23,17 @@ export default function Index() {
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
     queryKey: ["/api/services/popular"],
   });
+  interface Review {
+    id: number;
+    name: string;
+    rating: number;
+    comment: string;
+    avatar?: string | null;
+  }
 
-
-
+  const { data: reviews, isLoading: reviewsLoading } = useQuery<Review[]>({
+    queryKey: ["/api/reviews/home"],
+  });
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
@@ -251,71 +259,54 @@ export default function Index() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
-              <div className="flex items-center mb-4">
-                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
-                <div>
-                  <div className="font-semibold text-gray-900">{t("testimonials.user1")}</div>
-                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
+            {reviewsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
+                  <div className="flex items-center mb-4">
+                    <Skeleton className="w-10 h-10 rounded-full mr-3" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center mb-4">
-                <div className="flex space-x-1" aria-label="Note 5 sur 5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
+              ))
+            ) : reviews && reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review.id} className="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
+                  <div className="flex items-center mb-4">
+                    {review.avatar ? (
+                      <img src={review.avatar} alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-200 mr-3" />
+                    )}
+                    <div className="font-semibold text-gray-900">{review.name}</div>
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <div className="flex space-x-1" aria-label={`${review.rating} / 5`}>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          aria-hidden="true"
+                          className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-700 mb-4 leading-relaxed font-medium">{review.comment}</p>
                 </div>
+              ))
+            ) : (
+              <div className="min-h-[200px] flex flex-col items-center justify-center text-center md:col-span-3">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('reviews.empty.title')}</h3>
+                <p className="text-gray-500">{t('reviews.empty.subtitle')}</p>
               </div>
-              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
-                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
-                {t("testimonials.review1")}
-                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
-              <div className="flex items-center mb-4">
-                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
-                <div>
-                  <div className="font-semibold text-gray-900">{t("testimonials.user2")}</div>
-                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
-                </div>
-              </div>
-              <div className="flex items-center mb-4">
-                <div className="flex space-x-1" aria-label="Note 5 sur 5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
-                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
-                {t("testimonials.review2")}
-                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg" aria-label="Témoignage">
-              <div className="flex items-center mb-4">
-                <img src="/placeholder-avatar.jpg" alt="" className="w-10 h-10 rounded-full mr-3" loading="lazy" decoding="async" />
-                <div>
-                  <div className="font-semibold text-gray-900">{t("testimonials.user3")}</div>
-                  <Badge variant="secondary" className="mt-1">{language === "ar" ? "عميل موثق" : "Client vérifié"}</Badge>
-                </div>
-              </div>
-              <div className="flex items-center mb-4">
-                <div className="flex space-x-1" aria-label="Note 5 sur 5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} aria-hidden="true" className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <p className="relative text-gray-700 mb-4 leading-relaxed font-medium">
-                <span className="absolute -left-3 -top-2 text-4xl text-orange-200" aria-hidden="true">“</span>
-                {t("testimonials.review3")}
-                <span className="absolute -right-3 -bottom-4 text-4xl text-orange-200" aria-hidden="true">”</span>
-              </p>
-            </div>
+            )}
           </div>
         </div>
       </section>

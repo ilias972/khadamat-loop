@@ -6,6 +6,8 @@ import Logo from "@/components/ui/Logo";
 import UserProfileMenu from "@/components/ui/UserProfileMenu";
 import { useUnreadMessages } from '@/hooks/use-unread-messages';
 import { Menu, X, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Header() {
   const { t, language } = useLanguage();
@@ -13,9 +15,7 @@ export default function Header() {
   const hasUnread = useUnreadMessages();
   const isRTL = language === 'ar';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Mock user authentication state - à remplacer par votre logique d'auth
-  const isUserLoggedIn = true; // Changez ceci selon votre logique d'authentification
+  const { isAuthenticated, isLoading } = useAuth();
 
   const navigationItems = [
     { href: "/", label: t("nav.home") },
@@ -53,17 +53,25 @@ export default function Header() {
         {/* Actions (Droite) - Desktop */}
         <div className="hidden lg:flex items-center gap-6">
           {/* Menu profil utilisateur ou boutons de connexion */}
-          {!isUserLoggedIn ? (
+          {isLoading ? (
+            <Skeleton className="h-8 w-24" />
+          ) : !isAuthenticated ? (
             <>
               <Link href="/login">
-                <button className="px-3 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105">
-                  {t("nav.login")}
+                <button
+                  className="px-3 py-2 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:shadow-md hover:bg-orange-50 transform hover:scale-105"
+                  aria-label={t("auth.login")}
+                >
+                  {t("auth.login")}
                 </button>
               </Link>
-              
+
               <Link href="/register">
-                <button className="gradient-orange text-white px-4 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md">
-                  {t("nav.register")}
+                <button
+                  className="gradient-orange text-white px-4 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
+                  aria-label={t("auth.signup")}
+                >
+                  {t("auth.signup")}
                 </button>
               </Link>
             </>
@@ -132,22 +140,27 @@ export default function Header() {
                   <LanguageToggle />
                 </div>
                 
-                {!isUserLoggedIn ? (
+                {isLoading ? (
+                  <div className="px-4 py-3 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ) : !isAuthenticated ? (
                   <>
                     <Link
                       href="/login"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 text-gray-700 hover:text-orange-500 transition-all font-medium rounded-lg hover:bg-orange-50"
                     >
-                      {t("nav.login")}
+                      {t("auth.login")}
                     </Link>
-                    
+
                     <Link
                       href="/register"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 gradient-orange text-white rounded-lg font-semibold transition-all text-center"
                     >
-                      {t("nav.register")}
+                      {t("auth.signup")}
                     </Link>
                   </>
                 ) : (
