@@ -4,8 +4,8 @@ import { app } from '../server';
 
 describe('messages flow', () => {
   it('send, list, mark read, ownership', async () => {
-    const aEmail = `a${Date.now()}@test.io`;
-    const bEmail = `b${Date.now()}@test.io`;
+    const aEmail = `a${Date.now()}_${Math.random().toString(36).slice(2)}@test.io`;
+    const bEmail = `b${Date.now()}_${Math.random().toString(36).slice(2)}@test.io`;
 
     await request(app).post('/api/auth/register').send({ email: aEmail, password: 'Passw0rd!', role: 'CLIENT' }).expect(201);
     await request(app).post('/api/auth/register').send({ email: bEmail, password: 'Passw0rd!', role: 'PROVIDER' }).expect(201);

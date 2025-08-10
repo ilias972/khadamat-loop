@@ -10,8 +10,8 @@ function dayPlus(n: number) {
 
 describe('Booking flow', () => {
   it('client create -> provider confirm -> propose day -> client accept', async () => {
-    const pEmail = `p${Date.now()}@test.io`;
-    const cEmail = `c${Date.now()}@test.io`;
+    const pEmail = `p${Date.now()}_${Math.random().toString(36).slice(2)}@test.io`;
+    const cEmail = `c${Date.now()}_${Math.random().toString(36).slice(2)}@test.io`;
 
     await request(app)
       .post('/api/auth/register')

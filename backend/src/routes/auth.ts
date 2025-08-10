@@ -7,22 +7,39 @@ import { loginLimiter } from '../middlewares/rateLimit';
 
 const router = Router();
 
-const registerSchema = z.object({
+const RegisterSchema = z.object({
   body: z.object({
-    email: z.string().email(),
+    email: z
+      .string()
+      .email()
+      .transform((s) => s.trim().toLowerCase()),
     password: z.string().min(8),
-    role: z.enum(['CLIENT', 'PROVIDER', 'ADMIN']).optional(),
+    firstName: z.string().min(1).transform((s) => s.trim()).optional(),
+    lastName: z.string().min(1).transform((s) => s.trim()).optional(),
+    role: z
+      .enum(['CLIENT', 'PROVIDER', 'ADMIN'])
+      .or(z.string())
+      .transform((r) => {
+        const up = String(r).trim().toUpperCase();
+        if (!['CLIENT', 'PROVIDER', 'ADMIN'].includes(up)) throw new Error('Invalid role');
+        return up as 'CLIENT' | 'PROVIDER' | 'ADMIN';
+      })
+      .optional(),
+    phone: z.string().optional(),
   }),
 });
 
 const loginSchema = z.object({
   body: z.object({
-    email: z.string().email(),
+    email: z
+      .string()
+      .email()
+      .transform((s) => s.trim().toLowerCase()),
     password: z.string().min(8),
   }),
 });
 
-router.post('/register', validate(registerSchema), register);
+router.post('/register', validate(RegisterSchema), register);
 router.post('/login', loginLimiter, validate(loginSchema), login);
 router.get('/profile', authenticate, profile);
 
