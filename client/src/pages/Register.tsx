@@ -253,7 +253,7 @@ export default function Register() {
                       <FormItem>
                         <FormLabel>Prénom</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ahmed" {...field} disabled={isLoading} />
+                          <Input placeholder="" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -267,7 +267,7 @@ export default function Register() {
                       <FormItem>
                         <FormLabel>Nom</FormLabel>
                         <FormControl>
-                          <Input placeholder="Benali" {...field} disabled={isLoading} />
+                          <Input placeholder="" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -287,10 +287,10 @@ export default function Register() {
                           Email
                         </FormLabel>
                         <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="ahmed@example.com" 
-                            {...field} 
+                          <Input
+                            type="email"
+                            placeholder="email@domain.com"
+                            {...field}
                             disabled={isLoading}
                           />
                         </FormControl>

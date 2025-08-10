@@ -25,12 +25,12 @@ export default function ProfileClientInfo() {
   const [, setLocation] = useLocation();
 
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: "Ahmed",
-    lastName: "Benali",
-    email: "ahmed.benali@email.com",
-    phone: "+212 6 12 34 56 78",
-    address: "123 Rue Hassan II, Casablanca",
-    birthDate: "1985-03-15"
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);

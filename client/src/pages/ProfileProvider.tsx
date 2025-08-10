@@ -43,18 +43,18 @@ export default function ProfileProvider() {
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: "Mohammed",
-    lastName: "Idrissi",
-    email: "mohammed.idrissi@email.com",
-    phone: "+212 6 98 76 54 32",
-    address: "456 Avenue Mohammed V, Casablanca",
-    birthDate: "1980-07-22",
-    companyName: "Électricité Idrissi",
-    siret: "12345678901234",
-    description: "Électricien professionnel avec plus de 15 ans d'expérience. Spécialisé dans l'installation électrique, la maintenance et la rénovation.",
-    services: ["Installation électrique", "Maintenance", "Dépannage", "Rénovation"],
-    experience: "15 ans",
-    hourlyRate: "150 DH"
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
+    companyName: "",
+    siret: "",
+    description: "",
+    services: [],
+    experience: "",
+    hourlyRate: "",
   });
 
   const [securityInfo, setSecurityInfo] = useState({
@@ -62,12 +62,8 @@ export default function ProfileProvider() {
     newPassword: "",
     confirmPassword: "",
     twoFactorEnabled: true,
-    lastLogin: "2024-01-15 14:30",
-    loginHistory: [
-      { date: "2024-01-15 14:30", device: "Chrome - MacBook Pro", location: "Casablanca, Maroc" },
-      { date: "2024-01-14 09:15", device: "Safari - iPhone", location: "Rabat, Maroc" },
-      { date: "2024-01-12 16:45", device: "Chrome - Windows", location: "Fès, Maroc" }
-    ]
+    lastLogin: "",
+    loginHistory: [] as any[],
   });
 
   const [notifications, setNotifications] = useState({

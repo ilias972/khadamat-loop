@@ -4,54 +4,21 @@ import { Star, MapPin, CheckCircle, Edit, Settings, LogOut, FileText, MessageSqu
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-// Données mockées du client (en réalité, cela viendrait de l'API)
 const clientData = {
-  id: "1",
-  name: "Fatima Alami",
-  email: "fatima.alami@email.com",
-  phone: "+212 6 12 34 56 78",
-  location: "Casablanca",
-  rating: 4.2,
-  reviewCount: 8,
-  isVerified: true,
-  avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-  joinDate: "2023-03-15",
-  completedMissions: 12,
-  favoriteProviders: 5,
-  reviews: [
-    {
-      id: 1,
-      providerName: "Ahmed Benali",
-      rating: 5,
-      comment: "Excellent prestataire, très professionnel",
-      date: "2024-01-15"
-    },
-    {
-      id: 2,
-      providerName: "Mohammed K.",
-      rating: 4,
-      comment: "Bon service, délais respectés",
-      date: "2024-01-10"
-    }
-  ],
-  missions: [
-    {
-      id: 1,
-      title: "Installation électrique salon",
-      provider: "Ahmed Benali",
-      status: "Terminé",
-      date: "2024-01-15",
-      amount: 800
-    },
-    {
-      id: 2,
-      title: "Réparation plomberie cuisine",
-      provider: "Mohammed K.",
-      status: "En cours",
-      date: "2024-01-20",
-      amount: 450
-    }
-  ]
+  id: "",
+  name: "",
+  email: "",
+  phone: "",
+  location: "",
+  rating: 0,
+  reviewCount: 0,
+  isVerified: false,
+  avatar: "",
+  joinDate: "",
+  completedMissions: 0,
+  favoriteProviders: 0,
+  reviews: [] as any[],
+  missions: [] as any[],
 };
 
 export default function Profile() {

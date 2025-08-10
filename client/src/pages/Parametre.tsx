@@ -50,7 +50,7 @@ export default function Parametre() {
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div>
                     <h3 className="font-medium text-gray-900">Nom complet</h3>
-                    <p className="text-sm text-gray-500">Ahmed Ben Ali</p>
+                    <p className="text-sm text-gray-500">-</p>
                   </div>
                   <Button 
                     variant="ghost" 
@@ -66,7 +66,7 @@ export default function Parametre() {
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div>
                     <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-sm text-gray-500">ahmed.benali@email.com</p>
+                    <p className="text-sm text-gray-500">-</p>
                   </div>
                   <Button 
                     variant="ghost" 
@@ -82,7 +82,7 @@ export default function Parametre() {
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <h3 className="font-medium text-gray-900">Téléphone</h3>
-                    <p className="text-sm text-gray-500">+212 6 12 34 56 78</p>
+                    <p className="text-sm text-gray-500">-</p>
                   </div>
                   <Button 
                     variant="ghost" 

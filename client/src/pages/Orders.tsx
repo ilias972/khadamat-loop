@@ -6,36 +6,8 @@ export default function Orders() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées pour les commandes
-  const orders = [
-    {
-      id: 1,
-      service: "Plomberie",
-      provider: "Ahmed Ben Ali",
-      date: "2024-01-15",
-      status: "completed",
-      amount: "500 DH",
-      description: "Réparation fuite robinet cuisine"
-    },
-    {
-      id: 2,
-      service: "Électricité",
-      provider: "Mohammed El Hassani",
-      date: "2024-01-20",
-      status: "pending",
-      amount: "800 DH",
-      description: "Installation prise électrique salon"
-    },
-    {
-      id: 3,
-      service: "Ménage",
-      provider: "Fatima Zahra",
-      date: "2024-01-25",
-      status: "cancelled",
-      amount: "300 DH",
-      description: "Nettoyage appartement 3 pièces"
-    }
-  ];
+  // Liste des commandes fournie par l'API
+  const orders: any[] = [];
 
   const getStatusIcon = (status: string) => {
     switch (status) {

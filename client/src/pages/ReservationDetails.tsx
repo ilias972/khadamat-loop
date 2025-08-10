@@ -24,29 +24,29 @@ export default function ReservationDetails() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
-  // Données mockées de la réservation
+  // Détails de la réservation fournis par l'API
   const reservation = {
-    id: 1,
-    service: "Plomberie",
+    id: 0,
+    service: "",
     provider: {
-      name: "Ahmed Ben Ali",
-      phone: "+212 6 12 34 56 78",
-      email: "ahmed.benali@email.com",
-      rating: 4.8,
-      reviews: 127,
-      verified: true
+      name: "",
+      phone: "",
+      email: "",
+      rating: 0,
+      reviews: 0,
+      verified: false,
     },
-    date: "2024-01-15",
-    time: "14:00",
-    duration: "2 heures",
-    location: "Casablanca, Maarif",
-    address: "123 Rue Hassan II, Maarif, Casablanca",
-    status: "confirmée",
-    price: "300 DH",
-    description: "Réparation de la fuite dans la salle de bain principale. Remplacement du robinet et vérification de l'étanchéité.",
-    notes: "Merci de prévoir l'accès à la salle de bain. Le prestataire arrivera 10 minutes avant l'heure prévue.",
-    paymentMethod: "Carte bancaire",
-    paymentStatus: "Payé"
+    date: "",
+    time: "",
+    duration: "",
+    location: "",
+    address: "",
+    status: "",
+    price: "",
+    description: "",
+    notes: "",
+    paymentMethod: "",
+    paymentStatus: "",
   };
 
   const getStatusColor = (status: string) => {
