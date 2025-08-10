@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { hashDocNumber, last4, encryptDocNumber } from '../utils/kycCrypto';
+import { hashDocNumber, last4 } from '../utils/kycCrypto';
+import { encryptWithActiveKey } from '../config/keyring';
 import { logAction } from '../middlewares/audit';
 
 const prisma = new PrismaClient();
@@ -26,11 +27,13 @@ export const kycWebhook = async (req: Request, res: Response) => {
       if (docNumber) {
         updates.docNumberHash = hashDocNumber(userId, docNumber);
         updates.docNumberLast4 = last4(docNumber);
+
         if ((process.env.KYC_STORE_RAW ?? 'false').toLowerCase() === 'true') {
-          const { encDoc, encDocTag, encDocNonce } = encryptDocNumber(docNumber);
+          const { keyId, encDoc, encDocTag, encDocNonce } = encryptWithActiveKey(docNumber);
           await prisma.kycVault.upsert({
-            where: { userId }, create: { userId, encDoc, encDocTag, encDocNonce },
-            update: { encDoc, encDocTag, encDocNonce }
+            where: { userId },
+            create: { userId, encDoc, encDocTag, encDocNonce, keyId },
+            update: { encDoc, encDocTag, encDocNonce, keyId }
           });
         }
       }
