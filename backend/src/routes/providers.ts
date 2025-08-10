@@ -41,7 +41,7 @@ const updateSchema = z.object({ params: idSchema.shape.params, body: providerBod
 router.get('/', validate(listSchema), listProviders);
 router.get('/categories', listCategories);
 router.get('/:id', validate(idSchema), getProvider);
-router.post('/', authenticate, requireRole('provider'), requireKycFor('PROVIDER'), validate(createSchema), createProvider);
-router.put('/:id', authenticate, validate(updateSchema), updateProvider);
+router.post('/', authenticate, requireRole('provider'), requireKycFor('BOTH'), validate(createSchema), createProvider);
+router.put('/:id', authenticate, requireKycFor('BOTH'), validate(updateSchema), updateProvider);
 
 export default router;

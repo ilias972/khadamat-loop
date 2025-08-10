@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   listFavorites,
@@ -10,6 +11,8 @@ import {
 } from '../controllers/favoriteController';
 
 const router = Router();
+
+router.use(authenticate, requireKycFor('BOTH'));
 
 const paginationSchema = z.object({
   query: z.object({
@@ -26,9 +29,9 @@ const createSchema = z.object({
   body: z.object({ providerId: z.number().int() }),
 });
 
-router.get('/', authenticate, validate(paginationSchema), listFavorites);
-router.post('/', authenticate, validate(createSchema), addFavorite);
-router.delete('/:providerId', authenticate, validate(providerSchema), removeFavorite);
-router.get('/check/:providerId', authenticate, validate(providerSchema), checkFavorite);
+router.get('/', validate(paginationSchema), listFavorites);
+router.post('/', validate(createSchema), addFavorite);
+router.delete('/:providerId', validate(providerSchema), removeFavorite);
+router.get('/check/:providerId', validate(providerSchema), checkFavorite);
 
 export default router;
