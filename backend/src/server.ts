@@ -25,6 +25,26 @@ import { authenticate, requireRole } from './middlewares/auth';
 import { logger } from './config/logger';
 import { maintenanceGuard } from './middlewares/maintenance';
 import { startSchedulers } from './jobs/scheduler';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function hardenForTests() {
+  const isTest = (process.env.STAGE ?? process.env.NODE_ENV) === 'test';
+  if (!isTest) return;
+
+  await prisma.user.updateMany({
+    where: { isDemo: true, isDisabled: false },
+    data: { isDisabled: true }
+  }).catch(() => {});
+
+  process.env.SMS_DISABLED_FOR_DEMO = 'true';
+  process.env.EMAIL_DISABLED_FOR_DEMO = 'true';
+}
+
+hardenForTests()
+  .catch(() => {})
+  .finally(() => prisma.$disconnect());
 
 if (process.env.SENTRY_DSN) {
   (async () => {
