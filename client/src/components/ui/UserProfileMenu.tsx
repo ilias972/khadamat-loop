@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   User,
   Package,
@@ -39,9 +40,8 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
   const menuRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
-
-  // Aucune donnée utilisateur par défaut
-  const user: AuthUser | null = JSON.parse('null');
+  const { user } = useAuth();
+  const displayName = user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || t("profile.menu.account") : t("profile.menu.account");
 
   // Fermer le menu si on clique en dehors
   useEffect(() => {
@@ -109,23 +109,6 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
     { label: t("profile.menu.settings"), icon: Settings, href: "/reglages" },
   ];
 
-  if (!user) {
-    return (
-      <Link href="/login">
-        <button
-          className={`flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-orange-50 transition-all duration-200 ${className}`}
-        >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
-            <User className="w-4 h-4 text-orange-600" />
-          </div>
-          <span className="text-sm font-medium text-gray-700 hidden md:block">
-            {t("profile.menu.account")}
-          </span>
-        </button>
-      </Link>
-    );
-  }
-
   return (
     <div className={`relative ${className}`} ref={menuRef}>
       {/* Bouton du menu */}
@@ -151,7 +134,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
 
         {/* Nom de l'utilisateur */}
         <span className="text-sm font-medium text-gray-700 hidden md:block">
-          {user?.firstName} {user?.lastName}
+          {displayName}
         </span>
 
         {/* Icône de flèche */}
@@ -181,7 +164,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  {user?.firstName} {user?.lastName}
+                  {displayName}
                 </p>
                 <p className="text-xs text-gray-500 flex items-center gap-1">
                   {isClient ? (
