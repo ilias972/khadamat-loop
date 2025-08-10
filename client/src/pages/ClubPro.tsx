@@ -82,35 +82,7 @@ export default function ClubPro() {
     { number: "95%", labelKey: "club_pro.stats.satisfaction", icon: Star }
   ];
 
-  const testimonials = [
-    {
-      name: "Ahmed Benali",
-      roleKey: "club_pro.testimonials.ahmed.role",
-      avatar: "AB",
-      rating: 4.9,
-      reviews: 127,
-      textKey: "club_pro.testimonials.ahmed.text",
-      highlightKey: "club_pro.testimonials.ahmed.highlight"
-    },
-    {
-      name: "Fatima Zahra",
-      roleKey: "club_pro.testimonials.fatima.role",
-      avatar: "FZ",
-      rating: 4.8,
-      reviews: 89,
-      textKey: "club_pro.testimonials.fatima.text",
-      highlightKey: "club_pro.testimonials.fatima.highlight"
-    },
-    {
-      name: "Mohammed Idrissi",
-      roleKey: "club_pro.testimonials.mohammed.role",
-      avatar: "MI",
-      rating: 4.7,
-      reviews: 156,
-      textKey: "club_pro.testimonials.mohammed.text",
-      highlightKey: "club_pro.testimonials.mohammed.highlight"
-    }
-  ];
+  const testimonials: any[] = [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50 pt-24">
@@ -312,56 +284,58 @@ export default function ClubPro() {
       </section>
 
       {/* Testimonials Section - Enhanced Design */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                {t("club_pro.testimonials_title")}
-              </h2>
-              <p className="text-xl text-gray-600">
-                {t("club_pro.testimonials_subtitle")}
-              </p>
-            </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white">
-                <CardContent className="p-8">
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-4">
-                        <span className="text-white font-bold text-lg">{testimonial.avatar}</span>
-                      </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                          <p className="text-sm text-gray-600">{t(testimonial.roleKey)}</p>
-                        </div>
-                      </div>
-                      <Badge className="bg-green-100 text-green-700 border-green-200">
-                        {t(testimonial.highlightKey)}
-                      </Badge>
-                    </div>
+      {testimonials.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  {t("club_pro.testimonials_title")}
+                </h2>
+                <p className="text-xl text-gray-600">
+                  {t("club_pro.testimonials_subtitle")}
+                </p>
+              </div>
 
-                    <p className="text-gray-700 italic mb-6 leading-relaxed">
-                      "{t(testimonial.textKey)}"
-                    </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < Math.floor(testimonial.rating) ? 'fill-current' : ''}`} />
-                        ))}
+            <div className="grid md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white">
+                  <CardContent className="p-8">
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-4">
+                          <span className="text-white font-bold text-lg">{testimonial.avatar}</span>
+                        </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                            <p className="text-sm text-gray-600">{t(testimonial.roleKey)}</p>
+                          </div>
+                        </div>
+                        <Badge className="bg-green-100 text-green-700 border-green-200">
+                          {t(testimonial.highlightKey)}
+                        </Badge>
                       </div>
-                      <span className="ml-2 text-sm text-gray-600">{testimonial.rating}/5 ({testimonial.reviews} avis)</span>
+
+                      <p className="text-gray-700 italic mb-6 leading-relaxed">
+                        "{t(testimonial.textKey)}"
+                      </p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(testimonial.rating) ? 'fill-current' : ''}`} />
+                          ))}
+                        </div>
+                        <span className="ml-2 text-sm text-gray-600">{testimonial.rating}/5 ({testimonial.reviews} avis)</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section - Enhanced */}
       <section className="py-20 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 text-white relative overflow-hidden">

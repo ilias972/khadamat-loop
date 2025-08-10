@@ -53,24 +53,8 @@ const CITIES = {
   ar: ["الدار البيضاء", "الرباط", "فاس", "مراكش", "أكادير", "طنجة", "وجدة"]
 };
 
-// Liste de prestataires fictifs pour l'autocomplétion
-const PROVIDERS = [
-  "Ahmed Benali - Plombier",
-  "Fatima Zahra - Nettoyage",
-  "Mohammed Idrissi - Électricien",
-  "Amina El Fassi - Jardinier",
-  "Hassan Alami - Peintre",
-  "Karim Bennis - Maçon",
-  "Sara Mansouri - Ménage",
-  "Omar Tazi - Menuisier",
-  "Leila Benjelloun - Plombier",
-  "Youssef El Kaddouri - Électricien",
-  "Nadia Ait Benhaddou - Nettoyage",
-  "Rachid El Amrani - Jardinier",
-  "Samira El Fassi - Peintre",
-  "Abdelkader Benjelloun - Maçon",
-  "Hakima El Mansouri - Ménage"
-];
+// Liste de prestataires (vide par défaut)
+const PROVIDERS: string[] = [];
 
 const normalizeService = (service: string) =>
   service
