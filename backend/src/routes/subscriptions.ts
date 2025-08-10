@@ -5,7 +5,7 @@ import { createClubProSubscription, listMySubscriptions } from '../controllers/s
 
 const router = Router();
 
-router.post('/club-pro', authenticate, requireRole('provider'), requireKycFor('PROVIDER'), createClubProSubscription);
+router.post('/club-pro', authenticate, requireRole('provider'), requireKycFor('BOTH'), createClubProSubscription);
 router.get('/', authenticate, listMySubscriptions);
 
 export default router;

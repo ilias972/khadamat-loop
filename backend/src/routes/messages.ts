@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   getConversations,
@@ -13,7 +14,7 @@ import { z } from 'zod';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, requireKycFor('BOTH'));
 
 router.get(
   '/conversations',

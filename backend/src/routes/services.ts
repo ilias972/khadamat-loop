@@ -44,8 +44,8 @@ const updateSchema = z.object({ params: idSchema.shape.params, body: serviceBody
 router.get('/', validate(listSchema), listServices);
 router.get('/popular', listPopularServices);
 router.get('/category/:cat', validate(z.object({ params: z.object({ cat: z.string() }) })), listServicesByCategory);
-router.post('/', authenticate, requireRole('provider'), requireKycFor('PROVIDER'), validate(createSchema), createService);
-router.put('/:id', authenticate, validate(updateSchema), updateService);
-router.delete('/:id', authenticate, validate(idSchema), deleteService);
+router.post('/', authenticate, requireRole('provider'), requireKycFor('BOTH'), validate(createSchema), createService);
+router.put('/:id', authenticate, requireKycFor('BOTH'), validate(updateSchema), updateService);
+router.delete('/:id', authenticate, requireKycFor('BOTH'), validate(idSchema), deleteService);
 
 export default router;

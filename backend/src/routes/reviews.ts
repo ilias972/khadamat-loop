@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   createReview,
@@ -41,9 +42,9 @@ const updateSchema = z.object({
     }),
 });
 
-router.post('/', authenticate, validate(createSchema), createReview);
+router.post('/', authenticate, requireKycFor('BOTH'), validate(createSchema), createReview);
 router.get('/provider/:providerId', validate(providerSchema), listProviderReviews);
-router.put('/:id', authenticate, validate(updateSchema), updateReview);
-router.delete('/:id', authenticate, validate(idSchema), deleteReview);
+router.put('/:id', authenticate, requireKycFor('BOTH'), validate(updateSchema), updateReview);
+router.delete('/:id', authenticate, requireKycFor('BOTH'), validate(idSchema), deleteReview);
 
 export default router;

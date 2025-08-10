@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole } from '../middlewares/auth';
+import { requireKycFor } from '../middlewares/kyc';
 import { validate } from '../middlewares/validation';
 import {
   createBooking,
@@ -14,6 +15,8 @@ import {
 } from '../controllers/bookingController';
 
 const router = Router();
+
+router.use(authenticate, requireKycFor('BOTH'));
 
 const idSchema = z.object({ params: z.object({ id: z.string().regex(/^[0-9]+$/) }) });
 
@@ -41,13 +44,13 @@ const listSchema = z.object({
   }),
 });
 
-router.post('/', authenticate, requireRole('client', 'admin'), validate(createSchema), createBooking);
-router.put('/:id/confirm', authenticate, requireRole('provider'), validate(idSchema), confirmBooking);
-router.put('/:id/propose-day', authenticate, requireRole('provider'), validate(proposeSchema), proposeDay);
-router.put('/:id/accept-reschedule', authenticate, requireRole('client'), validate(idSchema), acceptReschedule);
-router.put('/:id/reject', authenticate, requireRole('provider'), validate(idSchema), rejectBooking);
-router.put('/:id/cancel', authenticate, requireRole('client'), validate(idSchema), cancelBooking);
-router.get('/', authenticate, validate(listSchema), listBookings);
-router.get('/:id', authenticate, validate(idSchema), getBooking);
+router.post('/', requireRole('client', 'admin'), validate(createSchema), createBooking);
+router.put('/:id/confirm', requireRole('provider'), validate(idSchema), confirmBooking);
+router.put('/:id/propose-day', requireRole('provider'), validate(proposeSchema), proposeDay);
+router.put('/:id/accept-reschedule', requireRole('client'), validate(idSchema), acceptReschedule);
+router.put('/:id/reject', requireRole('provider'), validate(idSchema), rejectBooking);
+router.put('/:id/cancel', requireRole('client'), validate(idSchema), cancelBooking);
+router.get('/', validate(listSchema), listBookings);
+router.get('/:id', validate(idSchema), getBooking);
 
 export default router;
