@@ -24,6 +24,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
+  const nextUrl = new URLSearchParams(window.location.search).get("next") || "/";
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +84,7 @@ export default function Login() {
 
       // Redirection après connexion
       setTimeout(() => {
-        setLocation('/');
+        setLocation(nextUrl);
       }, 1500);
 
     } catch (error) {

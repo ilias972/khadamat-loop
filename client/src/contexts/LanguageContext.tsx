@@ -30,6 +30,7 @@ const translations: Record<Language, TranslationDict> = {
     // Auth
     "auth.login": "Connexion",
     "auth.signup": "Inscription",
+    "auth.required": "Vous devez être connecté pour continuer",
     "auth.forgot.title": "Mot de passe oublié",
     "auth.forgot.email_label": "Email",
     "auth.forgot.send_link": "Envoyer le lien",
@@ -41,7 +42,10 @@ const translations: Record<Language, TranslationDict> = {
     "auth.reset.success": "Mot de passe mis à jour",
     "auth.reset.token_expired": "Lien expiré, redemandez un e-mail",
     "auth.reset.token_invalid": "Lien invalide",
-    
+
+    // Club
+    "club.join": "Rejoindre le Club Pro",
+
     // User Profile Menu
     "profile.menu.profile": "Profil",
     "profile.menu.orders": "Mes commandes",
@@ -585,6 +589,7 @@ const translations: Record<Language, TranslationDict> = {
     // Auth
     "auth.login": "تسجيل الدخول",
     "auth.signup": "التسجيل",
+    "auth.required": "يجب أن تكون متصلاً للمتابعة",
     "auth.forgot.title": "نسيت كلمة المرور",
     "auth.forgot.email_label": "البريد الإلكتروني",
     "auth.forgot.send_link": "إرسال الرابط",
@@ -596,6 +601,9 @@ const translations: Record<Language, TranslationDict> = {
     "auth.reset.success": "تم تحديث كلمة المرور",
     "auth.reset.token_expired": "انتهت صلاحية الرابط، اطلب بريدًا جديدًا",
     "auth.reset.token_invalid": "الرابط غير صالح",
+
+    // Club
+    "club.join": "انضم إلى كلوب برو",
     
     // User Profile Menu
     "profile.menu.profile": "الملف الشخصي",
