@@ -262,9 +262,19 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
-    const user: User = { 
-      ...insertUser, 
+    const user: User = {
       id,
+      username: insertUser.username,
+      email: insertUser.email,
+      password: insertUser.password,
+      firstName: insertUser.firstName,
+      lastName: insertUser.lastName,
+      phone: insertUser.phone ?? null,
+      avatar: insertUser.avatar ?? null,
+      userType: insertUser.userType,
+      isClubPro: insertUser.isClubPro ?? null,
+      isVerified: insertUser.isVerified ?? null,
+      location: insertUser.location ?? null,
       createdAt: new Date(),
     };
     this.users.set(id, user);
@@ -299,7 +309,16 @@ export class MemStorage implements IStorage {
 
   async createService(service: InsertService): Promise<Service> {
     const id = this.currentId++;
-    const newService: Service = { ...service, id };
+    const newService: Service = {
+      id,
+      name: service.name,
+      nameAr: service.nameAr ?? null,
+      description: service.description ?? null,
+      descriptionAr: service.descriptionAr ?? null,
+      category: service.category,
+      icon: service.icon,
+      isPopular: service.isPopular ?? null,
+    };
     this.services.set(id, newService);
     return newService;
   }
@@ -307,8 +326,8 @@ export class MemStorage implements IStorage {
   // Providers
   async getAllProviders(): Promise<ProviderWithUser[]> {
     const providersWithUsers: ProviderWithUser[] = [];
-    
-    for (const provider of this.providers.values()) {
+
+    for (const provider of Array.from(this.providers.values())) {
       const user = this.users.get(provider.userId);
       if (user) {
         providersWithUsers.push({ ...provider, user });
@@ -344,7 +363,18 @@ export class MemStorage implements IStorage {
 
   async createProvider(provider: InsertProvider): Promise<Provider> {
     const id = this.currentId++;
-    const newProvider: Provider = { ...provider, id };
+    const newProvider: Provider = {
+      id,
+      userId: provider.userId,
+      specialties: provider.specialties ?? null,
+      experience: provider.experience ?? null,
+      rating: provider.rating ?? null,
+      reviewCount: provider.reviewCount ?? null,
+      isOnline: provider.isOnline ?? null,
+      hourlyRate: provider.hourlyRate ?? null,
+      bio: provider.bio ?? null,
+      bioAr: provider.bioAr ?? null,
+    };
     this.providers.set(id, newProvider);
     return newProvider;
   }
@@ -361,8 +391,8 @@ export class MemStorage implements IStorage {
   // Projects
   async getAllProjects(): Promise<ProjectWithClient[]> {
     const projectsWithClients: ProjectWithClient[] = [];
-    
-    for (const project of this.projects.values()) {
+
+    for (const project of Array.from(this.projects.values())) {
       const client = this.users.get(project.clientId);
       if (client) {
         projectsWithClients.push({ ...project, client });
@@ -389,9 +419,16 @@ export class MemStorage implements IStorage {
 
   async createProject(project: InsertProject): Promise<Project> {
     const id = this.currentId++;
-    const newProject: Project = { 
-      ...project, 
+    const newProject: Project = {
       id,
+      clientId: project.clientId,
+      title: project.title,
+      description: project.description,
+      serviceCategory: project.serviceCategory,
+      budget: project.budget ?? null,
+      location: project.location ?? null,
+      urgency: project.urgency ?? null,
+      status: project.status ?? null,
       createdAt: new Date(),
     };
     this.projects.set(id, newProject);
@@ -410,8 +447,8 @@ export class MemStorage implements IStorage {
   // Messages
   async getMessagesBetweenUsers(userId1: number, userId2: number): Promise<MessageWithUsers[]> {
     const messagesWithUsers: MessageWithUsers[] = [];
-    
-    for (const message of this.messages.values()) {
+
+    for (const message of Array.from(this.messages.values())) {
       if (
         (message.senderId === userId1 && message.receiverId === userId2) ||
         (message.senderId === userId2 && message.receiverId === userId1)
@@ -432,8 +469,8 @@ export class MemStorage implements IStorage {
 
   async getMessagesByUser(userId: number): Promise<MessageWithUsers[]> {
     const messagesWithUsers: MessageWithUsers[] = [];
-    
-    for (const message of this.messages.values()) {
+
+    for (const message of Array.from(this.messages.values())) {
       if (message.senderId === userId || message.receiverId === userId) {
         const sender = this.users.get(message.senderId);
         const receiver = this.users.get(message.receiverId);
@@ -451,9 +488,12 @@ export class MemStorage implements IStorage {
 
   async createMessage(message: InsertMessage): Promise<Message> {
     const id = this.currentId++;
-    const newMessage: Message = { 
-      ...message, 
+    const newMessage: Message = {
       id,
+      senderId: message.senderId,
+      receiverId: message.receiverId,
+      content: message.content,
+      isRead: message.isRead ?? null,
       createdAt: new Date(),
     };
     this.messages.set(id, newMessage);
@@ -489,9 +529,10 @@ export class MemStorage implements IStorage {
 
   async addFavorite(favorite: InsertFavorite): Promise<Favorite> {
     const id = this.currentId++;
-    const newFavorite: Favorite = { 
-      ...favorite, 
+    const newFavorite: Favorite = {
       id,
+      userId: favorite.userId,
+      providerId: favorite.providerId,
       createdAt: new Date(),
     };
     this.favorites.set(id, newFavorite);
@@ -499,7 +540,7 @@ export class MemStorage implements IStorage {
   }
 
   async removeFavorite(userId: number, providerId: number): Promise<boolean> {
-    for (const [id, favorite] of this.favorites.entries()) {
+    for (const [id, favorite] of Array.from(this.favorites.entries())) {
       if (favorite.userId === userId && favorite.providerId === providerId) {
         this.favorites.delete(id);
         return true;
@@ -523,9 +564,13 @@ export class MemStorage implements IStorage {
 
   async createReview(review: InsertReview): Promise<Review> {
     const id = this.currentId++;
-    const newReview: Review = { 
-      ...review, 
+    const newReview: Review = {
       id,
+      clientId: review.clientId,
+      providerId: review.providerId,
+      rating: review.rating,
+      comment: review.comment ?? null,
+      projectId: review.projectId ?? null,
       createdAt: new Date(),
     };
     this.reviews.set(id, newReview);

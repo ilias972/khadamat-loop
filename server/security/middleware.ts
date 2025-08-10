@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { Options as RateLimitOptions } from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
 import { body, validationResult } from 'express-validator';
 import { verifyAccessToken, AuthUser } from './auth';
 import { SecurityLogger } from './logger';
+
+interface RateLimitConfig extends Partial<RateLimitOptions> {
+  trustProxy?: boolean;
+}
 
 // Extension interface Request pour TypeScript
 declare global {
@@ -19,21 +23,22 @@ declare global {
 
 // Rate limiting agressif
 export const createRateLimit = (windowMs: number, max: number, message: string) => {
-  return rateLimit({
+  const config: RateLimitConfig = {
     windowMs,
     max,
     message: { error: message },
     standardHeaders: true,
     legacyHeaders: false,
-    trustProxy: true, // Fix for Replit proxy
-    handler: (req, res) => {
-      SecurityLogger.logSuspiciousActivity(req.ip || 'unknown', 'RATE_LIMIT_EXCEEDED', {
+    trustProxy: true,
+    handler: (req: Request, res: Response) => {
+      SecurityLogger.logSuspiciousActivity(req.ip || '', 'RATE_LIMIT_EXCEEDED', {
         endpoint: req.path,
-        userAgent: req.get('User-Agent')
+        userAgent: req.get('User-Agent') || ''
       });
       res.status(429).json({ error: message });
     }
-  });
+  };
+  return rateLimit(config as RateLimitOptions);
 };
 
 // Rate limits spécifiques par endpoint
@@ -66,10 +71,10 @@ export const corsOptions = {
       process.env.FRONTEND_URL
     ].filter(Boolean);
     
-    if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin as string)) {
       callback(null, true);
     } else {
-      SecurityLogger.logSuspiciousActivity(origin, 'CORS_VIOLATION', { origin });
+      SecurityLogger.logSuspiciousActivity(origin || '', 'CORS_VIOLATION', { origin });
       callback(new Error('Non autorisé par CORS'));
     }
   },
@@ -116,9 +121,9 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     
     const user = verifyAccessToken(token);
     if (!user) {
-      SecurityLogger.logSuspiciousActivity(req.ip, 'INVALID_TOKEN', {
+      SecurityLogger.logSuspiciousActivity(req.ip || '', 'INVALID_TOKEN', {
         token: token.substring(0, 10) + '...',
-        userAgent: req.get('User-Agent')
+        userAgent: req.get('User-Agent') || ''
       });
       return res.status(403).json({ error: 'Token invalide' });
     }
@@ -136,7 +141,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 export const requireRole = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      SecurityLogger.logSuspiciousActivity(req.ip, 'UNAUTHORIZED_ACCESS', {
+      SecurityLogger.logSuspiciousActivity(req.ip || '', 'UNAUTHORIZED_ACCESS', {
         userId: req.user?.id,
         requiredRoles: roles,
         userRole: req.user?.role
@@ -212,7 +217,7 @@ export const validate2FAInput = [
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    SecurityLogger.logSuspiciousActivity(req.ip, 'VALIDATION_ERROR', {
+    SecurityLogger.logSuspiciousActivity(req.ip || '', 'VALIDATION_ERROR', {
       errors: errors.array(),
       body: req.body
     });
@@ -243,16 +248,16 @@ export const detectSuspiciousActivity = (req: Request, res: Response, next: Next
   ];
   
   if (suspiciousPatterns.some(pattern => pattern.test(userAgent))) {
-    SecurityLogger.logSuspiciousActivity(req.ip, 'SUSPICIOUS_USER_AGENT', {
+    SecurityLogger.logSuspiciousActivity(req.ip || '', 'SUSPICIOUS_USER_AGENT', {
       userAgent,
       endpoint: req.path
     });
   }
   
   // Vérification taille body pour éviter DoS
-  if (req.get('content-length') && parseInt(req.get('content-length')!) > 1024 * 1024) {
-    SecurityLogger.logSuspiciousActivity(req.ip, 'LARGE_PAYLOAD', {
-      size: req.get('content-length'),
+  if (req.get('content-length') && parseInt(req.get('content-length')!, 10) > 1024 * 1024) {
+    SecurityLogger.logSuspiciousActivity(req.ip || '', 'LARGE_PAYLOAD', {
+      size: req.get('content-length') || '',
       endpoint: req.path
     });
     return res.status(413).json({ error: 'Payload trop volumineux' });

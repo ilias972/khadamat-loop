@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useLocation } from "wouter";
-import { 
-  User, 
-  Package, 
-  Heart, 
-  MessageSquare, 
-  Settings, 
+import {
+  User,
+  Package,
+  Heart,
+  MessageSquare,
+  Settings,
   LogOut,
   ChevronDown,
   Crown,
@@ -17,13 +17,18 @@ interface UserProfileMenuProps {
   className?: string;
 }
 
+interface AuthUser {
+  firstName: string;
+  lastName: string;
+  avatar?: string | null;
+}
+
 // Hook pour détecter le rôle de l'utilisateur
 const useUserRole = () => {
   // Simulation - à remplacer par votre logique d'authentification
-  // Vous pouvez passer ces props depuis le Header ou utiliser un contexte d'auth
   const isClient = true; // ou false selon l'utilisateur connecté
   const isPrestataire = false; // ou true selon l'utilisateur connecté
-  
+
   return { isClient, isPrestataire };
 };
 
@@ -36,7 +41,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
   const [, setLocation] = useLocation();
 
   // Aucune donnée utilisateur par défaut
-  const user = null;
+  const user: AuthUser | null = JSON.parse('null');
 
   // Fermer le menu si on clique en dehors
   useEffect(() => {
@@ -133,20 +138,20 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
       >
         {/* Avatar ou icône par défaut */}
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
-          {user.avatar ? (
-            <img
-              src={user.avatar}
-              alt="Avatar"
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          ) : (
+            {user?.avatar ? (
+              <img
+                src={user.avatar ?? ''}
+                alt="Avatar"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
             <User className="w-4 h-4 text-orange-600" />
           )}
         </div>
 
         {/* Nom de l'utilisateur */}
         <span className="text-sm font-medium text-gray-700 hidden md:block">
-          {user.firstName} {user.lastName}
+          {user?.firstName} {user?.lastName}
         </span>
 
         {/* Icône de flèche */}
@@ -164,9 +169,9 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
           <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white rounded-t-xl">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-sm">
-                {user.avatar ? (
+                {user?.avatar ? (
                   <img
-                    src={user.avatar}
+                    src={user.avatar ?? ''}
                     alt="Avatar"
                     className="w-10 h-10 rounded-full object-cover"
                   />
@@ -176,7 +181,7 @@ export default function UserProfileMenu({ className = "" }: UserProfileMenuProps
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  {user.firstName} {user.lastName}
+                  {user?.firstName} {user?.lastName}
                 </p>
                 <p className="text-xs text-gray-500 flex items-center gap-1">
                   {isClient ? (

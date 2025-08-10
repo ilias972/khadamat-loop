@@ -123,6 +123,14 @@ npm run build
 npm start
 ```
 
+## 🧪 Tests
+
+Pour exécuter les tests du frontend :
+
+```bash
+cd client && npm test
+```
+
 ## 🐛 Dépannage
 
 ### **Erreurs courantes :**
