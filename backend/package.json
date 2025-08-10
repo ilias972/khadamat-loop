@@ -16,7 +16,11 @@
     "test:watch": "jest --watch",
     "e2e:clubpro:curl": "node scripts/print-e2e-curls.js",
     "test:cov": "jest --coverage",
-    "admin:create": "ts-node scripts/create-admin.ts"
+    "admin:create": "ts-node scripts/create-admin.ts",
+    "admin:ensure:dev": "ts-node scripts/dev-ensure-admins.ts",
+    "vault:check": "ts-node scripts/check-vault.ts",
+    "kyc:retention:run": "ts-node scripts/run-kyc-retention.ts",
+    "e2e:optionB": "bash scripts/e2e-optionB.sh"
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",
