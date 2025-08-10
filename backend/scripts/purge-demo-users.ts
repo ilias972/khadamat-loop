@@ -8,7 +8,7 @@ async function main() {
     select: { id: true }
   });
   if (!demos.length) {
-    console.log('No demo users found in test DB.');
+    console.log('No demo users found.');
     return;
   }
   const ids = demos.map(d => d.id);
@@ -46,7 +46,7 @@ async function main() {
   // 3) Enfin : Users
   await prisma.user.deleteMany({ where: { id: { in: ids } } }).catch(() => {});
 
-  console.log(`Purged ${ids.length} demo users + related data from test DB.`);
+  console.log(`Purged ${ids.length} demo users and related data.`);
 }
 
 main().finally(() => prisma.$disconnect());

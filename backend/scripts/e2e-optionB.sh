@@ -7,8 +7,10 @@ EMAIL="u$(date +%s)@t.io"
 PASS="Passw0rd!"
 DOCNUM="CINTEST12345678"
 
-echo "== 0) Prépare 2 admins dev =="
-npm run admin:ensure:dev >/dev/null
+: "${ADMIN_A_EMAIL:?set ADMIN_A_EMAIL}"
+: "${ADMIN_A_PASS:?set ADMIN_A_PASS}"
+: "${ADMIN_B_EMAIL:?set ADMIN_B_EMAIL}"
+: "${ADMIN_B_PASS:?set ADMIN_B_PASS}"
 
 echo "== 1) Register user ($ROLE) =="
 curl -s -X POST "$BASE/api/auth/register" -H "Content-Type: application/json" \
@@ -33,11 +35,11 @@ echo "== 5) Vérifier KycVault (chiffré) =="
 npm run -s vault:check -- $USER_ID
 
 echo "== 6) Admin A login =="
-ALOG=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" -d '{"email":"adminA@khadamat.test","password":"ChangeMe_1!"}')
+ALOG=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$ADMIN_A_EMAIL\",\"password\":\"$ADMIN_A_PASS\"}")
 ATOK=$(echo "$ALOG" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{let j=JSON.parse(s);console.log(j.data.tokens.access)}catch{}})")
 
 echo "== 7) Admin B login =="
-BLOG=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" -d '{"email":"adminB@khadamat.test","password":"ChangeMe_1!"}')
+BLOG=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$ADMIN_B_EMAIL\",\"password\":\"$ADMIN_B_PASS\"}")
 BTOK=$(echo "$BLOG" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{let j=JSON.parse(s);console.log(j.data.tokens.access)}catch{}})")
 
 echo "== 8) Admin A demande disclosure =="
