@@ -70,6 +70,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function Register() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
+  const nextUrl = new URLSearchParams(window.location.search).get("next") || "/";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -167,6 +168,9 @@ export default function Register() {
       }
 
       setSuccess(true);
+      setTimeout(() => {
+        setLocation(nextUrl);
+      }, 1500);
 
     } catch (error) {
       console.error('Erreur inscription:', error);

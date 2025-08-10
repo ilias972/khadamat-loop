@@ -1,18 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, CreditCard, Shield, Lock, Crown, CheckCircle, ArrowRight } from "lucide-react";
 
 export default function ClubProCheckout() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -36,15 +39,42 @@ export default function ClubProCheckout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
+    setIsSubmitting(true);
+
     // Simulation d'un processus de paiement
     setTimeout(() => {
-      setIsLoading(false);
+      setIsSubmitting(false);
       // Rediriger vers une page de succès ou le profil
       setLocation("/profile");
     }, 2000);
   };
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      setLocation(`/login?next=/club-pro/checkout`);
+    }
+  }, [authLoading, isAuthenticated, setLocation]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Skeleton className="w-12 h-12 rounded-full" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (user && !(user as any).isProvider) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center space-y-4">
+        <p>{t("auth.required")}</p>
+        <Button onClick={() => setLocation("/register")}>{t("join_providers.become_provider")}</Button>
+      </div>
+    );
+  }
 
   const planDetails = {
     name: "Club Pro",
@@ -241,10 +271,10 @@ export default function ClubProCheckout() {
 
                   <Button
                     type="submit"
-                    disabled={isLoading || !formData.acceptTerms}
+                    disabled={isSubmitting || !formData.acceptTerms}
                     className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-xl"
                   >
-                    {isLoading ? (
+                    {isSubmitting ? (
                       <div className="flex items-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Traitement en cours...</span>
