@@ -3,10 +3,16 @@ import { hashPassword } from '../src/utils/password';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = process.env.SEED_ADMIN_EMAIL!;
+  const email = process.env.SEED_ADMIN_EMAIL;
+  if (!email) {
+    throw new Error('SEED_ADMIN_EMAIL is required');
+  }
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) { console.log('Admin already exists'); return; }
-  const password = process.env.SEED_ADMIN_PASSWORD || 'ChangeMe_2025!';
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!password) {
+    throw new Error('SEED_ADMIN_PASSWORD is required');
+  }
   const hashed = await hashPassword(password);
   const user = await prisma.user.create({
     data: {
