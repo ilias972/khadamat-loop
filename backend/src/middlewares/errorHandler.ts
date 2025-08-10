@@ -1,7 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
+import { ZodError } from 'zod';
 
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Données invalides',
+        details: err.issues?.map((i) => ({ path: i.path, message: i.message })),
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+
   let status = err?.status || 500;
   let message = err?.message || 'Internal Server Error';
 

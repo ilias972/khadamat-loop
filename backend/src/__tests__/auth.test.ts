@@ -4,7 +4,7 @@ import { app } from '../server';
 
 describe('Auth', () => {
   it('register + login + profile', async () => {
-    const email = `t${Date.now()}@test.io`;
+    const email = `t${Date.now()}_${Math.random().toString(36).slice(2)}@test.io`;
     await request(app)
       .post('/api/auth/register')
       .send({ email, password: 'Passw0rd!', role: 'CLIENT' })

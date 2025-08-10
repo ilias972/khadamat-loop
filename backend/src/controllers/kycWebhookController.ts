@@ -6,14 +6,34 @@ import { logAction } from '../middlewares/audit';
 
 const prisma = new PrismaClient();
 
+function parseEvent(req: any) {
+  const body = req.body;
+  if (Buffer.isBuffer(body)) {
+    try {
+      return JSON.parse(body.toString('utf8'));
+    } catch {
+      return null;
+    }
+  }
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body);
+    } catch {
+      return null;
+    }
+  }
+  return body;
+}
+
 // A monter avec express.raw() AVANT json (comme Stripe payments)
 export const kycWebhook = async (req: Request, res: Response) => {
   try {
-    const event = req.body as any; // en prod: vérifier la signature du provider
+    const event = parseEvent(req); // en prod: vérifier la signature du provider
+    if (!event) return res.status(400).json({ error: 'invalid_payload' });
     const type = event?.type;
     const sess = event?.data?.object;
     const userId = Number(sess?.metadata?.userId);
-    if (!userId || !type) return res.status(400).end();
+    if (!userId || !type) return res.status(400).json({ error: 'bad_request' });
 
     if (type.endsWith('.verified')) {
       const documentType = sess?.last_verification_report?.document?.type || sess?.type || 'id_card';
