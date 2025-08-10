@@ -6,6 +6,7 @@ export type UserRole = 'client' | 'provider' | 'admin';
 interface JwtPayload {
   id: string;
   role: UserRole;
+  mfa?: boolean;
 }
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
@@ -29,7 +30,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     if (!secret) throw new Error('JWT secret not configured');
 
     const decoded = jwt.verify(token, secret) as JwtPayload;
-    req.user = { id: decoded.id, role: decoded.role };
+    req.user = { id: decoded.id, role: decoded.role, mfa: decoded.mfa };
     next();
   } catch {
     return res.status(401).json({
@@ -66,6 +67,7 @@ declare global {
       user?: {
         id: string;
         role: UserRole;
+        mfa?: boolean;
       };
     }
   }

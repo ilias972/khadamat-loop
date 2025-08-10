@@ -38,6 +38,7 @@ model User {
   pii           UserPII?
   kycVault      KycVault?
   legalHold     LegalHold?
+  mfaSecret      MfaSecret?
 }
 
 model Subscription {
@@ -299,3 +300,17 @@ model LegalHold {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 }
+
+model MfaSecret {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  encSecret Bytes
+  encTag    Bytes
+  encNonce  Bytes
+  keyId     String
+  recoveryCodes String? // JSON array of hashed codes
+  enabledAt DateTime?
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
