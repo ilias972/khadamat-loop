@@ -30,6 +30,17 @@ const translations: Record<Language, TranslationDict> = {
     // Auth
     "auth.login": "Connexion",
     "auth.signup": "Inscription",
+    "auth.forgot.title": "Mot de passe oublié",
+    "auth.forgot.email_label": "Email",
+    "auth.forgot.send_link": "Envoyer le lien",
+    "auth.forgot.success": "Si un compte existe, un e-mail a été envoyé.",
+    "auth.reset.title": "Réinitialiser le mot de passe",
+    "auth.reset.new_password": "Nouveau mot de passe",
+    "auth.reset.confirm_password": "Confirmer le mot de passe",
+    "auth.reset.submit": "Mettre à jour le mot de passe",
+    "auth.reset.success": "Mot de passe mis à jour",
+    "auth.reset.token_expired": "Lien expiré, redemandez un e-mail",
+    "auth.reset.token_invalid": "Lien invalide",
     
     // User Profile Menu
     "profile.menu.profile": "Profil",
@@ -574,6 +585,17 @@ const translations: Record<Language, TranslationDict> = {
     // Auth
     "auth.login": "تسجيل الدخول",
     "auth.signup": "التسجيل",
+    "auth.forgot.title": "نسيت كلمة المرور",
+    "auth.forgot.email_label": "البريد الإلكتروني",
+    "auth.forgot.send_link": "إرسال الرابط",
+    "auth.forgot.success": "إذا كان الحساب موجودًا، تم إرسال بريد إلكتروني.",
+    "auth.reset.title": "إعادة تعيين كلمة المرور",
+    "auth.reset.new_password": "كلمة المرور الجديدة",
+    "auth.reset.confirm_password": "تأكيد كلمة المرور",
+    "auth.reset.submit": "تحديث كلمة المرور",
+    "auth.reset.success": "تم تحديث كلمة المرور",
+    "auth.reset.token_expired": "انتهت صلاحية الرابط، اطلب بريدًا جديدًا",
+    "auth.reset.token_invalid": "الرابط غير صالح",
     
     // User Profile Menu
     "profile.menu.profile": "الملف الشخصي",
