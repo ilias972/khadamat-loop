@@ -26,6 +26,10 @@ const translations: Record<Language, TranslationDict> = {
     "nav.contact": "Contact",
     "nav.about": "À propos",
     "nav.profile": "Profil",
+
+    // Auth
+    "auth.login": "Connexion",
+    "auth.signup": "Inscription",
     
     // User Profile Menu
     "profile.menu.profile": "Profil",
@@ -89,6 +93,10 @@ const translations: Record<Language, TranslationDict> = {
     "providers.contact": "Contacter",
     "providers.reviews": "avis",
     "providers.view_profile": "Profil",
+
+    // Reviews
+    "reviews.empty.title": "Aucun avis pour le moment",
+    "reviews.empty.subtitle": "Revenez bientôt : de nouveaux avis apparaîtront ici.",
     
     // Chat
     "chat.title": "Messagerie Instantanée",
@@ -425,15 +433,6 @@ const translations: Record<Language, TranslationDict> = {
     "stats.support": "Support",
     
     // Testimonials
-    "testimonials.review1": "Excellent service ! Le prestataire était ponctuel, professionnel et le travail était parfait. Je recommande vivement.",
-    "testimonials.review2": "Très satisfait de la qualité du service. Prix raisonnable et délais respectés. Je ferai appel à nouveau.",
-    "testimonials.review3": "Plateforme très pratique pour trouver des prestataires fiables. L'interface est intuitive et le service client réactif.",
-    "testimonials.user1": "Client 1",
-    "testimonials.user2": "Client 2",
-    "testimonials.user3": "Client 3",
-    "testimonials.city1": "Casablanca",
-    "testimonials.city2": "Rabat",
-    "testimonials.city3": "Marrakech",
     
     // Newsletter
     "newsletter.stay_informed": "Restez informé des nouveautés et des offres dans votre région",
@@ -571,6 +570,10 @@ const translations: Record<Language, TranslationDict> = {
     "nav.contact": "اتصل بنا",
     "nav.about": "حول",
     "nav.profile": "الملف الشخصي",
+
+    // Auth
+    "auth.login": "تسجيل الدخول",
+    "auth.signup": "التسجيل",
     
     // User Profile Menu
     "profile.menu.profile": "الملف الشخصي",
@@ -641,6 +644,10 @@ const translations: Record<Language, TranslationDict> = {
     "providers.contact": "اتصل",
     "providers.reviews": "مراجعة",
     "providers.view_profile": "الملف الشخصي",
+
+    // Reviews
+    "reviews.empty.title": "لا توجد مراجعات حالياً",
+    "reviews.empty.subtitle": "عودوا لاحقاً: ستظهر المراجعات الجديدة هنا.",
     
     // Chat
     "chat.title": "المراسلة الفورية",
@@ -973,15 +980,6 @@ const translations: Record<Language, TranslationDict> = {
     "stats.support": "الدعم",
     
     // Testimonials
-    "testimonials.review1": "خدمة ممتازة! كان مقدم الخدمة دقيقاً ومهنياً والعمل كان مثالياً. أوصي بشدة.",
-    "testimonials.review2": "راضٍ جداً من جودة الخدمة. السعر معقول والمواعيد محترمة. سألجأ مرة أخرى.",
-    "testimonials.review3": "منصة مفيدة جداً للعثور على مقدمي خدمات موثوقين. الواجهة بديهية وخدمة العملاء متجاوبة.",
-    "testimonials.user1": "عميل 1",
-    "testimonials.user2": "عميل 2",
-    "testimonials.user3": "عميل 3",
-    "testimonials.city1": "الدار البيضاء",
-    "testimonials.city2": "الرباط",
-    "testimonials.city3": "مراكش",
     
     // Newsletter
     "newsletter.stay_informed": "ابق على اطلاع بالأخبار والعروض في منطقتك",
@@ -1165,7 +1163,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useLanguage() {
+export function useLanguage(): LanguageContextType {
   const context = useContext(LanguageContext);
   if (context === undefined) {
     throw new Error("useLanguage must be used within a LanguageProvider");
