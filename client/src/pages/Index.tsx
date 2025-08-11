@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
-import SmartSearch from "@/components/search/SmartSearch";
+import ServiceSearchBar from "@/components/search/ServiceSearchBar";
 import FeaturedProvidersCarousel from "@/components/providers/FeaturedProvidersCarousel";
 import JoinProviders from "@/components/providers/JoinProviders";
 import NewsletterSection from "@/components/ui/NewsletterSection";
@@ -77,9 +77,9 @@ export default function Index() {
             </p>
           </div>
           
-          {/* Smart Search Bar avec suggestions */}
+          {/* Service Search Bar with suggestions */}
           <div id="search">
-            <SmartSearch showSuggestions={true} />
+            <ServiceSearchBar />
           </div>
 
         </div>

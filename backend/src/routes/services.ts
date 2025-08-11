@@ -10,6 +10,8 @@ import {
   createService,
   updateService,
   deleteService,
+  getServiceCatalog,
+  suggestServices,
 } from '../controllers/serviceController';
 
 const router = Router();
@@ -41,9 +43,26 @@ const serviceBody = z.object({
 const createSchema = z.object({ body: serviceBody });
 const updateSchema = z.object({ params: idSchema.shape.params, body: serviceBody.partial() });
 
+const catalogSchema = z.object({
+  query: z.object({
+    groupBy: z.string().optional(),
+    locale: z.enum(['fr', 'ar']).optional(),
+  }),
+});
+
+const suggestSchema = z.object({
+  query: z.object({
+    q: z.string().optional(),
+    limit: z.string().regex(/^[0-9]+$/).optional(),
+    locale: z.enum(['fr', 'ar']).optional(),
+  }),
+});
+
 router.get('/', validate(listSchema), listServices);
 router.get('/popular', listPopularServices);
 router.get('/category/:cat', validate(z.object({ params: z.object({ cat: z.string() }) })), listServicesByCategory);
+router.get('/catalog', validate(catalogSchema), getServiceCatalog);
+router.get('/suggest', validate(suggestSchema), suggestServices);
 router.post('/', authenticate, requireRole('provider'), requireKycFor('BOTH'), validate(createSchema), createService);
 router.put('/:id', authenticate, requireKycFor('BOTH'), validate(updateSchema), updateService);
 router.delete('/:id', authenticate, requireKycFor('BOTH'), validate(idSchema), deleteService);
