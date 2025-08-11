@@ -6,13 +6,21 @@ import type { Service } from "@shared/schema";
 interface ServiceCardProps {
   service: Service;
   onClick?: () => void;
+  highlight?: string;
 }
 
-export default function ServiceCard({ service, onClick }: ServiceCardProps) {
+export default function ServiceCard({ service, onClick, highlight }: ServiceCardProps) {
   const { t, language } = useLanguage();
-  
-  const name = language === "ar" && service.nameAr ? service.nameAr : service.name;
+
+  const rawName = language === "ar" && service.nameAr ? service.nameAr : service.name;
   const description = language === "ar" && service.descriptionAr ? service.descriptionAr : (service.description || "");
+
+  const renderName = () => {
+    if (!highlight) return rawName;
+    const escaped = highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escaped})`, "i");
+    return <span dangerouslySetInnerHTML={{ __html: rawName.replace(regex, "<mark>$1</mark>") }} />;
+  };
 
   return (
     <div 
@@ -26,7 +34,7 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       </div>
       
       <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
-        {name}
+        {renderName()}
       </h3>
       
       <p className="text-gray-600 mb-6 leading-relaxed">

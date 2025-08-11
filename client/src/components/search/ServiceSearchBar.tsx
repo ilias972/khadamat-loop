@@ -1,5 +1,6 @@
 import { useState, useEffect, KeyboardEvent } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useServicesCatalog } from "@/hooks/useServicesCatalog";
 
 interface Suggestion {
   id: number;
@@ -11,8 +12,21 @@ interface Suggestion {
   category_name_ar: string;
 }
 
-export default function ServiceSearchBar() {
+interface Props {
+  className?: string;
+  placeholder?: string;
+  autoFocus?: boolean;
+  onQueryChange?: (q: string) => void;
+}
+
+export default function ServiceSearchBar({
+  className = "",
+  placeholder,
+  autoFocus,
+  onQueryChange,
+}: Props) {
   const { t, language } = useLanguage();
+  useServicesCatalog();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [active, setActive] = useState(-1);
@@ -66,12 +80,15 @@ export default function ServiceSearchBar() {
         type="text"
         value={query}
         onChange={(e) => {
-          setQuery(e.target.value);
+          const val = e.target.value;
+          setQuery(val);
           setActive(-1);
+          onQueryChange?.(val);
         }}
         onKeyDown={onKeyDown}
-        placeholder={t("filters.service.searchPlaceholder")}
-        className="w-full border rounded px-4 py-2"
+        placeholder={placeholder || t("filters.service.searchPlaceholder")}
+        className={`w-full border rounded px-4 py-2 ${className}`}
+        autoFocus={autoFocus}
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={suggestions.length > 0}
