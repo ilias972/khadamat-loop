@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { logger } from '../config/logger';
+import { CATEGORY_LABELS } from '../config/categoryLabels';
 
 const prisma = new PrismaClient();
 
@@ -37,6 +39,22 @@ const levenshtein = (a: string, b: string) => {
   return matrix[b.length][a.length];
 };
 
+type CatLabel = { name_fr: string; name_ar: string; slug: string };
+
+async function loadCategoryLabels(): Promise<Record<string, CatLabel>> {
+  try {
+    const cats = await prisma.serviceCategory.findMany({ where: { isActive: true } });
+    const map: Record<string, CatLabel> = {};
+    cats.forEach((c) => {
+      map[c.code] = { name_fr: c.nameFr, name_ar: c.nameAr, slug: c.slug };
+    });
+    return map;
+  } catch (e) {
+    logger.warn('categories_fallback_in_use');
+    return CATEGORY_LABELS;
+  }
+}
+
 export async function getServiceCatalog(req: Request, res: Response, next: NextFunction) {
   try {
     const locale = (req.query.locale as string) === 'ar' ? 'ar' : 'fr';
@@ -44,12 +62,20 @@ export async function getServiceCatalog(req: Request, res: Response, next: NextF
       return res.json({ success: true, data: catalogCache.data });
     }
 
-    const services = await prisma.service.findMany();
+    const [services, labels] = await Promise.all([
+      prisma.service.findMany(),
+      loadCategoryLabels(),
+    ]);
     const collator = new Intl.Collator(locale, { sensitivity: 'base' });
 
     const categoriesMap = new Map<string, any>();
     services.forEach((s) => {
       const catCode = s.category;
+      const label = labels[catCode] || {
+        name_fr: catCode,
+        name_ar: catCode,
+        slug: slugify(catCode),
+      };
       const serviceObj = {
         id: s.id,
         code: s.category,
@@ -60,8 +86,9 @@ export async function getServiceCatalog(req: Request, res: Response, next: NextF
       if (!categoriesMap.has(catCode)) {
         categoriesMap.set(catCode, {
           code: catCode,
-          name_fr: catCode,
-          name_ar: catCode,
+          slug: label.slug,
+          name_fr: label.name_fr,
+          name_ar: label.name_ar,
           services: [],
         });
       }
@@ -72,13 +99,16 @@ export async function getServiceCatalog(req: Request, res: Response, next: NextF
     categories.forEach((cat) => {
       cat.services.sort((a: any, b: any) =>
         collator.compare(
-          locale === 'ar' ? a.name_ar : a.name_fr,
-          locale === 'ar' ? b.name_ar : b.name_fr,
+          locale === 'ar' ? normalizeAr(a.name_ar) : normalizeFr(a.name_fr),
+          locale === 'ar' ? normalizeAr(b.name_ar) : normalizeFr(b.name_fr),
         ),
       );
     });
     categories.sort((a: any, b: any) =>
-      collator.compare(locale === 'ar' ? a.name_ar : a.name_fr, locale === 'ar' ? b.name_ar : b.name_fr),
+      collator.compare(
+        locale === 'ar' ? normalizeAr(a.name_ar) : normalizeFr(a.name_fr),
+        locale === 'ar' ? normalizeAr(b.name_ar) : normalizeFr(b.name_fr),
+      ),
     );
 
     const data = { categories };
@@ -98,7 +128,10 @@ export async function suggestServices(req: Request, res: Response, next: NextFun
     const q = normalize(rawQuery);
     if (!q) return res.json({ success: true, data: { suggestions: [] } });
 
-    const services = await prisma.service.findMany();
+    const [services, labels] = await Promise.all([
+      prisma.service.findMany(),
+      loadCategoryLabels(),
+    ]);
     const collator = new Intl.Collator(locale, { sensitivity: 'base' });
 
     const suggestions: any[] = [];
@@ -111,12 +144,19 @@ export async function suggestServices(req: Request, res: Response, next: NextFun
       else if (normName.includes(q)) score = 0.8;
       else if (levenshtein(normName, q) === 1) score = 0.7;
       if (score > 0) {
+        const label = labels[s.category] || {
+          name_fr: s.category,
+          name_ar: s.category,
+          slug: slugify(s.category),
+        };
         suggestions.push({
           id: s.id,
           slug: slugify(s.name),
           name_fr: s.name,
           name_ar: s.nameAr || s.name,
           category_code: s.category,
+          category_name_fr: label.name_fr,
+          category_name_ar: label.name_ar,
           _score: score,
         });
       }
@@ -125,7 +165,10 @@ export async function suggestServices(req: Request, res: Response, next: NextFun
     suggestions.sort(
       (a, b) =>
         b._score - a._score ||
-        collator.compare(locale === 'ar' ? a.name_ar : a.name_fr, locale === 'ar' ? b.name_ar : b.name_fr),
+        collator.compare(
+          locale === 'ar' ? normalizeAr(a.name_ar) : normalizeFr(a.name_fr),
+          locale === 'ar' ? normalizeAr(b.name_ar) : normalizeFr(b.name_fr),
+        ),
     );
 
     const final = suggestions.slice(0, limit).map(({ _score, ...rest }) => rest);

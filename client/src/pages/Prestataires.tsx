@@ -5,12 +5,13 @@ import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { Search, Filter, MapPin, Calendar, DollarSign } from "lucide-react";
 import { getFilteredAndSortedProviders } from "@/lib/providerSorting";
 import type { SortableProvider } from "@/lib/providerSorting";
+import { useQuery } from "@tanstack/react-query";
 
 // Liste des prestataires fournie par l'API
 const allProviders: SortableProvider[] = [];
 
 export default function Prestataires() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedService, setSelectedService] = useState("");
@@ -20,27 +21,25 @@ export default function Prestataires() {
   const [selectedDate, setSelectedDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const serviceDisplayMap: Record<string, string> = {
-    plomberie: "Plomberie",
-    electricite: "Électricité",
-    nettoyage: "Nettoyage",
-    menage: "Ménage",
-    jardinage: "Jardinage",
-    peinture: "Peinture",
-    reparation: "Réparation",
-    menuiserie: "Menuiserie",
-  };
+  const { data: catalog } = useQuery<{ categories: any[] }>({
+    queryKey: ["/api/services/catalog", language],
+    queryFn: async () => {
+      const res = await fetch(`/api/services/catalog?locale=${language}`);
+      const json = await res.json();
+      return json.success ? json.data : { categories: [] };
+    },
+  });
 
-  const services = [
-    "Plomberie",
-    "Électricité",
-    "Ménage",
-    "Jardinage",
-    "Peinture",
-    "Menuiserie",
-    "Nettoyage",
-    "Réparation",
-  ];
+  const serviceOptions = (catalog?.categories || []).flatMap((c) =>
+    c.services.map((s: any) => ({ slug: s.slug, label: language === "ar" ? s.name_ar : s.name_fr }))
+  );
+
+  const serviceDisplayMap: Record<string, string> = {};
+  serviceOptions.forEach((s) => {
+    serviceDisplayMap[s.slug] = s.label;
+  });
+
+  const services = serviceOptions.map((s) => s.label);
 
   const cities = [
     "Casablanca",
@@ -62,7 +61,7 @@ export default function Prestataires() {
     const providerFilter = urlParams.get('provider');
 
     if (serviceFilter) {
-      const decodedService = decodeURIComponent(serviceFilter).toLowerCase();
+      const decodedService = decodeURIComponent(serviceFilter);
       setSelectedService(serviceDisplayMap[decodedService] || decodedService);
     }
     if (locationFilter) {

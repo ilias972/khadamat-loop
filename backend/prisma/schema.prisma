@@ -89,6 +89,7 @@ model Service {
   description   String?
   descriptionAr String?
   category      String
+  serviceCategory ServiceCategory @relation(fields: [category], references: [code])
   icon          String?
   basePrice     Int      @default(0)
   isPopular     Boolean  @default(false)
@@ -97,6 +98,18 @@ model Service {
   bookings      Booking[]
 
   @@index([providerId, category], map: "idx_service_provider_category")
+}
+
+model ServiceCategory {
+  code      String  @id
+  slug      String  @unique
+  nameFr    String  @map("name_fr")
+  nameAr    String  @map("name_ar")
+  sortOrder Int     @default(100) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+  services  Service[]
+
+  @@map("service_categories")
 }
 
 model Booking {

@@ -29,6 +29,15 @@ export const services = pgTable("services", {
   isPopular: boolean("is_popular").default(false),
 });
 
+export const serviceCategories = pgTable("service_categories", {
+  code: text("code").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name_fr: text("name_fr").notNull(),
+  name_ar: text("name_ar").notNull(),
+  sort_order: integer("sort_order").default(100),
+  is_active: boolean("is_active").default(true),
+});
+
 export const providers = pgTable("providers", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -120,6 +129,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Service = typeof services.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
+export type ServiceCategory = typeof serviceCategories.$inferSelect;
 export type Provider = typeof providers.$inferSelect;
 export type InsertProvider = z.infer<typeof insertProviderSchema>;
 export type Project = typeof projects.$inferSelect;
