@@ -1,160 +1,183 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, 
-  Target, 
-  Heart, 
-  Award, 
-  TrendingUp,
-  Globe,
-  Shield,
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Search,
+  MessageCircle,
   CheckCircle,
+  Shield,
+  Heart,
+  Award,
   Handshake,
-  Star,
-  MapPin,
-  Phone,
-  Mail
 } from "lucide-react";
 
 export default function About() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
+
+  const howItWorks = [
+    {
+      icon: Search,
+      title: t("about.how.step1.title"),
+      description: t("about.how.step1.desc"),
+    },
+    {
+      icon: MessageCircle,
+      title: t("about.how.step2.title"),
+      description: t("about.how.step2.desc"),
+    },
+    {
+      icon: CheckCircle,
+      title: t("about.how.step3.title"),
+      description: t("about.how.step3.desc"),
+    },
+  ];
 
   const values = [
     {
       icon: Shield,
-      title: "Confiance",
-      description: "Nous vérifions chaque prestataire pour garantir la qualité et la sécurité de nos services.",
+      title: t("about.values.trust.title"),
+      description: t("about.values.trust.desc"),
     },
     {
       icon: Heart,
-      title: "Proximité",
-      description: "Une approche locale qui privilégie les relations humaines et la compréhension des besoins spécifiques.",
+      title: t("about.values.proximity.title"),
+      description: t("about.values.proximity.desc"),
     },
     {
       icon: Award,
-      title: "Excellence",
-      description: "Nous ne sélectionnons que les meilleurs prestataires pour offrir un service d'exception.",
+      title: t("about.values.excellence.title"),
+      description: t("about.values.excellence.desc"),
     },
     {
       icon: Handshake,
-      title: "Engagement",
-      description: "Notre mission est de faciliter les rencontres entre clients et prestataires de qualité.",
+      title: t("about.values.commitment.title"),
+      description: t("about.values.commitment.desc"),
     },
   ];
 
-  const stats = [
-    { value: "10,000+", label: "Prestataires Actifs", icon: Users },
-    { value: "50,000+", label: "Clients Satisfaits", icon: Heart },
-    { value: "15", label: "Villes Couvertes", icon: MapPin },
-    { value: "4.8/5", label: "Note Moyenne", icon: Star },
+  const trustPoints = [
+    t("about.trust.b1"),
+    t("about.trust.b2"),
+    t("about.trust.b3"),
+    t("about.trust.b4"),
+    t("about.trust.b5"),
   ];
 
-  const milestones = [
-    {
-      year: "2021",
-      title: "Création de Khadamat",
-      description: "Lancement de la première version avec 100 prestataires à Casablanca",
-    },
-    {
-      year: "2022",
-      title: "Expansion Nationale",
-      description: "Extension à 5 grandes villes du Maroc avec plus de 1,000 prestataires",
-    },
-    {
-      year: "2023",
-      title: "Lancement Club Pro",
-      description: "Introduction du programme de vérification premium pour les prestataires",
-    },
-    {
-      year: "2024",
-      title: "Innovation Continue",
-      description: "Nouvelles fonctionnalités : messagerie temps réel, service SOS, paiement sécurisé",
-    },
+  const faqs = [
+    { q: t("faq.q1"), a: t("faq.a1") },
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
   ];
-
-  const team: Array<never> = [];
 
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-20 pattern-bg">
+    <div dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen pt-20">
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-orange-50 via-white to-orange-100 py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <Badge variant="secondary" className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full mb-6">
-            {t("nav.about")}
+          <Badge
+            variant="secondary"
+            className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full mb-6"
+          >
+            {t("about.badge")}
           </Badge>
-          
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Notre Mission :
-            <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-              {" "}Connecter
-            </span>
+          <h1
+            className={`text-5xl md:text-7xl font-bold text-gray-900 mb-6 ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("about.title")}
           </h1>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-            Khadamat est né d'une vision simple : faciliter l'accès aux services professionnels de qualité 
-            partout au Maroc en créant une plateforme de confiance qui unit clients et prestataires.
+          <p
+            className={`text-xl text-gray-600 max-w-3xl mx-auto mb-8 ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("about.subtitle")}
           </p>
-
-          <div className="flex justify-center space-x-4">
-            <Button 
+          <div
+            className={`flex justify-center space-x-4 ${
+              language === "ar" ? "space-x-reverse" : ""
+            }`}
+          >
+            <Button
               className="gradient-orange text-white px-8 py-3 rounded-xl font-semibold border-0"
               onClick={() => setLocation("/register")}
             >
-              Rejoindre Khadamat
+              {t("about.cta.join")}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-orange-200 text-orange-600 hover:bg-orange-50 px-8 py-3 rounded-xl font-semibold"
               onClick={() => setLocation("/services")}
             >
-              Découvrir nos Services
+              {t("about.cta.explore")}
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* How it works */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
+          <h2
+            className={`text-4xl font-bold text-gray-900 mb-12 text-center ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("about.how.title")}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {howItWorks.map((item, index) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="w-8 h-8 text-white" />
+                  <item.icon className="w-8 h-8 text-white" aria-hidden="true" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                <div className="text-gray-600">{stat.label}</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Values Section */}
+      {/* Values */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nos Valeurs
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Les principes qui guident notre mission et façonnent notre approche
-            </p>
-          </div>
-          
+          <h2
+            className={`text-4xl font-bold text-gray-900 mb-12 text-center ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("about.values.title")}
+          </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover-scale text-center">
-                <CardContent className="p-8">
+              <Card
+                key={index}
+                className="border-0 shadow-lg hover:shadow-xl transition-all"
+              >
+                <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 gradient-orange rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <value.icon className="w-8 h-8 text-white" />
+                    <value.icon
+                      className="w-8 h-8 text-white"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{value.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {value.title}
+                  </h3>
+                  <p className="text-gray-600">{value.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -162,151 +185,96 @@ export default function About() {
         </div>
       </section>
 
-      {/* Story Section */}
+      {/* Trust & Security */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Notre Histoire
-              </h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Tout a commencé en 2021 avec une frustration partagée par de nombreux Marocains : 
-                la difficulté de trouver des prestataires de services fiables et qualifiés. 
-                Nos fondateurs ont décidé de créer une solution digitale innovante pour résoudre ce problème.
-              </p>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Aujourd'hui, Khadamat est devenu la référence au Maroc pour connecter clients et prestataires, 
-                avec un système de vérification rigoureux et des outils modernes pour faciliter les échanges.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange-500" />
-                  <span className="text-gray-700">Vérification rigoureuse de tous les prestataires</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange-500" />
-                  <span className="text-gray-700">Système de notation transparent et équitable</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange-500" />
-                  <span className="text-gray-700">Support client disponible 7j/7</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange-500" />
-                  <span className="text-gray-700">Paiement sécurisé et protection des données</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <img 
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Équipe Khadamat au travail"
-                className="rounded-2xl shadow-lg"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Bureau moderne Khadamat"
-                className="rounded-2xl shadow-lg mt-8"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1543269664-56d93c1b41a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Technologie et innovation"
-                className="rounded-2xl shadow-lg -mt-8"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Services professionnels au Maroc"
-                className="rounded-2xl shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Timeline Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Notre Parcours
-            </h2>
-            <p className="text-xl text-gray-600">
-              Les étapes clés de notre développement
-            </p>
-          </div>
-          
-          <div className="space-y-8">
-            {milestones.map((milestone, index) => (
-              <div key={index} className="flex items-start space-x-6">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 gradient-orange rounded-full flex items-center justify-center text-white font-bold">
-                    {milestone.year.slice(-2)}
-                  </div>
-                </div>
-                <Card className="flex-1 border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xl font-bold text-gray-900">{milestone.title}</h3>
-                      <Badge variant="secondary" className="bg-orange-100 text-orange-600">
-                        {milestone.year}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600 leading-relaxed">{milestone.description}</p>
-                  </CardContent>
-                </Card>
-              </div>
+          <h2
+            className={`text-4xl font-bold text-gray-900 mb-6 text-center ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("about.trust.title")}
+          </h2>
+          <ul
+            className={`space-y-3 list-disc ${
+              language === "ar" ? "pr-6 text-right" : "pl-6"
+            }`}
+          >
+            {trustPoints.map((point, i) => (
+              <li key={i} className="text-gray-700">
+                {point}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
+      {/* Reviews placeholder */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            {t("about.reviews.title")}
+          </h2>
+          <p className="text-gray-600">{t("about.reviews.empty")}</p>
+        </div>
+      </section>
 
+      {/* FAQ */}
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2
+            className={`text-4xl font-bold text-gray-900 mb-8 text-center ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("faq.title")}
+          </h2>
+          <Accordion type="single" collapsible>
+            {faqs.map((item, idx) => (
+              <AccordionItem key={idx} value={`item-${idx}`}>
+                <AccordionTrigger className={language === "ar" ? "text-right" : ""}>
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className={language === "ar" ? "text-right" : ""}>
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
 
-      {/* Contact CTA Section */}
+      {/* Final CTA */}
       <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Globe className="w-16 h-16 mx-auto mb-6 text-orange-200" />
-          <h2 className="text-4xl font-bold mb-6">
-            Rejoignez Notre Mission
+          <h2 className="text-4xl font-bold mb-4">
+            {t("cta.join.title")}
           </h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Que vous soyez client à la recherche de services ou prestataire souhaitant développer votre activité, 
-            Khadamat est là pour vous accompagner.
+          <p className="text-xl mb-8 text-orange-100">
+            {t("cta.join.desc")}
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              className="bg-white text-orange-600 px-8 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-all"
+          <div
+            className={`flex flex-col sm:flex-row gap-4 justify-center ${
+              language === "ar" ? "sm:flex-row-reverse" : ""
+            }`}
+          >
+            <Button
+              className="bg-white text-orange-600 px-8 py-3 rounded-xl font-semibold hover:bg-orange-50"
               onClick={() => setLocation("/register")}
             >
-              <Users className="w-5 h-5 mr-2" />
-              Devenir Prestataire
+              {t("cta.join.register")}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-3 rounded-xl font-semibold"
               onClick={() => setLocation("/contact")}
             >
-              <Mail className="w-5 h-5 mr-2" />
-              Nous Contacter
+              {t("cta.join.contact")}
             </Button>
-          </div>
-
-          <div className="flex items-center justify-center space-x-8 mt-8 text-orange-200">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-5 h-5" />
-              <span>+212 5XX XXX XXX</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="w-5 h-5" />
-              <span>hello@khadamat.ma</span>
-            </div>
           </div>
         </div>
       </section>
     </div>
   );
 }
+
