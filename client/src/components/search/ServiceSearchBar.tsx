@@ -7,6 +7,8 @@ interface Suggestion {
   name_fr: string;
   name_ar: string;
   category_code: string;
+  category_name_fr: string;
+  category_name_ar: string;
 }
 
 export default function ServiceSearchBar() {
@@ -35,7 +37,7 @@ export default function ServiceSearchBar() {
   const displayName = (s: Suggestion) => (language === "ar" ? s.name_ar : s.name_fr);
 
   const handleSelect = (s: Suggestion) => {
-    window.location.href = `/providers?services=${s.slug}`;
+    window.location.href = `/prestataires?service=${s.slug}`;
   };
 
   const highlight = (name: string) => {
@@ -87,6 +89,9 @@ export default function ServiceSearchBar() {
                 onMouseDown={() => handleSelect(s)}
               >
                 <span dangerouslySetInnerHTML={{ __html: highlight(displayName(s)) }} />
+                <div className="text-xs text-gray-500">
+                  {language === "ar" ? s.category_name_ar : s.category_name_fr}
+                </div>
               </div>
             ))
           ) : (
