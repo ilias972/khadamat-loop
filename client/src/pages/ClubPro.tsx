@@ -1,13 +1,15 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Headphones, Building, Star, CheckCircle, ArrowRight, Users, TrendingUp, Award, CreditCard, Tag, Rocket, Shield, Crown, User, Zap, Target, Calendar, MessageSquare, Phone, Mail, MapPin, Clock, DollarSign, Percent, ArrowUpRight } from "lucide-react";
+import { Star, CheckCircle, ArrowRight, Users, TrendingUp, Shield, Crown, Zap, Target, Calendar, MessageSquare, Clock, DollarSign } from "lucide-react";
 import { useJoinClubPro } from "@/hooks/useJoinClubPro";
+import { useLocation } from "wouter";
 
 export default function ClubPro() {
   const { t } = useLanguage();
   const { handleJoinClubPro, isLoading } = useJoinClubPro();
+  const [, setLocation] = useLocation();
 
   const features = [
     {
@@ -91,7 +93,7 @@ export default function ClubPro() {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 text-center">
           <div className="inline-flex items-center space-x-3 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-white/30">
-            <Crown className="w-5 h-5" />
+            <Crown className="w-5 h-5" aria-hidden="true" />
             <span className="font-bold text-lg">{t("nav.club_pro")}</span>
           </div>
 
@@ -105,15 +107,15 @@ export default function ClubPro() {
           
           <div className="flex flex-wrap items-center justify-center gap-6 text-orange-100 text-sm mb-12">
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" aria-hidden="true" />
               <span>{t("club_pro.verification_24h")}</span>
             </div>
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" aria-hidden="true" />
               <span>{t("club_pro.priority_support")}</span>
             </div>
             <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full">
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" aria-hidden="true" />
               <span>{t("club_pro.premium_badge")}</span>
             </div>
           </div>
@@ -129,7 +131,7 @@ export default function ClubPro() {
             ) : (
               <>
                 {t("club.join")}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
               </>
             )}
           </Button>
@@ -145,7 +147,7 @@ export default function ClubPro() {
               return (
                 <div key={index} className="text-center">
                   <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-white" />
+                    <Icon className="w-8 h-8 text-white" aria-hidden="true" />
                   </div>
                     <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{stat.number}</div>
                     <div className="text-gray-600 font-medium">{t(stat.labelKey)}</div>
@@ -175,7 +177,7 @@ export default function ClubPro() {
                 <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white">
                   <CardContent className="p-8 text-center">
                     <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
-                      <Icon className="w-8 h-8 text-white" />
+                      <Icon className="w-8 h-8 text-white" aria-hidden="true" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">
                       {t(feature.titleKey)}
@@ -211,7 +213,7 @@ export default function ClubPro() {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-white" />
+                        <Icon className="w-6 h-6 text-white" aria-hidden="true" />
                       </div>
                       <Badge className="bg-orange-100 text-orange-700 border-orange-200">
                         {t(benefit.highlightKey)}
@@ -247,7 +249,7 @@ export default function ClubPro() {
             <CardContent className="p-8 md:p-12">
               <div className="text-center mb-8">
                   <div className="inline-flex items-center space-x-2 bg-white/20 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6">
-                    <Crown className="w-5 h-5" />
+                    <Crown className="w-5 h-5" aria-hidden="true" />
                     <span>{t("nav.club_pro")}</span>
                   </div>
                 
@@ -264,7 +266,7 @@ export default function ClubPro() {
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 {benefits.slice(0, 6).map((benefit, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0" aria-hidden="true" />
                     <span className="text-white">
                       {t(benefit.titleKey)}
                     </span>
@@ -283,7 +285,7 @@ export default function ClubPro() {
                 ) : (
                   <>
                     {t("club.join")}
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
                   </>
                 )}
               </Button>
@@ -337,7 +339,7 @@ export default function ClubPro() {
                       <div className="flex items-center">
                         <div className="flex text-yellow-400">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(testimonial.rating) ? 'fill-current' : ''}`} />
+                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(testimonial.rating) ? 'fill-current' : ''}`} aria-hidden="true" />
                           ))}
                         </div>
                         <span className="ml-2 text-sm text-gray-600">{testimonial.rating}/5 ({testimonial.reviews} avis)</span>
@@ -374,7 +376,7 @@ export default function ClubPro() {
                 ) : (
                   <>
                     {t("club.join")}
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
                   </>
                 )}
               </Button>

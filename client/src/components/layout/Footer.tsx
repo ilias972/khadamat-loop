@@ -57,9 +57,12 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-bold mb-6">Légal</h4>
             <ul className="space-y-4">
-              <li><Link href="/faq" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.faq")}</Link></li>
+              <li><Link href="/legal-notice" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.legal_notice")}</Link></li>
               <li><Link href="/terms" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.terms")}</Link></li>
+              <li><Link href="/rules" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.rules")}</Link></li>
               <li><Link href="/privacy" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.privacy")}</Link></li>
+              <li><Link href="/cookies" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.cookies")}</Link></li>
+              <li><Link href="/club-pro-terms" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">{t("footer.club_pro_terms")}</Link></li>
             </ul>
           </div>
         </div>
