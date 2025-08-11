@@ -40,6 +40,10 @@ import FAQ from "@/pages/FAQ";
 
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import LegalNotice from "@/pages/LegalNotice";
+import Rules from "@/pages/Rules";
+import Cookies from "@/pages/Cookies";
+import ClubProTerms from "@/pages/ClubProTerms";
 import Careers from "@/pages/Careers";
 import Partners from "@/pages/Partners";
 import LoginPage from "@/pages/Login";
@@ -90,8 +94,12 @@ function Router() {
           <Route path="/post-service" component={PostService} />
           <Route path="/faq" component={FAQ} />
 
+          <Route path="/legal-notice" component={LegalNotice} />
           <Route path="/terms" component={Terms} />
+          <Route path="/rules" component={Rules} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/cookies" component={Cookies} />
+          <Route path="/club-pro-terms" component={ClubProTerms} />
           <Route path="/careers" component={Careers} />
           <Route path="/partners" component={Partners} />
           <Route path="/login" component={LoginPage} />
