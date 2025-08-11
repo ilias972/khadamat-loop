@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Headphones, Building, Star, CheckCircle, ArrowRight, Users, TrendingUp, Award, CreditCard, Tag, Rocket, Shield, Crown, User, Zap, Target, Calendar, MessageSquare, Phone, Mail, MapPin, Clock, DollarSign, Percent, ArrowUpRight } from "lucide-react";
-import { useLocation } from "wouter";
+import { useJoinClubPro } from "@/hooks/useJoinClubPro";
 
 export default function ClubPro() {
   const { t } = useLanguage();
-  const [, setLocation] = useLocation();
+  const { handleJoinClubPro, isLoading } = useJoinClubPro();
 
   const features = [
     {
@@ -118,13 +118,20 @@ export default function ClubPro() {
             </div>
           </div>
 
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl"
-            onClick={() => setLocation("/club-pro/checkout")}
+            onClick={handleJoinClubPro}
+            disabled={isLoading}
           >
-            {t("club_pro.join_button")}
-            <ArrowRight className="w-5 h-5 ml-2" />
+            {isLoading ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                {t("club.join")}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </>
+            )}
           </Button>
         </div>
       </section>
@@ -268,10 +275,17 @@ export default function ClubPro() {
               <div className="text-center">
                 <Button
                 className="w-full bg-white text-orange-600 hover:bg-gray-100 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-xl"
-                onClick={() => setLocation("/club-pro/checkout")}
+                onClick={handleJoinClubPro}
+                disabled={isLoading}
               >
-                {t("club_pro.join_now")}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    {t("club.join")}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
+                )}
               </Button>
                 
                 <p className="text-sm text-orange-100 mt-4">
@@ -352,10 +366,17 @@ export default function ClubPro() {
               <Button
                 variant="outline"
                 className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl transition-all transform hover:scale-105 shadow-2xl"
-                onClick={() => setLocation("/club-pro/checkout")}
+                onClick={handleJoinClubPro}
+                disabled={isLoading}
               >
-                {t("club_pro.cta_join")}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    {t("club.join")}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
+                )}
               </Button>
 
               <Button
