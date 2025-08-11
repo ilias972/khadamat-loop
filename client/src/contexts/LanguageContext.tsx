@@ -1284,7 +1284,7 @@ const translations: Record<Language, TranslationDict> = {
     "settings.profile_section": "الملف الشخصي والمعلومات",
     "settings.profile.personal": "المعلومات الشخصية",
     "settings.profile.avatar": "الصورة الرمزية والصورة",
-    "settings.profile.language": "تفضيلات اللغة",
+    "settings.profile.language": "إعدادات اللغة",
     "settings.security_section": "الأمان والوصول",
     "settings.security.password": "كلمة المرور",
     "settings.security.2fa": "المصادقة الثنائية",
