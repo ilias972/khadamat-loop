@@ -11,7 +11,7 @@ import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useRef, useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getNameBySlug } from "@/lib/servicesCatalog";
+import { getNameBySlug, useServicesCatalog } from "@/lib/servicesCatalog";
 
 export default function Index() {
   const { t, language } = useLanguage();
@@ -19,6 +19,7 @@ export default function Index() {
   const numberFormatter = new Intl.NumberFormat(language);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [showTop, setShowTop] = useState(false);
+  useServicesCatalog();
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
