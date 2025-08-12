@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "check:services": "node ../scripts/check-services.js",
+    "check:services:online": "BACKEND_BASE_URL=http://localhost:4000 node ../scripts/check-services.js",
+    "prebuild": "npm run check:services"
   }
 }
