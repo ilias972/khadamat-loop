@@ -11,6 +11,7 @@ import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useRef, useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getNameBySlug } from "@/lib/servicesCatalog";
 
 export default function Index() {
   const { t, language } = useLanguage();
@@ -133,31 +134,30 @@ export default function Index() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 px-2 md:px-0">
                 {[
-                  { nameKey: 'services.plumbing', serviceName: 'plomberie', count: 156, popular: true, icon: Droplets },
-                  { nameKey: 'services.cleaning', serviceName: 'nettoyage', count: 89, popular: true, icon: Sparkles },
-                  { nameKey: 'services.electricity', serviceName: 'electricite', count: 134, popular: false, icon: Lightbulb },
-                  { nameKey: 'services.gardening', serviceName: 'jardinage', count: 67, popular: false, icon: Wrench },
-                  { nameKey: 'services.painting', serviceName: 'peinture', count: 92, popular: true, icon: Palette },
-                  { nameKey: 'services.repair', serviceName: 'reparation', count: 78, popular: false, icon: Hammer },
+                  { slug: 'plomberie', count: 156, icon: Droplets },
+                  { slug: 'nettoyage', count: 89, icon: Sparkles },
+                  { slug: 'electricite', count: 134, icon: Lightbulb },
+                  { slug: 'jardinage', count: 67, icon: Wrench },
+                  { slug: 'peinture', count: 92, icon: Palette },
+                  { slug: 'reparation', count: 78, icon: Hammer },
                 ].map((service, index) => {
                   const Icon = service.icon;
                   return (
-                  <Link
-                    key={index}
-                    href={`/prestataires?service=${encodeURIComponent(service.serviceName)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
-                    className="group block cursor-pointer relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl md:rounded-2xl"
-                  >
-                    <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-[transform,box-shadow,border-color] duration-300 transform hover:-translate-y-1 shadow-md service-card-pulse">
-
-                      <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
-                        <Icon aria-hidden="true" focusable="false" className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
+                    <Link
+                      key={index}
+                      href={`/prestataires?service=${encodeURIComponent(service.slug)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
+                      className="group block cursor-pointer relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl md:rounded-2xl"
+                    >
+                      <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-[transform,box-shadow,border-color] duration-300 transform hover:-translate-y-1 shadow-md service-card-pulse">
+                        <div className="text-2xl md:text-4xl mb-2 md:mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                          <Icon aria-hidden="true" focusable="false" className="w-12 h-12 md:w-16 md:h-16 text-orange-500" />
+                        </div>
+                        <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                          {getNameBySlug(service.slug, language)}
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-500">{t("services.providers_count", { count: service.count, formattedCount: numberFormatter.format(service.count) })}</p>
                       </div>
-                      <h3 className="font-semibold md:font-bold text-sm md:text-base text-gray-900 mb-1 md:mb-2 group-hover:text-orange-600 transition-colors leading-tight">
-                        {t(service.nameKey)}
-                      </h3>
-                      <p className="text-xs md:text-sm text-gray-500">{t("services.providers_count", { count: service.count, formattedCount: numberFormatter.format(service.count) })}</p>
-                    </div>
-                  </Link>
+                    </Link>
                   );
                 })}
               </div>

@@ -5,41 +5,31 @@ import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { Search, Filter, MapPin, Calendar, DollarSign } from "lucide-react";
 import { getFilteredAndSortedProviders } from "@/lib/providerSorting";
 import type { SortableProvider } from "@/lib/providerSorting";
+import { getNameBySlug } from "@/lib/servicesCatalog";
 
 // Liste des prestataires fournie par l'API
 const allProviders: SortableProvider[] = [];
 
 export default function Prestataires() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedService, setSelectedService] = useState("");
+  const [selectedService, setSelectedService] = useState(""); // slug
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const serviceDisplayMap: Record<string, string> = {
-    plomberie: "Plomberie",
-    electricite: "Électricité",
-    nettoyage: "Nettoyage",
-    menage: "Ménage",
-    jardinage: "Jardinage",
-    peinture: "Peinture",
-    reparation: "Réparation",
-    menuiserie: "Menuiserie",
-  };
-
   const services = [
-    "Plomberie",
-    "Électricité",
-    "Ménage",
-    "Jardinage",
-    "Peinture",
-    "Menuiserie",
-    "Nettoyage",
-    "Réparation",
+    "plomberie",
+    "electricite",
+    "menage",
+    "jardinage",
+    "peinture",
+    "menuiserie",
+    "nettoyage",
+    "reparation",
   ];
 
   const cities = [
@@ -63,7 +53,7 @@ export default function Prestataires() {
 
     if (serviceFilter) {
       const decodedService = decodeURIComponent(serviceFilter).toLowerCase();
-      setSelectedService(serviceDisplayMap[decodedService] || decodedService);
+      setSelectedService(decodedService);
     }
     if (locationFilter) {
       const decodedCity = decodeURIComponent(locationFilter);
@@ -153,8 +143,11 @@ export default function Prestataires() {
         provider.specialties?.some(specialty => specialty.toLowerCase().includes(searchTerm.toLowerCase())) ||
         provider.city.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesService = selectedService === "" || 
-        provider.specialties?.some(specialty => specialty.toLowerCase().includes(selectedService.toLowerCase()));
+      const matchesService =
+        selectedService === "" ||
+        provider.specialties?.some((specialty) =>
+          specialty.toLowerCase().includes(selectedService.toLowerCase()),
+        );
       
       const matchesCity =
         selectedCity === "" ||
@@ -227,8 +220,8 @@ export default function Prestataires() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="">{t("prestataires.all_services")}</option>
-                    {services.map(service => (
-                      <option key={service} value={service}>{service}</option>
+                    {services.map((slug) => (
+                      <option key={slug} value={slug}>{getNameBySlug(slug, language)}</option>
                     ))}
                   </select>
                 </div>

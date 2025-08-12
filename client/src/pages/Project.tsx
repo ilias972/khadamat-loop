@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getNameBySlug } from "@/lib/servicesCatalog";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +28,7 @@ import {
 } from "lucide-react";
 
 export default function Project() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
@@ -82,16 +83,16 @@ export default function Project() {
   };
 
   const categories = [
-    t("services.plumbing"),
-    t("services.electricity"), 
-    t("services.cleaning"),
-    t("services.gardening"),
-    t("services.painting"),
-    t("services.repair"),
-    t("services.installation"),
-    t("services.deep_cleaning"),
-    t("services.moving"),
-    t("project.form.other")
+    "plomberie",
+    "electricite",
+    "nettoyage",
+    "jardinage",
+    "peinture",
+    "reparation",
+    "installation",
+    "deep_cleaning",
+    "moving",
+    "other",
   ];
 
   const budgetRanges = [
@@ -192,7 +193,7 @@ export default function Project() {
                           <SelectContent>
                             {categories.map((category) => (
                               <SelectItem key={category} value={category}>
-                                {category}
+                                {category === "other" ? t("project.form.other") : getNameBySlug(category, language)}
                               </SelectItem>
                             ))}
                           </SelectContent>

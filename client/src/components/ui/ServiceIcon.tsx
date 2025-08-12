@@ -1,13 +1,13 @@
 import React from 'react';
 
 interface ServiceIconProps {
-  serviceName: string;
+  serviceSlug: string;
   className?: string;
 }
 
 // Icônes SVG inline - Correspondant exactement à l'image fournie
 const iconComponents: Record<string, React.FC<{ className?: string }>> = {
-  // Plomberie - Design exact correspondant à l'image fournie
+  // Icon for slug 'plomberie'
   'plomberie': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Robinet principal - forme stylisée */}
@@ -21,7 +21,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Électricité - Design moderne avec clé, tournevis et éclair
+  // Icon for slug 'electricite'
   'electricite': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Clé à molette */}
@@ -39,7 +39,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Nettoyage - Pelle grise avec manche marron, terre et feuilles
+  // Icon for slug 'nettoyage'
   'nettoyage': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Pelle */}
@@ -54,7 +54,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Jardinage - Terre marron avec pousses vertes
+  // Icon for slug 'jardinage'
   'jardinage': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Terre */}
@@ -65,7 +65,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Peinture - Pinceau avec manche marron et poils jaunes + gouttes rouges
+  // Icon for slug 'peinture'
   'peinture': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Manche du pinceau */}
@@ -78,7 +78,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Réparation - Clé et tournevis croisés (sans éclair)
+  // Icon for slug 'reparation'
   'reparation': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Clé */}
@@ -94,7 +94,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Climatisation - Unité bleue avec lignes ondulées et goutte
+  // Icon for slug 'climatisation'
   'climatisation': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Unité de climatisation */}
@@ -109,7 +109,7 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
     </svg>
   ),
   
-  // Sécurité - Bouclier jaune avec cadenas gris
+  // Icon for slug 'securite'
   'securite': ({ className }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Bouclier */}
@@ -123,61 +123,19 @@ const iconComponents: Record<string, React.FC<{ className?: string }>> = {
   ),
 };
 
-// Mappings pour les noms avec majuscules
-const iconMap: Record<string, string> = {
-  // Services principaux (minuscules) - pour la page d'accueil
-  'plomberie': 'plomberie',
-  'electricite': 'electricite',
-  'nettoyage': 'nettoyage',
-  'jardinage': 'jardinage',
-  'peinture': 'peinture',
-  'reparation': 'reparation',
-  'climatisation': 'climatisation',
-  'securite': 'securite',
-  
-  // Noms français avec majuscules - pour la page Services
-  'Plomberie': 'plomberie',
-  'Électricité': 'electricite',
-  'Nettoyage': 'nettoyage',
-  'Jardinage': 'jardinage',
-  'Peinture': 'peinture',
-  'Réparation': 'reparation',
-  'Climatisation': 'climatisation',
-  'Sécurité': 'securite',
-  
-  // Catégories (pour ServiceCard)
-  'plumbing': 'plomberie',
-  'electricity': 'electricite',
-  'cleaning': 'nettoyage',
-  'gardening': 'jardinage',
-  'painting': 'peinture',
-  'repair': 'reparation',
-  'air-conditioning': 'climatisation',
-  'security': 'securite',
-  
-  // Fallbacks supplémentaires
-  'menage': 'nettoyage',
-  'Ménage': 'nettoyage',
-  'maçonnerie': 'jardinage',
-  'Maçonnerie': 'jardinage',
-  'menuiserie': 'reparation',
-  'Menuiserie': 'reparation',
-  'serrurerie': 'securite',
-  'Serrurerie': 'securite',
-};
+export const hasServiceIcon = (slug: string) => slug in iconComponents;
 
-export default function ServiceIcon({ serviceName, className = "w-12 h-12" }: ServiceIconProps) {
-  const iconKey = iconMap[serviceName.toLowerCase()] || iconMap[serviceName];
-  
-  if (iconKey && iconComponents[iconKey]) {
-    const IconComponent = iconComponents[iconKey];
+export default function ServiceIcon({ serviceSlug, className = "w-12 h-12" }: ServiceIconProps) {
+  const IconComponent = iconComponents[serviceSlug];
+
+  if (IconComponent) {
     return <IconComponent className={className} />;
   }
-  
+
   // Fallback vers une icône par défaut
   return (
     <div className={`${className} bg-orange-500 rounded-lg flex items-center justify-center text-white`}>
       <span className="text-xs font-bold">?</span>
     </div>
   );
-} 
+}

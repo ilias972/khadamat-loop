@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { queryClient } from "@/lib/queryClient";
 
 export interface ServiceCatalogItem {
   id: number;
@@ -10,17 +11,26 @@ export interface ServiceCatalogItem {
   category_code: string;
 }
 
+async function fetchCatalog(lang: string) {
+  const res = await fetch(`/api/services/catalog?groupBy=category&locale=${lang}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.items || [];
+}
+
 export function useServicesCatalog() {
   const { language } = useLanguage();
   return useQuery<ServiceCatalogItem[]>({
     queryKey: ["servicesCatalog", language],
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/services/catalog?groupBy=category&locale=${language}`,
-      );
-      const data = await res.json();
-      return Array.isArray(data) ? data : data.items || [];
-    },
+    queryFn: () => fetchCatalog(language),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+}
+
+export async function ensureCatalogPrefetched(lang: string) {
+  await queryClient.ensureQueryData({
+    queryKey: ["servicesCatalog", lang],
+    queryFn: () => fetchCatalog(lang),
     staleTime: 10 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -45,6 +55,26 @@ export function listByCategory(
   category: string,
 ) {
   return items?.filter((s) => s.category_code === category) || [];
+}
+
+export function resolveServiceName(item: ServiceCatalogItem, lang: string) {
+  return lang === "ar" ? item.name_ar || item.name_fr : item.name_fr;
+}
+
+export function prettifySlug(slug: string) {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+export function getNameBySlug(slug: string, lang: string) {
+  const items = queryClient.getQueryData<ServiceCatalogItem[]>([
+    "servicesCatalog",
+    lang,
+  ]);
+  const s = items?.find((item) => item.slug === slug);
+  return s ? resolveServiceName(s, lang) : prettifySlug(slug);
 }
 
 function normalize(str: string) {

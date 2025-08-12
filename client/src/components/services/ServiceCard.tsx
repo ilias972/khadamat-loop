@@ -1,6 +1,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowRight } from "lucide-react";
-import ServiceIcon from "@/components/ui/ServiceIcon";
+import ServiceIcon, { hasServiceIcon } from "@/components/ui/ServiceIcon";
+import { getNameBySlug } from "@/lib/servicesCatalog";
 import type { Service } from "@shared/schema";
 
 interface ServiceCardProps {
@@ -10,8 +11,8 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service, onClick }: ServiceCardProps) {
   const { t, language } = useLanguage();
-  
-  const name = language === "ar" && service.nameAr ? service.nameAr : service.name;
+
+  const name = getNameBySlug(service.category, language);
   const description = language === "ar" && service.descriptionAr ? service.descriptionAr : (service.description || "");
 
   return (
@@ -20,8 +21,8 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       onClick={onClick}
     >
       <div className="w-16 h-16 bg-white border border-gray-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-        {(service.category === 'plomberie' || service.name === 'Plomberie' || service.category === 'electricite' || service.name === 'Électricité') && (
-          <ServiceIcon serviceName={service.category || service.name} className="w-12 h-12" />
+        {hasServiceIcon(service.category) && (
+          <ServiceIcon serviceSlug={service.category} className="w-12 h-12" />
         )}
       </div>
       
