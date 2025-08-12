@@ -167,6 +167,8 @@ const translations: Record<Language, TranslationDict> = {
     "providers.contact": "Contacter",
     "providers.reviews": "avis",
     "providers.view_profile": "Profil",
+    "providers.search.byNamePlaceholder": "Nom du prestataire",
+    "providers.search.noResults": "Aucun prestataire trouvé",
 
     // Reviews
     "reviews.empty.title": "Aucun avis pour le moment",
@@ -835,6 +837,8 @@ const translations: Record<Language, TranslationDict> = {
     "providers.contact": "اتصل",
     "providers.reviews": "مراجعة",
     "providers.view_profile": "الملف الشخصي",
+    "providers.search.byNamePlaceholder": "اسم مقدم الخدمة",
+    "providers.search.noResults": "لم يتم العثور على مقدم خدمة",
 
     // Reviews
     "reviews.empty.title": "لا توجد مراجعات حالياً",
