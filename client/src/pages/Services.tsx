@@ -12,84 +12,84 @@ import type { Service } from "@shared/schema";
 const mockServices: Service[] = [
   {
     id: 1,
-    name: "Plomberie",
-    nameAr: "سباكة",
-    description: "Services de plomberie professionnels pour tous vos besoins",
-    descriptionAr: "خدمات سباكة احترافية لجميع احتياجاتك",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "plomberie",
     icon: "Wrench",
-    isPopular: true
+    isPopular: true,
   },
   {
     id: 2,
-    name: "Électricité",
-    nameAr: "كهرباء",
-    description: "Installation et réparation électrique sécurisée",
-    descriptionAr: "تركيب وإصلاح كهربائي آمن",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "electricite",
     icon: "Zap",
-    isPopular: true
+    isPopular: true,
   },
   {
     id: 3,
-    name: "Nettoyage",
-    nameAr: "تنظيف",
-    description: "Services de nettoyage résidentiel et commercial",
-    descriptionAr: "خدمات تنظيف سكنية وتجارية",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "nettoyage",
     icon: "Sparkles",
-    isPopular: true
+    isPopular: true,
   },
   {
     id: 4,
-    name: "Jardinage",
-    nameAr: "بستنة",
-    description: "Entretien et aménagement de jardins",
-    descriptionAr: "صيانة وتنسيق الحدائق",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "jardinage",
     icon: "TreePine",
-    isPopular: false
+    isPopular: false,
   },
   {
     id: 5,
-    name: "Peinture",
-    nameAr: "دهان",
-    description: "Services de peinture intérieure et extérieure",
-    descriptionAr: "خدمات دهان داخلية وخارجية",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "peinture",
     icon: "Palette",
-    isPopular: true
+    isPopular: true,
   },
   {
     id: 6,
-    name: "Réparation",
-    nameAr: "إصلاح",
-    description: "Réparation générale et maintenance",
-    descriptionAr: "إصلاح عام وصيانة",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "reparation",
     icon: "Hammer",
-    isPopular: false
+    isPopular: false,
   },
   {
     id: 7,
-    name: "Climatisation",
-    nameAr: "تكييف",
-    description: "Installation et maintenance de climatisation",
-    descriptionAr: "تركيب وصيانة التكييف",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "climatisation",
     icon: "Snowflake",
-    isPopular: false
+    isPopular: false,
   },
   {
     id: 8,
-    name: "Sécurité",
-    nameAr: "أمن",
-    description: "Systèmes de sécurité et surveillance",
-    descriptionAr: "أنظمة الأمن والمراقبة",
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
     category: "securite",
     icon: "Shield",
-    isPopular: false
-  }
+    isPopular: false,
+  },
 ];
 
 export default function Services() {
@@ -107,8 +107,7 @@ export default function Services() {
   const filteredServices = displayServices;
 
   const handleServiceClick = (service: Service) => {
-    // Rediriger vers la page des prestataires avec le service sélectionné
-            window.location.href = `/prestataires?service=${encodeURIComponent(service.name)}`;
+    window.location.href = `/prestataires?service=${encodeURIComponent(service.category)}`;
   };
 
   if (error) {

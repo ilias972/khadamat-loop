@@ -1,10 +1,12 @@
 import { Switch, Route } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ensureCatalogPrefetched } from "@/lib/servicesCatalog";
 
 // Layout components
 import Header from "@/components/layout/Header";
@@ -64,6 +66,9 @@ import MesFavoris from "@/pages/MesFavoris";
 
 function Router() {
   const { language } = useLanguage();
+  useEffect(() => {
+    ensureCatalogPrefetched(language);
+  }, [language]);
   return (
     <div className="min-h-screen bg-gray-50" dir={language === "ar" ? "rtl" : "ltr"}>
       <ScrollManager />
