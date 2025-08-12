@@ -72,6 +72,7 @@ export default function SmartSearch({
   }, [catalog, serviceQuery, language]);
 
   useEffect(() => {
+    const controller = new AbortController();
     const handler = setTimeout(async () => {
       if (serviceQuery.length < 1 || !city) return;
       try {
@@ -80,31 +81,43 @@ export default function SmartSearch({
           city,
           limit: "8",
         });
-        const res = await fetch(`/api/services/suggest?${params.toString()}`);
-        const json = await res.json();
-        const map = new Map<string, number>();
-        for (const it of json.data?.items || []) {
-          map.set(it.slug, it.providersCountInCity || 0);
+        const timeout = setTimeout(() => controller.abort(), 1200);
+        try {
+          const res = await fetch(`/api/services/suggest?${params.toString()}`, {
+            signal: controller.signal,
+          });
+          const json = await res.json();
+          const map = new Map<string, number>();
+          for (const it of json.data?.items || []) {
+            map.set(it.slug, it.providersCountInCity || 0);
+          }
+          setServiceSuggestions((prev) =>
+            prev
+              .map((r) => ({
+                ...r,
+                providersCountInCity: map.get(r.item.slug) ?? 0,
+              }))
+              .sort((a, b) => {
+                if (a.score !== b.score) return a.score - b.score;
+                return (
+                  (b.providersCountInCity > 0 ? 1 : 0) -
+                  (a.providersCountInCity > 0 ? 1 : 0)
+                );
+              })
+          );
+        } finally {
+          clearTimeout(timeout);
         }
-        setServiceSuggestions((prev) =>
-          prev
-            .map((r) => ({
-              ...r,
-              providersCountInCity: map.get(r.item.slug) ?? 0,
-            }))
-            .sort((a, b) => {
-              if (a.score !== b.score) return a.score - b.score;
-              return (
-                (b.providersCountInCity > 0 ? 1 : 0) -
-                (a.providersCountInCity > 0 ? 1 : 0)
-              );
-            })
-        );
       } catch {
-        // ignore
+        if (!controller.signal.aborted) {
+          // keep local suggestions
+        }
       }
     }, 250);
-    return () => clearTimeout(handler);
+    return () => {
+      clearTimeout(handler);
+      controller.abort();
+    };
   }, [serviceQuery, city]);
   const citySuggestions =
     city && !currentCities.includes(city)
@@ -112,22 +125,34 @@ export default function SmartSearch({
       : [];
 
   useEffect(() => {
+    const controller = new AbortController();
     const handler = setTimeout(async () => {
       if (provider) {
         try {
           const params = new URLSearchParams({ q: provider, limit: "8" });
           if (city) params.append("city", city);
-          const res = await fetch(`/api/providers/suggest?${params.toString()}`);
-          const json = await res.json();
-          setProviderSuggestions(json.data?.items || []);
+          const timeout = setTimeout(() => controller.abort(), 1200);
+          try {
+            const res = await fetch(
+              `/api/providers/suggest?${params.toString()}`,
+              { signal: controller.signal }
+            );
+            const json = await res.json();
+            setProviderSuggestions(json.data?.items || []);
+          } finally {
+            clearTimeout(timeout);
+          }
         } catch {
-          setProviderSuggestions([]);
+          if (!controller.signal.aborted) setProviderSuggestions([]);
         }
       } else {
         setProviderSuggestions([]);
       }
     }, 250);
-    return () => clearTimeout(handler);
+    return () => {
+      clearTimeout(handler);
+      controller.abort();
+    };
   }, [provider, city]);
 
   const handleSearch = () => {
@@ -190,9 +215,27 @@ export default function SmartSearch({
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-2 text-gray-700">
-                  {t("home.search.noResults")}
-                </div>
+                <>
+                  <div className="px-4 py-2 text-gray-700">
+                    {t("home.search.noResults")}
+                  </div>
+                  <div
+                    className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
+                    onMouseDown={() => setLocation("/services")}
+                  >
+                    {t("home.search.viewAllServices")}
+                  </div>
+                  {city && (
+                    <div
+                      className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
+                      onMouseDown={() =>
+                        setLocation(`/providers?city=${encodeURIComponent(city)}`)
+                      }
+                    >
+                      {t("home.search.nearbyProviders")}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

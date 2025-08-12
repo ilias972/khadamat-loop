@@ -13,8 +13,12 @@ async function run() {
   );
   assert.equal(suggestRes.status, 200, "suggest status");
   const suggest = await suggestRes.json();
-  const first = suggest.data.items[0];
-  assert.ok(first && first.slug, "missing first suggestion");
+  const hasPlomberie = suggest.data.items.some(
+    (it) =>
+      String(it.slug || "").includes("plom") ||
+      String(it.name_fr || "").toLowerCase().includes("plom")
+  );
+  assert.ok(hasPlomberie, "missing plomberie suggestion");
   console.log("e2e:smoke:services ok");
 }
 run().catch((err)=>{

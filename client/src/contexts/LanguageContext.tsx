@@ -82,6 +82,8 @@ const translations: Record<Language, TranslationDict> = {
     "home.search.providerPlaceholder": "Nom du prestataire",
     "home.search.noResults": "Aucun résultat",
     "home.search.providerNoResults": "Aucun prestataire trouvé",
+    "home.search.viewAllServices": "Voir tous les services",
+    "home.search.nearbyProviders": "Prestataires proches",
     "home.search.providersNearCity": "{{count}} prestataires près de {{city}}",
 
     // Filters and services
@@ -745,6 +747,8 @@ const translations: Record<Language, TranslationDict> = {
     "home.search.providerPlaceholder": "اسم مقدم الخدمة",
     "home.search.noResults": "لا توجد نتائج",
     "home.search.providerNoResults": "لم يتم العثور على مقدم خدمة",
+    "home.search.viewAllServices": "عرض جميع الخدمات",
+    "home.search.nearbyProviders": "مقدمو الخدمات القريبون",
     "home.search.providersNearCity": "{{count}} من مقدمي الخدمات بالقرب من {{city}}",
 
     // Filters and services
