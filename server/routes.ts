@@ -49,6 +49,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     60,
     "Too many suggestions"
   );
+  const serviceSuggestRate = createRateLimit(
+    60 * 1000,
+    60,
+    "Too many suggestions"
+  );
 
   // Health check
   app.get("/health", (_req, res) => {
@@ -57,8 +62,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Routes de sécurité
   app.use("/api/auth", securityRoutes);
-  // Catalogue services
-  app.get("/api/services/catalog", (req, res) => {
+    // Catalogue services
+    app.get("/api/services/catalog", (req, res) => {
     try {
       const groupBy = req.query.groupBy;
       if (groupBy === "category") {
@@ -79,7 +84,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ success: false, error: "Failed to fetch catalog" });
     }
-  });
+    });
+    app.get("/api/services/suggest", serviceSuggestRate, async (req, res) => {
+      try {
+        const q = (req.query.q as string) || "";
+        const city = (req.query.city as string) || "";
+        const limit = Math.min(parseInt((req.query.limit as string) || "8", 10), 8);
+        const normalized = normalizeString(q);
+        if (!normalized) {
+          return res.json({ success: true, data: { items: [] } });
+        }
+        const providers = city ? await storage.getAllProviders() : [];
+        const normalizedCity = normalizeString(city);
+        const scored = serviceCatalog
+          .map((s) => {
+            const name = normalizeString(s.name_fr);
+            if (name.startsWith(normalized)) return { s, score: 0 };
+            if (name.includes(" " + normalized)) return { s, score: 1 };
+            if (name.includes(normalized)) return { s, score: 2 };
+            if (levenshtein(name, normalized) <= 1) return { s, score: 3 };
+            return null;
+          })
+          .filter((x): x is { s: typeof serviceCatalog[number]; score: number } => x !== null)
+          .sort((a, b) => a.score - b.score)
+          .slice(0, limit);
+        const items = scored.map(({ s }) => {
+          let providersCountInCity = 0;
+          if (city) {
+            providersCountInCity = providers.filter((p) => {
+              const matchCity = normalizeString(p.user.location || "").includes(normalizedCity);
+              const matchService = p.specialties?.some((sp) => normalizeString(sp).includes(normalizeString(s.name_fr)));
+              return matchCity && matchService;
+            }).length;
+          }
+          return {
+            id: s.id,
+            code: s.code,
+            slug: s.slug,
+            name_fr: s.name_fr,
+            name_ar: s.name_ar,
+            providersCountInCity,
+          };
+        });
+        items.sort((a, b) => b.providersCountInCity - a.providersCountInCity);
+        res.json({ success: true, data: { items } });
+      } catch (error) {
+        res.status(500).json({ success: false, error: "Failed to suggest services" });
+      }
+    });
   // Services routes
   app.get("/api/services", async (req, res) => {
     try {
