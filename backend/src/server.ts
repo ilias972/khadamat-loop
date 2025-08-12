@@ -30,6 +30,14 @@ import { startSchedulers } from './jobs/scheduler';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+prisma
+  .$connect()
+  .then(() => {
+    logger.info('DB connected');
+  })
+  .catch((err) => {
+    logger.warn(`DB connection failed: ${err.message}`);
+  });
 
 async function hardenForTests() {
   const isTest = (process.env.STAGE ?? process.env.NODE_ENV) === 'test';

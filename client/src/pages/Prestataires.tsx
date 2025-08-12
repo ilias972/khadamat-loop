@@ -5,7 +5,7 @@ import ArtisanProfileCard from "@/components/providers/ArtisanProfileCard";
 import { Search, Filter, MapPin, Calendar, DollarSign } from "lucide-react";
 import { getFilteredAndSortedProviders } from "@/lib/providerSorting";
 import type { SortableProvider } from "@/lib/providerSorting";
-import { getNameBySlug } from "@/lib/servicesCatalog";
+import { getNameBySlug, useServicesCatalog } from "@/lib/servicesCatalog";
 
 // Liste des prestataires fournie par l'API
 const allProviders: SortableProvider[] = [];
@@ -21,16 +21,11 @@ export default function Prestataires() {
   const [selectedDate, setSelectedDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const services = [
-    "plomberie",
-    "electricite",
-    "menage",
-    "jardinage",
-    "peinture",
-    "menuiserie",
-    "nettoyage",
-    "reparation",
-  ];
+  const { data: servicesCatalog } = useServicesCatalog();
+  const services = useMemo(
+    () => servicesCatalog?.map((s) => s.slug).sort((a, b) => a.localeCompare(b)) || [],
+    [servicesCatalog]
+  );
 
   const cities = [
     "Casablanca",
