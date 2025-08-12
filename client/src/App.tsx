@@ -14,7 +14,7 @@ import Footer from "@/components/layout/Footer";
 import MobileHeader from "@/components/layout/MobileHeader";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import MobileTabBar from "@/components/layout/MobileTabBar";
-import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollToTopButton from "@/components/ui/ScrollToTopButton";
 import ScrollManager from "@/components/ui/ScrollManager";
 
 // Pages
@@ -71,7 +71,7 @@ function Router() {
   return (
     <div className="min-h-screen bg-gray-50" dir={language === "ar" ? "rtl" : "ltr"}>
       <ScrollManager />
-      <ScrollToTop />
+      <ScrollToTopButton />
       <Header />
       <MobileHeader />
       <main className="pb-20 md:pb-0">

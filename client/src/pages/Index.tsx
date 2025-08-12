@@ -9,7 +9,7 @@ import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkle
 import { Link } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getNameBySlug, useServicesCatalog } from "@/lib/servicesCatalog";
 
@@ -18,7 +18,6 @@ export default function Index() {
   const { city: userLocation } = useGeolocation();
   const numberFormatter = new Intl.NumberFormat(language);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [showTop, setShowTop] = useState(false);
   useServicesCatalog();
 
   // Fetch popular services
@@ -54,11 +53,6 @@ export default function Index() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 600);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <div className="min-h-screen">
@@ -325,14 +319,6 @@ export default function Index() {
         </Button>
       </a>
 
-      {/* Back to top button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className={`fixed bottom-4 right-4 hidden md:flex w-10 h-10 items-center justify-center rounded-full bg-orange-500 text-white transition-opacity ${showTop ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        aria-label={language === "ar" ? "العودة إلى الأعلى" : "Retour en haut"}
-      >
-        ↑
-      </button>
     </div>
   );
 }

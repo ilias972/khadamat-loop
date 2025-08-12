@@ -6,13 +6,14 @@ import { Search, Filter, MapPin, Calendar, DollarSign } from "lucide-react";
 import { getFilteredAndSortedProviders } from "@/lib/providerSorting";
 import type { SortableProvider } from "@/lib/providerSorting";
 import { getNameBySlug, useServicesCatalog } from "@/lib/servicesCatalog";
+import ProviderAutocomplete from "@/components/providers/ProviderAutocomplete";
 
 // Liste des prestataires fournie par l'API
 const allProviders: SortableProvider[] = [];
 
 export default function Prestataires() {
   const { t, language } = useLanguage();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedService, setSelectedService] = useState(""); // slug
   const [selectedCity, setSelectedCity] = useState("");
@@ -122,12 +123,30 @@ export default function Prestataires() {
     });
   };
 
+  const applySearch = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (searchTerm.trim()) {
+      params.set("q", searchTerm.trim());
+    } else {
+      params.delete("q");
+    }
+    const base = location.split("?")[0];
+    const query = params.toString();
+    setLocation(query ? `${base}?${query}` : base);
+  };
+
+  const handleSearchChange = (v: string) => {
+    setSearchTerm(v);
+    if (v.trim() === "") applySearch();
+  };
+
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedService("");
     setSelectedCity("");
     setSelectedRating(null);
     setSelectedDate("");
+    applySearch();
   };
 
   // Filtrer et trier les prestataires
@@ -180,16 +199,12 @@ export default function Prestataires() {
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Recherche */}
             <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder={t("prestataires.search_placeholder")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
+              <ProviderAutocomplete
+                value={searchTerm}
+                onChange={handleSearchChange}
+                city={selectedCity}
+                onSubmit={applySearch}
+              />
             </div>
 
             {/* Bouton filtres */}
@@ -201,6 +216,21 @@ export default function Prestataires() {
               {t("prestataires.filters")}
             </button>
           </div>
+
+          {searchTerm && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm">
+                {searchTerm}
+                <button
+                  className="ml-2 text-orange-600"
+                  onClick={() => handleSearchChange("")}
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          )}
 
           {/* Filtres avancés */}
           {(showFilters || window.innerWidth >= 1024) && (
