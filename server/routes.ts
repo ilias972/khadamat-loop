@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertProjectSchema, insertMessageSchema, insertFavoriteSchema, insertReviewSchema } from "@shared/schema";
 import { serviceCatalog } from "./serviceCatalog";
+import cors from "cors";
 
 // Import des middlewares de sécurité
 import { 
@@ -20,13 +21,19 @@ import securityRoutes from "./security/routes";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middlewares de sécurité globaux
   app.use(helmetConfig);
+  app.use(cors(corsOptions));
   app.use(captureClientIP);
   app.use(detectSuspiciousActivity);
   app.use(sanitizeInput);
   app.use(apiRateLimit);
-  
+
+  // Health check
+  app.get("/health", (_req, res) => {
+    res.json({ ok: true });
+  });
+
   // Routes de sécurité
-  app.use('/api/auth', securityRoutes);
+  app.use("/api/auth", securityRoutes);
   // Catalogue services
   app.get("/api/services/catalog", (req, res) => {
     try {

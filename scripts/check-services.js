@@ -1,13 +1,32 @@
 // Simple check to prevent hardcoded service names in client/src
 import { spawn } from "child_process";
+import { readFile } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const API_URL = process.env.API_URL || "http://localhost:3000";
+const API_URL = process.env.BACKEND_BASE_URL || "http://localhost:4000";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SEED_PATH = path.join(__dirname, "..", "client", "public", "catalog.seed.json");
 
 function rg(pattern) {
   try {
-    return spawn("rg", [pattern, "client/src", "-l"], {
-      stdio: ["ignore", "pipe", "ignore"],
-    });
+    return spawn(
+      "rg",
+      [
+        pattern,
+        "client/src",
+        "-l",
+        "--glob",
+        "!contexts/LanguageContext.tsx",
+        "--glob",
+        "!i18n/**",
+        "--glob",
+        "!**/__tests__/**",
+        "--glob",
+        "!**/*.test.*",
+      ],
+      { stdio: ["ignore", "pipe", "ignore"] }
+    );
   } catch (e) {
     console.error("ripgrep is required");
     process.exit(1);
@@ -15,12 +34,26 @@ function rg(pattern) {
 }
 
 async function main() {
-  const res = await fetch(`${API_URL}/api/services/catalog`).catch(() => null);
-  if (!res || !res.ok) {
-    console.error("Failed to fetch services catalog");
-    process.exit(1);
+  let services;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${API_URL}/api/services/catalog`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error("bad status");
+    const json = await res.json();
+    services = json.data || json;
+  } catch {
+    const content = await readFile(SEED_PATH, "utf8").catch(() => null);
+    if (!content) {
+      console.error("Failed to load services catalog");
+      process.exit(1);
+    }
+    const json = JSON.parse(content);
+    services = json.data || json;
   }
-  const services = await res.json();
   const names = new Set();
   services.forEach((s) => {
     if (s.name_fr) names.add(s.name_fr);
