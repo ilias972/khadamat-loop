@@ -5,6 +5,8 @@ import { z } from "zod";
 import { insertUserSchema, insertProjectSchema, insertMessageSchema, insertFavoriteSchema, insertReviewSchema } from "@shared/schema";
 import { serviceCatalog } from "./serviceCatalog";
 import cors from "cors";
+import { normalizeString } from "@shared/normalize";
+import { createRateLimit } from "./security/middleware";
 
 // Import des middlewares de sécurité
 import { 
@@ -18,6 +20,21 @@ import {
 import { SecurityLogger } from "./security/logger";
 import securityRoutes from "./security/routes";
 
+function levenshtein(a: string, b: string): number {
+  const matrix = Array.from({ length: b.length + 1 }, () => Array(a.length + 1).fill(0));
+  for (let i = 0; i <= b.length; i++) matrix[i][0] = i;
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b[i - 1] === a[j - 1]) matrix[i][j] = matrix[i - 1][j - 1];
+      else {
+        matrix[i][j] = Math.min(matrix[i - 1][j - 1], matrix[i][j - 1], matrix[i - 1][j]) + 1;
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middlewares de sécurité globaux
   app.use(helmetConfig);
@@ -26,6 +43,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(detectSuspiciousActivity);
   app.use(sanitizeInput);
   app.use(apiRateLimit);
+
+  const providerSuggestRate = createRateLimit(
+    60 * 1000,
+    60,
+    "Too many suggestions"
+  );
 
   // Health check
   app.get("/health", (_req, res) => {
@@ -83,6 +106,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(services);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch services by category" });
+    }
+  });
+
+  // Provider suggestions
+  app.get("/api/providers/suggest", providerSuggestRate, async (req, res) => {
+    try {
+      const q = (req.query.q as string) || "";
+      const limit = Math.min(parseInt((req.query.limit as string) || "8", 10), 8);
+      const city = (req.query.city as string) || "";
+      const normalizedQuery = normalizeString(q);
+      if (!normalizedQuery) {
+        return res.json({ success: true, data: { items: [] } });
+      }
+
+      const allProviders = await storage.getAllProviders();
+      const filtered = allProviders.filter(p =>
+        p.user.isVerified &&
+        (!city || p.user.location?.toLowerCase().includes(city.toLowerCase()))
+      );
+
+      const scored = filtered
+        .map(p => {
+          const name =
+            p.user.displayNameNormalized ||
+            normalizeString(`${p.user.firstName} ${p.user.lastName}`);
+          let score = 4;
+          if (name === normalizedQuery) score = 0;
+          else if (name.split(" ").some(t => t.startsWith(normalizedQuery))) score = 1;
+          else if (name.includes(normalizedQuery)) score = 2;
+          else if (levenshtein(name, normalizedQuery) <= 2) score = 3;
+          return { provider: p, score };
+        })
+        .filter(s => s.score < 4)
+        .sort((a, b) => a.score - b.score)
+        .slice(0, limit)
+        .map(({ provider }) => ({
+          id: provider.id,
+          slug: provider.user.username,
+          displayName: `${provider.user.firstName} ${provider.user.lastName}`,
+          mainCity: provider.user.location,
+          topServices: provider.specialties?.slice(0, 3),
+          rating: provider.rating,
+        }));
+
+      res.json({ success: true, data: { items: scored } });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to suggest providers" });
+    }
+  });
+
+  app.get("/api/providers/search", async (req, res) => {
+    try {
+      const { q, service, city } = req.query;
+      const normalizedQuery = normalizeString((q as string) || "");
+      let providers = (await storage.getAllProviders()).filter(p => p.user.isVerified);
+      if (service) {
+        const serviceLower = (service as string).toLowerCase();
+        providers = providers.filter(p =>
+          p.specialties?.some(s => s.toLowerCase().includes(serviceLower))
+        );
+      }
+      if (city) {
+        const cityLower = (city as string).toLowerCase();
+        providers = providers.filter(p => p.user.location?.toLowerCase().includes(cityLower));
+      }
+      if (normalizedQuery) {
+        providers = providers.filter(p => {
+          const name =
+            p.user.displayNameNormalized ||
+            normalizeString(`${p.user.firstName} ${p.user.lastName}`);
+          return name.includes(normalizedQuery);
+        });
+      }
+      providers.sort((a, b) => {
+        const clubDiff = (b.user.isClubPro ? 1 : 0) - (a.user.isClubPro ? 1 : 0);
+        if (clubDiff !== 0) return clubDiff;
+        const ratingA = parseFloat(a.rating || "0");
+        const ratingB = parseFloat(b.rating || "0");
+        return ratingB - ratingA;
+      });
+      res.json({ success: true, data: { items: providers } });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to search providers" });
     }
   });
 

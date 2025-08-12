@@ -20,7 +20,6 @@ import ScrollManager from "@/components/ui/ScrollManager";
 // Pages
 import Index from "@/pages/Index";
 import Services from "@/pages/Services";
-import Providers from "@/pages/Providers";
 import ClubPro from "@/pages/ClubPro";
 import ClubProCheckout from "@/pages/ClubProCheckout";
 import Project from "@/pages/Project";
@@ -79,7 +78,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Index} />
           <Route path="/services" component={Services} />
-          <Route path="/providers" component={Providers} />
+          <Route path="/providers" component={Prestataires} />
           <Route path="/club-pro" component={ClubPro} />
           <Route path="/club-pro/checkout" component={ClubProCheckout} />
           <Route path="/project" component={Project} />

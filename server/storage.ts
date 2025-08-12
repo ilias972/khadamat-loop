@@ -24,6 +24,7 @@ import {
   type Review,
   type InsertReview,
 } from "@shared/schema";
+import { normalizeString } from "@shared/normalize";
 
 export interface IStorage {
   // Users
@@ -152,6 +153,7 @@ export class MemStorage implements IStorage {
         password: "hashed_password",
         firstName: "Ahmed",
         lastName: "Benali",
+        displayNameNormalized: normalizeString("Ahmed Benali"),
         phone: "+212612345678",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
         userType: "provider",
@@ -167,6 +169,7 @@ export class MemStorage implements IStorage {
         password: "hashed_password",
         firstName: "Fatima",
         lastName: "Zahra",
+        displayNameNormalized: normalizeString("Fatima Zahra"),
         phone: "+212623456789",
         avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
         userType: "provider",
@@ -182,6 +185,7 @@ export class MemStorage implements IStorage {
         password: "hashed_password",
         firstName: "Omar",
         lastName: "Alaoui",
+        displayNameNormalized: normalizeString("Omar Alaoui"),
         phone: "+212634567890",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
         userType: "provider",
@@ -269,6 +273,7 @@ export class MemStorage implements IStorage {
       password: insertUser.password,
       firstName: insertUser.firstName,
       lastName: insertUser.lastName,
+      displayNameNormalized: normalizeString(`${insertUser.firstName} ${insertUser.lastName}`),
       phone: insertUser.phone ?? null,
       avatar: insertUser.avatar ?? null,
       userType: insertUser.userType,
@@ -284,8 +289,13 @@ export class MemStorage implements IStorage {
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
-    
-    const updatedUser = { ...user, ...updates };
+    const newFirst = updates.firstName ?? user.firstName;
+    const newLast = updates.lastName ?? user.lastName;
+    const updatedUser = {
+      ...user,
+      ...updates,
+      displayNameNormalized: normalizeString(`${newFirst} ${newLast}`),
+    };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
