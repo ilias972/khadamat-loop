@@ -10,7 +10,8 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "frontend": "npx vite",
-    "test": "npm --prefix client test"
+    "test": "npm --prefix client test",
+    "check:services": "node scripts/check-services.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -75,6 +75,37 @@ const translations: Record<Language, TranslationDict> = {
     "hero.location": "Casablanca",
     "hero.city_placeholder": "Ville (ex: Casablanca, Rabat...)",
     "hero.provider_placeholder": "Rechercher un prestataire spécifique (optionnel)",
+
+    // Home search
+    "home.search.servicePlaceholder": "Quel service recherchez-vous ?",
+    "home.search.cityPlaceholder": "Ville ou quartier",
+    "home.search.providerPlaceholder": "Nom du prestataire",
+    "home.search.noResults": "Aucun résultat",
+    "home.search.providerNoResults": "Aucun prestataire trouvé",
+    "home.search.providersNearCity": "{{count}} prestataires près de {{city}}",
+
+    // Filters and services
+    "services.search.placeholder": "Rechercher un service",
+    "filters.category.title": "Catégories",
+    "filters.services.title": "Services",
+    "filters.apply": "Appliquer",
+    "filters.reset": "Réinitialiser",
+    "filters.clearAll": "Effacer tout",
+    "filters.otherInCategory": "Autre (catégorie)",
+    "filters.noResults": "Aucun résultat",
+
+    "services.propose.cta": "Proposer un service",
+    "services.propose.title": "Proposer un service",
+    "services.propose.nameFr": "Nom en français",
+    "services.propose.nameAr": "Nom en arabe",
+    "services.propose.category": "Catégorie",
+    "services.propose.tags": "Tags",
+    "services.propose.submit": "Envoyer",
+    "services.propose.sent": "Proposition envoyée",
+    "services.propose.status.pending": "En attente",
+    "services.propose.status.approved": "Approuvé",
+    "services.propose.withdraw": "Retirer",
+    "services.propose.rules": "Règles",
     
     // Services
     "services.title": "Nos services populaires",
@@ -714,6 +745,37 @@ const translations: Record<Language, TranslationDict> = {
     "hero.location": "الدار البيضاء",
     "hero.city_placeholder": "المدينة (مثل: الدار البيضاء، الرباط...)",
     "hero.provider_placeholder": "البحث عن مقدم خدمة محدد (اختياري)",
+
+    // Home search
+    "home.search.servicePlaceholder": "أي خدمة تبحث عنها؟",
+    "home.search.cityPlaceholder": "مدينة أو حي",
+    "home.search.providerPlaceholder": "اسم مقدم الخدمة",
+    "home.search.noResults": "لا توجد نتائج",
+    "home.search.providerNoResults": "لم يتم العثور على مقدم خدمة",
+    "home.search.providersNearCity": "{{count}} من مقدمي الخدمات بالقرب من {{city}}",
+
+    // Filters and services
+    "services.search.placeholder": "ابحث عن خدمة",
+    "filters.category.title": "الفئات",
+    "filters.services.title": "الخدمات",
+    "filters.apply": "تطبيق",
+    "filters.reset": "إعادة تعيين",
+    "filters.clearAll": "مسح الكل",
+    "filters.otherInCategory": "أخرى (فئة)",
+    "filters.noResults": "لا توجد نتائج",
+
+    "services.propose.cta": "اقترح خدمة",
+    "services.propose.title": "اقترح خدمة",
+    "services.propose.nameFr": "الاسم بالفرنسية",
+    "services.propose.nameAr": "الاسم بالعربية",
+    "services.propose.category": "الفئة",
+    "services.propose.tags": "الوسوم",
+    "services.propose.submit": "إرسال",
+    "services.propose.sent": "تم الإرسال",
+    "services.propose.status.pending": "قيد الانتظار",
+    "services.propose.status.approved": "مقبول",
+    "services.propose.withdraw": "سحب",
+    "services.propose.rules": "القواعد",
     
     // Services
     "services.title": "خدماتنا الشائعة",
