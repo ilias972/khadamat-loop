@@ -87,15 +87,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
     app.get("/api/services/suggest", serviceSuggestRate, async (req, res) => {
       try {
-        const q = (req.query.q as string) || "";
-        const city = (req.query.city as string) || "";
-        const limit = Math.min(parseInt((req.query.limit as string) || "8", 10), 8);
-        const normalized = normalizeString(q);
+        const qRaw = (req.query.q as string) || "";
+        const cityRaw = (req.query.city as string) || "";
+        const limitParam = parseInt(req.query.limit as string, 10);
+        const limit = Math.min(Math.max(isNaN(limitParam) ? 8 : limitParam, 1), 20);
+        const normalized = normalizeString(qRaw);
         if (!normalized) {
           return res.json({ success: true, data: { items: [] } });
         }
-        const providers = city ? await storage.getAllProviders() : [];
-        const normalizedCity = normalizeString(city);
+        SecurityLogger.logSensitiveOperation(0, "SERVICE_SUGGEST_QUERY", { q: normalized }, req.ip);
+        const providers = cityRaw ? await storage.getAllProviders() : [];
+        const normalizedCity = normalizeString(cityRaw);
         const scored = serviceCatalog
           .map((s) => {
             const name = normalizeString(s.name_fr);
@@ -110,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .slice(0, limit);
         const items = scored.map(({ s }) => {
           let providersCountInCity = 0;
-          if (city) {
+          if (cityRaw) {
             providersCountInCity = providers.filter((p) => {
               const matchCity = normalizeString(p.user.location || "").includes(normalizedCity);
               const matchService = p.specialties?.some((sp) => normalizeString(sp).includes(normalizeString(s.name_fr)));
@@ -164,33 +166,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Provider suggestions
   app.get("/api/providers/suggest", providerSuggestRate, async (req, res) => {
     try {
-      const q = (req.query.q as string) || "";
-      const limit = Math.min(parseInt((req.query.limit as string) || "8", 10), 8);
-      const city = (req.query.city as string) || "";
-      const normalizedQuery = normalizeString(q);
+      const qRaw = (req.query.q as string) || "";
+      const cityRaw = (req.query.city as string) || "";
+      const limitParam = parseInt(req.query.limit as string, 10);
+      const limit = Math.min(Math.max(isNaN(limitParam) ? 8 : limitParam, 1), 20);
+      const normalizedQuery = normalizeString(qRaw);
       if (!normalizedQuery) {
         return res.json({ success: true, data: { items: [] } });
       }
+      SecurityLogger.logSensitiveOperation(0, "PROVIDER_SUGGEST_QUERY", { q: normalizedQuery }, req.ip);
 
       const allProviders = await storage.getAllProviders();
-      const filtered = allProviders.filter(p =>
-        p.user.isVerified &&
-        (!city || p.user.location?.toLowerCase().includes(city.toLowerCase()))
+      const normalizedCity = normalizeString(cityRaw);
+      const filtered = allProviders.filter(
+        (p) =>
+          p.user.isVerified &&
+          (!normalizedCity ||
+            normalizeString(p.user.location || "").includes(normalizedCity))
       );
 
       const scored = filtered
-        .map(p => {
+        .map((p) => {
           const name =
             p.user.displayNameNormalized ||
             normalizeString(`${p.user.firstName} ${p.user.lastName}`);
           let score = 4;
           if (name === normalizedQuery) score = 0;
-          else if (name.split(" ").some(t => t.startsWith(normalizedQuery))) score = 1;
+          else if (name.split(" ").some((t) => t.startsWith(normalizedQuery))) score = 1;
           else if (name.includes(normalizedQuery)) score = 2;
           else if (levenshtein(name, normalizedQuery) <= 2) score = 3;
           return { provider: p, score };
         })
-        .filter(s => s.score < 4)
+        .filter((s) => s.score < 4)
         .sort((a, b) => a.score - b.score)
         .slice(0, limit)
         .map(({ provider }) => ({
@@ -204,7 +211,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ success: true, data: { items: scored } });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to suggest providers" });
+      res
+        .status(500)
+        .json({ success: false, error: "Failed to suggest providers" });
     }
   });
 
