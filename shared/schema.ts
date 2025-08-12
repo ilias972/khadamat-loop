@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  displayNameNormalized: text("display_name_normalized"),
   phone: text("phone"),
   avatar: text("avatar"),
   userType: text("user_type").notNull(), // 'client' | 'provider'
@@ -85,6 +86,7 @@ export const reviews = pgTable("reviews", {
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  displayNameNormalized: true,
 });
 
 export const insertServiceSchema = createInsertSchema(services).omit({

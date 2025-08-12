@@ -14,6 +14,7 @@ interface SmartSearchProps {
   onSearch?: (service: string, city: string, provider?: string) => void;
   defaultLocation?: string;
   className?: string;
+  showSuggestions?: boolean;
 }
 
 const CITIES = {
@@ -33,6 +34,8 @@ export default function SmartSearch({
   const [provider, setProvider] = useState("");
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [providerSuggestions, setProviderSuggestions] = useState<any[]>([]);
+  const [showProviderSuggestions, setShowProviderSuggestions] = useState(false);
 
   const { city: detectedCity, isLoading: locationLoading } = useGeolocation();
   useEffect(() => {
@@ -60,12 +63,31 @@ export default function SmartSearch({
       ? fuseCities.search(city).map((r) => r.item).slice(0, 5)
       : [];
 
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      if (provider) {
+        try {
+          const params = new URLSearchParams({ q: provider, limit: "8" });
+          if (city) params.append("city", city);
+          const res = await fetch(`/api/providers/suggest?${params.toString()}`);
+          const json = await res.json();
+          setProviderSuggestions(json.data?.items || []);
+        } catch {
+          setProviderSuggestions([]);
+        }
+      } else {
+        setProviderSuggestions([]);
+      }
+    }, 250);
+    return () => clearTimeout(handler);
+  }, [provider, city]);
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (service) params.append("service", service);
-    if (city) params.append("location", city);
-    if (provider) params.append("provider", provider);
-    const url = `/prestataires${params.toString() ? `?${params.toString()}` : ""}`;
+    if (city) params.append("city", city);
+    if (provider) params.append("q", provider);
+    const url = `/providers${params.toString() ? `?${params.toString()}` : ""}`;
     setLocation(url);
     onSearch?.(service, city, provider);
   };
@@ -158,16 +180,43 @@ export default function SmartSearch({
       </div>
 
       {/* Provider search */}
-      <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl mt-4">
+      <div className="relative flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl mt-4">
         <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <input
           className="flex-1 py-2 text-base placeholder-gray-400 bg-transparent border-none focus:outline-none"
           placeholder={t("home.search.providerPlaceholder")}
           value={provider}
-          onChange={(e) => setProvider(e.target.value)}
+          onChange={(e) => {
+            setProvider(e.target.value);
+            setShowProviderSuggestions(true);
+          }}
+          onFocus={() => setShowProviderSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 150)}
           onKeyPress={handleKeyPress}
           autoComplete="off"
         />
+        {showProviderSuggestions && provider && (
+          <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
+            {providerSuggestions.length > 0 ? (
+              providerSuggestions.map((p) => (
+                <div
+                  key={p.id}
+                  className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
+                  onClick={() => {
+                    setShowProviderSuggestions(false);
+                    setLocation(`/providers/${p.slug || p.id}`);
+                  }}
+                >
+                  {p.displayName}
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-gray-700">
+                {t("home.search.providerNoResults")}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

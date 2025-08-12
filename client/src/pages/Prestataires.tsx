@@ -48,19 +48,19 @@ export default function Prestataires() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const serviceFilter = urlParams.get('service');
-    const locationFilter = urlParams.get('location');
-    const providerFilter = urlParams.get('provider');
+    const cityFilter = urlParams.get('city');
+    const qFilter = urlParams.get('q');
 
     if (serviceFilter) {
       const decodedService = decodeURIComponent(serviceFilter).toLowerCase();
       setSelectedService(decodedService);
     }
-    if (locationFilter) {
-      const decodedCity = decodeURIComponent(locationFilter);
+    if (cityFilter) {
+      const decodedCity = decodeURIComponent(cityFilter);
       setSelectedCity(cities.includes(decodedCity) ? decodedCity : "Autre");
     }
-    if (providerFilter) {
-      setSearchTerm(decodeURIComponent(providerFilter));
+    if (qFilter) {
+      setSearchTerm(decodeURIComponent(qFilter));
     }
   }, []);
 
