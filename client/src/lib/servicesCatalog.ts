@@ -12,9 +12,18 @@ export interface ServiceCatalogItem {
 }
 
 async function fetchCatalog(lang: string) {
-  const res = await fetch(`/api/services/catalog?groupBy=category&locale=${lang}`);
-  const data = await res.json();
-  return Array.isArray(data) ? data : data.items || [];
+  try {
+    const res = await fetch(
+      `/api/services/catalog?groupBy=category&locale=${lang}`
+    );
+    if (!res.ok) throw new Error("failed");
+    const data = await res.json();
+    return Array.isArray(data) ? data : data.items || [];
+  } catch {
+    const fallback = await fetch("/catalog.seed.json");
+    const json = await fallback.json();
+    return Array.isArray(json.data) ? json.data : json;
+  }
 }
 
 export function useServicesCatalog() {
@@ -99,12 +108,12 @@ function fuzzy(a: string, b: string) {
   return dp[m][n];
 }
 
-export function searchLocal(
+export function searchLocalDetailed(
   items: ServiceCatalogItem[] | undefined,
   query: string,
   lang: string,
 ) {
-  if (!items) return [] as ServiceCatalogItem[];
+  if (!items) return [] as { item: ServiceCatalogItem; score: number }[];
   const q = normalize(query);
   return items
     .map((item) => {
@@ -116,7 +125,14 @@ export function searchLocal(
       return null;
     })
     .filter((x): x is { item: ServiceCatalogItem; score: number } => x !== null)
-    .sort((a, b) => a.score - b.score)
-    .map((r) => r.item);
+    .sort((a, b) => a.score - b.score);
+}
+
+export function searchLocal(
+  items: ServiceCatalogItem[] | undefined,
+  query: string,
+  lang: string,
+) {
+  return searchLocalDetailed(items, query, lang).map((r) => r.item);
 }
 

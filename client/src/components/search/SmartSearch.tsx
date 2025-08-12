@@ -6,7 +6,7 @@ import Fuse from "fuse.js";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import {
   useServicesCatalog,
-  searchLocal,
+  searchLocalDetailed,
   type ServiceCatalogItem,
 } from "@/lib/servicesCatalog";
 
@@ -29,7 +29,10 @@ export default function SmartSearch({
 }: SmartSearchProps) {
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
-  const [service, setService] = useState("");
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [selectedService, setSelectedService] = useState<
+    { slug: string; name: string } | null
+  >(null);
   const [city, setCity] = useState(defaultLocation);
   const [provider, setProvider] = useState("");
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
@@ -52,12 +55,57 @@ export default function SmartSearch({
     keys: ["name"],
   });
 
-  const serviceSuggestions =
-    service && catalog
-      ? searchLocal(catalog as ServiceCatalogItem[], service, language)
-          .map((item) => (language === "ar" ? item.name_ar : item.name_fr))
-          .slice(0, 8)
-      : [];
+  const [serviceSuggestions, setServiceSuggestions] = useState<
+    { item: ServiceCatalogItem; score: number; providersCountInCity?: number }[]
+  >([]);
+  useEffect(() => {
+    if (!catalog || serviceQuery.length < 1) {
+      setServiceSuggestions([]);
+      return;
+    }
+    const results = searchLocalDetailed(
+      catalog as ServiceCatalogItem[],
+      serviceQuery,
+      language
+    ).slice(0, 8);
+    setServiceSuggestions(results);
+  }, [catalog, serviceQuery, language]);
+
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      if (serviceQuery.length < 1 || !city) return;
+      try {
+        const params = new URLSearchParams({
+          q: serviceQuery,
+          city,
+          limit: "8",
+        });
+        const res = await fetch(`/api/services/suggest?${params.toString()}`);
+        const json = await res.json();
+        const map = new Map<string, number>();
+        for (const it of json.data?.items || []) {
+          map.set(it.slug, it.providersCountInCity || 0);
+        }
+        setServiceSuggestions((prev) =>
+          prev
+            .map((r) => ({
+              ...r,
+              providersCountInCity: map.get(r.item.slug) ?? 0,
+            }))
+            .sort((a, b) => {
+              if (a.score !== b.score) return a.score - b.score;
+              return (
+                (b.providersCountInCity > 0 ? 1 : 0) -
+                (a.providersCountInCity > 0 ? 1 : 0)
+              );
+            })
+        );
+      } catch {
+        // ignore
+      }
+    }, 250);
+    return () => clearTimeout(handler);
+  }, [serviceQuery, city]);
   const citySuggestions =
     city && !currentCities.includes(city)
       ? fuseCities.search(city).map((r) => r.item).slice(0, 5)
@@ -84,12 +132,12 @@ export default function SmartSearch({
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (service) params.append("service", service);
+    if (selectedService) params.append("services", selectedService.slug);
     if (city) params.append("city", city);
     if (provider) params.append("q", provider);
     const url = `/providers${params.toString() ? `?${params.toString()}` : ""}`;
     setLocation(url);
-    onSearch?.(service, city, provider);
+    onSearch?.(serviceQuery, city, provider);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -105,9 +153,10 @@ export default function SmartSearch({
           <input
             className="flex-1 py-3 md:py-4 text-base md:text-lg placeholder-gray-400 border-none focus:outline-none min-w-0"
             placeholder={t("home.search.servicePlaceholder")}
-            value={service}
+            value={serviceQuery}
             onChange={(e) => {
-              setService(e.target.value);
+              setServiceQuery(e.target.value);
+              setSelectedService(null);
               setShowServiceSuggestions(true);
             }}
             onFocus={() => setShowServiceSuggestions(true)}
@@ -115,20 +164,36 @@ export default function SmartSearch({
             onKeyPress={handleKeyPress}
             autoComplete="off"
           />
-          {showServiceSuggestions && serviceSuggestions.length > 0 && (
+          {showServiceSuggestions && serviceQuery && (
             <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
-              {serviceSuggestions.map((s, idx) => (
-                <div
-                  key={idx}
-                  className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
-                  onClick={() => {
-                    setService(s);
-                    setShowServiceSuggestions(false);
-                  }}
-                >
-                  {s}
+              {serviceSuggestions.length > 0 ? (
+                serviceSuggestions.map(({ item, providersCountInCity }) => (
+                  <div
+                    key={item.id}
+                    className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-700"
+                    onClick={() => {
+                      const name = language === "ar" ? item.name_ar : item.name_fr;
+                      setServiceQuery(name);
+                      setSelectedService({ slug: item.slug, name });
+                      setShowServiceSuggestions(false);
+                    }}
+                  >
+                    <div>{language === "ar" ? item.name_ar : item.name_fr}</div>
+                    {city && (
+                      <div className="text-sm text-gray-500">
+                        {t("home.search.providersNearCity", {
+                          count: providersCountInCity ?? 0,
+                          city,
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-gray-700">
+                  {t("home.search.noResults")}
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
