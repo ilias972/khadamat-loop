@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertProjectSchema, insertMessageSchema, insertFavoriteSchema, insertReviewSchema } from "@shared/schema";
+import { serviceCatalog } from "./serviceCatalog";
 
 // Import des middlewares de sécurité
 import { 
@@ -26,6 +27,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Routes de sécurité
   app.use('/api/auth', securityRoutes);
+  // Catalogue services
+  app.get("/api/services/catalog", (req, res) => {
+    try {
+      const groupBy = req.query.groupBy;
+      if (groupBy === "category") {
+        const categoriesMap = new Map<string, { code: string; name_fr: string; name_ar: string; services: { id: number; code: string; slug: string; name_fr: string; name_ar: string }[] }>();
+        for (const s of serviceCatalog) {
+          let category = categoriesMap.get(s.category_code);
+          if (!category) {
+            category = { code: s.category_code, name_fr: s.name_fr, name_ar: s.name_ar, services: [] };
+            categoriesMap.set(s.category_code, category);
+          }
+          category.services.push({ id: s.id, code: s.code, slug: s.slug, name_fr: s.name_fr, name_ar: s.name_ar });
+        }
+        const categories = Array.from(categoriesMap.values());
+        res.json({ success: true, data: { categories } });
+      } else {
+        res.json({ success: true, data: serviceCatalog });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to fetch catalog" });
+    }
+  });
   // Services routes
   app.get("/api/services", async (req, res) => {
     try {
