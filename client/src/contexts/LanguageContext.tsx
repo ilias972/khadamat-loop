@@ -1414,7 +1414,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 export function useLanguage(): LanguageContextType {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    console.warn("useLanguage called outside of LanguageProvider");
+    return {
+      language: "fr",
+      toggleLanguage: () => {},
+      t: (key: string) => key,
+      isRTL: false,
+    };
   }
   return context;
 }
