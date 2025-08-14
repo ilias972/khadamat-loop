@@ -16,14 +16,14 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
   const description = language === "ar" && service.descriptionAr ? service.descriptionAr : (service.description || "");
 
   return (
-    <div 
-      className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-orange-200 transition-all duration-300 hover-scale cursor-pointer"
+    <div
+      className="group bg-white border-2 border-gray-200 rounded-2xl p-8 text-center hover:shadow-xl hover:border-orange-300 transition-[transform,box-shadow,border-color] duration-300 transform hover:-translate-y-1 shadow-md service-card-pulse cursor-pointer"
       onClick={onClick}
     >
-      <div className="w-16 h-16 bg-white border border-gray-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+      <div className="mb-6 flex items-center justify-center group-hover:scale-110 transition-transform">
         {(() => {
           const Icon = getServiceIcon(service.category);
-          return <Icon className="w-12 h-12" />;
+          return <Icon className="w-12 h-12 text-orange-500" />;
         })()}
       </div>
       

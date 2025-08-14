@@ -7,6 +7,7 @@ import { serviceCatalog } from "./serviceCatalog";
 import cors from "cors";
 import { normalizeString } from "@shared/normalize";
 import { createRateLimit } from "./security/middleware";
+import { SEARCH_RADIUS_KM, SEARCH_RANKING } from "./config";
 
 // Import des middlewares de sécurité
 import { 
@@ -113,9 +114,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return null;
           })
           .filter((x): x is { s: typeof serviceCatalog[number]; score: number } => x !== null)
-          .sort((a, b) => a.score - b.score)
           .slice(0, limit);
-        const items = scored.map(({ s }) => {
+        const items = scored.map(({ s, score }) => {
           let providersCountInCity = 0;
           if (cityRaw) {
             providersCountInCity = providers.filter((p) => {
@@ -131,10 +131,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             name_fr: s.name_fr,
             name_ar: s.name_ar,
             providersCountInCity,
+            score,
           };
         });
-        items.sort((a, b) => b.providersCountInCity - a.providersCountInCity);
-        res.json({ success: true, data: { items } });
+        items.sort((a, b) => {
+          if (SEARCH_RANKING === 'popularity_local') {
+            if (b.providersCountInCity !== a.providersCountInCity)
+              return b.providersCountInCity - a.providersCountInCity;
+            return a.score - b.score;
+          }
+          if (a.score !== b.score) return a.score - b.score;
+          return b.providersCountInCity - a.providersCountInCity;
+        });
+        res.json({ success: true, data: { items: items.map(({ score, ...rest }) => rest) } });
       } catch (error) {
         res.status(500).json({ success: false, error: "Failed to suggest services" });
       }
@@ -205,10 +214,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           else if (name.split(" ").some((t) => t.startsWith(normalizedQuery))) score = 1;
           else if (name.includes(normalizedQuery)) score = 2;
           else if (levenshtein(name, normalizedQuery) <= 2) score = 3;
-          return { provider: p, score };
+          const popularity = p.reviewCount || 0;
+          return { provider: p, score, popularity };
         })
         .filter((s) => s.score < 4)
-        .sort((a, b) => a.score - b.score)
+        .sort((a, b) => {
+          if (SEARCH_RANKING === 'popularity_local') {
+            if (b.popularity !== a.popularity) return b.popularity - a.popularity;
+            return a.score - b.score;
+          }
+          if (a.score !== b.score) return a.score - b.score;
+          return b.popularity - a.popularity;
+        })
         .slice(0, limit)
         .map(({ provider }) => ({
           id: provider.id,
@@ -242,22 +259,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const cityLower = (city as string).toLowerCase();
         providers = providers.filter(p => p.user.location?.toLowerCase().includes(cityLower));
       }
-      if (normalizedQuery) {
-        providers = providers.filter(p => {
-          const name =
-            p.user.displayNameNormalized ||
-            normalizeString(`${p.user.firstName} ${p.user.lastName}`);
-          return name.includes(normalizedQuery);
-        });
-      }
-      providers.sort((a, b) => {
-        const clubDiff = (b.user.isClubPro ? 1 : 0) - (a.user.isClubPro ? 1 : 0);
+      let mapped = providers.map(p => {
+        const name =
+          p.user.displayNameNormalized ||
+          normalizeString(`${p.user.firstName} ${p.user.lastName}`);
+        let score = 2;
+        if (normalizedQuery) {
+          if (name.startsWith(normalizedQuery)) score = 0;
+          else if (name.includes(normalizedQuery)) score = 1;
+        }
+        const popularity = p.reviewCount || 0;
+        return { p, score, popularity };
+      });
+      mapped = mapped.filter(m => !normalizedQuery || m.score < 2 || m.p.user.isClubPro);
+      mapped.sort((a, b) => {
+        const clubDiff = (b.p.user.isClubPro ? 1 : 0) - (a.p.user.isClubPro ? 1 : 0);
         if (clubDiff !== 0) return clubDiff;
-        const ratingA = parseFloat(a.rating || "0");
-        const ratingB = parseFloat(b.rating || "0");
+        if (SEARCH_RANKING === 'popularity_local') {
+          if (b.popularity !== a.popularity) return b.popularity - a.popularity;
+          if (a.score !== b.score) return a.score - b.score;
+        } else {
+          if (a.score !== b.score) return a.score - b.score;
+          if (b.popularity !== a.popularity) return b.popularity - a.popularity;
+        }
+        const ratingA = parseFloat(a.p.rating || "0");
+        const ratingB = parseFloat(b.p.rating || "0");
         return ratingB - ratingA;
       });
-      res.json({ success: true, data: { items: providers } });
+      res.json({ success: true, data: { items: mapped.map(m => m.p) } });
     } catch (error) {
       res.status(500).json({ success: false, error: "Failed to search providers" });
     }
