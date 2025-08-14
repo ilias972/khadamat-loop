@@ -72,9 +72,11 @@ export default function Index() {
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 text-center">
           <div className="animate-slide-up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
-              {t("hero.title")}
-              <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-                {" "}{t("hero.title_highlight")}
+              {t("hero.title")}{" "}
+              <span className="border-expand">
+                <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                  {t("hero.title_highlight")}
+                </span>
               </span>
             </h1>
             

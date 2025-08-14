@@ -1,0 +1,125 @@
+/* === EFFET BORDER EXPAND === */
+
+/* Style de base */
+.border-expand {
+  color: #f97316; /* Orange-500 */
+  position: relative;
+  display: inline-block;
+  padding: 12px 24px; /* Espacement interne */
+  transition: color 0.4s ease;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Bordure qui apparaît */
+.border-expand::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid #f97316; /* Bordure orange */
+  border-radius: 8px;
+  transform: scale(0); /* Commence invisible */
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1; /* Derrière le texte */
+}
+
+/* Animation au survol */
+.border-expand:hover {
+  color: #ea580c; /* Orange plus foncé */
+}
+
+.border-expand:hover::before {
+  transform: scale(1); /* Bordure apparaît */
+  background: rgba(249, 115, 22, 0.05); /* Fond subtle */
+}
+
+/* === VARIANTES === */
+
+/* Variante avec bordure plus épaisse */
+.border-expand-thick::before {
+  border-width: 3px;
+  border-radius: 12px;
+}
+
+/* Variante avec animation plus rapide */
+.border-expand-fast::before {
+  transition: transform 0.3s ease-out;
+}
+
+/* Variante avec effet de respiration */
+.border-expand-pulse:hover::before {
+  animation: border-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes border-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    border-width: 2px;
+  }
+  50% { 
+    transform: scale(1.02);
+    border-width: 3px;
+  }
+}
+
+/* Variante avec dégradé de bordure */
+.border-expand-gradient::before {
+  border: none;
+  background: linear-gradient(45deg, #ea580c, #f97316, #fb923c);
+  padding: 2px;
+  border-radius: 10px;
+}
+
+.border-expand-gradient::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: white;
+  border-radius: 8px;
+  z-index: -1;
+}
+
+/* Variante avec bordure pointillée */
+.border-expand-dashed::before {
+  border-style: dashed;
+  border-width: 2px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .border-expand {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+  
+  .border-expand::before {
+    border-width: 2px;
+    border-radius: 6px;
+  }
+}
+
+/* === AVEC TAILWIND CSS (optionnel) === */
+/*
+Ajoute ceci dans globals.css, dans un bloc @layer components :
+
+@layer components {
+  .border-expand-tailwind {
+    @apply text-orange-500 relative inline-block px-6 py-3 font-bold cursor-pointer transition-colors duration-300 ease-in-out;
+  }
+  .border-expand-tailwind::before {
+    content: '';
+    @apply absolute inset-0 rounded-lg scale-0 -z-10;
+    border: 2px solid #f97316;
+    transition: transform 0.5s ease-out;
+    background: rgba(249, 115, 22, 0.05);
+  }
+  .border-expand-tailwind:hover { @apply text-orange-600; }
+  .border-expand-tailwind:hover::before { transform: scale(1); }
+}
+*/
