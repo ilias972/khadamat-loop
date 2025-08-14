@@ -1367,6 +1367,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("fr");
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const savedLanguage = localStorage.getItem("khadamat-language") as Language;
     if (savedLanguage && (savedLanguage === "fr" || savedLanguage === "ar")) {
       setLanguage(savedLanguage);
@@ -1374,10 +1375,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     localStorage.setItem("khadamat-language", language);
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = language;
-    
+
     if (language === "ar") {
       document.documentElement.classList.add("rtl");
     } else {
