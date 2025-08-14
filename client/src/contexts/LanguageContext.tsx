@@ -86,6 +86,10 @@ const translations: Record<Language, TranslationDict> = {
     "home.search.nearbyProviders": "Prestataires proches",
     "home.search.providersNearCity": "{{count}} prestataires près de {{city}}",
 
+    "home.quick.title": "Suggestions près de chez vous",
+    "home.quick.item": "{{service}} à {{city}}",
+    "home.quick.nearMe": "près de moi",
+
     // Filters and services
     "services.search.placeholder": "Rechercher un service",
     "filters.category.title": "Catégories",
@@ -750,6 +754,10 @@ const translations: Record<Language, TranslationDict> = {
     "home.search.viewAllServices": "عرض جميع الخدمات",
     "home.search.nearbyProviders": "مقدمو الخدمات القريبون",
     "home.search.providersNearCity": "{{count}} من مقدمي الخدمات بالقرب من {{city}}",
+
+    "home.quick.title": "اقتراحات قريبة منك",
+    "home.quick.item": "{{service}} في {{city}}",
+    "home.quick.nearMe": "بالقرب مني",
 
     // Filters and services
     "services.search.placeholder": "ابحث عن خدمة",

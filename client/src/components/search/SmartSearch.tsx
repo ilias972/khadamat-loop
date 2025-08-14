@@ -15,6 +15,8 @@ interface SmartSearchProps {
   defaultLocation?: string;
   className?: string;
   showSuggestions?: boolean;
+  onServiceQueryChange?: (q: string) => void;
+  onCityChange?: (city: string) => void;
 }
 
 const CITIES = {
@@ -26,6 +28,9 @@ export default function SmartSearch({
   onSearch,
   defaultLocation = "",
   className = "",
+  showSuggestions = true,
+  onServiceQueryChange,
+  onCityChange,
 }: SmartSearchProps) {
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
@@ -183,13 +188,14 @@ export default function SmartSearch({
               setServiceQuery(e.target.value);
               setSelectedService(null);
               setShowServiceSuggestions(true);
+              onServiceQueryChange?.(e.target.value);
             }}
             onFocus={() => setShowServiceSuggestions(true)}
             onBlur={() => setTimeout(() => setShowServiceSuggestions(false), 150)}
             onKeyPress={handleKeyPress}
             autoComplete="off"
           />
-          {showServiceSuggestions && serviceQuery && (
+          {showSuggestions && showServiceSuggestions && serviceQuery && (
             <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
               {serviceSuggestions.length > 0 ? (
                 serviceSuggestions.map(({ item, providersCountInCity }) => (
@@ -206,10 +212,10 @@ export default function SmartSearch({
                     <div>{language === "ar" ? item.name_ar : item.name_fr}</div>
                     {city && (
                       <div className="text-sm text-gray-500">
-                        {t("home.search.providersNearCity", {
-                          count: providersCountInCity ?? 0,
-                          city,
-                        })}
+                        {t(
+                          "home.search.providersNearCity",
+                          { count: providersCountInCity ?? 0, city } as any
+                        )}
                       </div>
                     )}
                   </div>
@@ -250,6 +256,7 @@ export default function SmartSearch({
             onChange={(e) => {
               setCity(e.target.value);
               setShowCitySuggestions(true);
+              onCityChange?.(e.target.value);
             }}
             onFocus={() => setShowCitySuggestions(true)}
             onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
@@ -259,7 +266,7 @@ export default function SmartSearch({
           <MapPin
             className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 ${locationLoading ? "geolocation-pulse" : ""}`}
           />
-          {showCitySuggestions && citySuggestions.length > 0 && (
+          {showSuggestions && showCitySuggestions && citySuggestions.length > 0 && (
             <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
               {citySuggestions.map((s, idx) => (
                 <div
@@ -303,7 +310,7 @@ export default function SmartSearch({
           onKeyPress={handleKeyPress}
           autoComplete="off"
         />
-        {showProviderSuggestions && provider && (
+        {showSuggestions && showProviderSuggestions && provider && (
           <div className="absolute left-0 top-full z-10 w-full bg-white border border-gray-200 rounded-b-xl shadow-lg max-h-56 overflow-auto">
             {providerSuggestions.length > 0 ? (
               providerSuggestions.map((p) => (
