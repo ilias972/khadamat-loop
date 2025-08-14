@@ -105,11 +105,9 @@ export default function SmartSearch({
                 providersCountInCity: map.get(r.item.slug) ?? 0,
               }))
               .sort((a, b) => {
-                if (a.score !== b.score) return a.score - b.score;
-                return (
-                  (b.providersCountInCity > 0 ? 1 : 0) -
-                  (a.providersCountInCity > 0 ? 1 : 0)
-                );
+                if (b.providersCountInCity !== a.providersCountInCity)
+                  return b.providersCountInCity - a.providersCountInCity;
+                return a.score - b.score;
               })
           );
         } finally {
@@ -177,7 +175,7 @@ export default function SmartSearch({
   };
 
   return (
-    <div className={`max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-4 md:p-6 mb-8 md:mb-12 ${className}`}> 
+    <div className={`relative max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-orange-100 p-4 md:p-6 mb-8 md:mb-12 ${className}`}>
       <div className="flex flex-col md:flex-row items-stretch md:items-center space-y-3 md:space-y-0 md:space-x-4">
         {/* Service input */}
         <div className="flex items-center space-x-3 px-3 md:px-4 flex-1 border border-gray-200 md:border-none rounded-xl md:rounded-none relative">
