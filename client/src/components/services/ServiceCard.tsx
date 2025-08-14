@@ -1,6 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowRight } from "lucide-react";
-import ServiceIcon, { hasServiceIcon } from "@/components/ui/ServiceIcon";
+import { getServiceIcon } from "@/lib/serviceIcons";
 import { getNameBySlug } from "@/lib/servicesCatalog";
 import type { Service } from "@shared/schema";
 
@@ -21,9 +21,10 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       onClick={onClick}
     >
       <div className="w-16 h-16 bg-white border border-gray-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-        {hasServiceIcon(service.category) && (
-          <ServiceIcon serviceSlug={service.category} className="w-12 h-12" />
-        )}
+        {(() => {
+          const Icon = getServiceIcon(service.category);
+          return <Icon className="w-12 h-12" />;
+        })()}
       </div>
       
       <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">

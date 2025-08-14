@@ -12,6 +12,7 @@
     "frontend": "npx vite",
     "test": "npm --prefix client test",
     "check:services": "node scripts/check-services.js",
+    "check:service-icons": "tsx scripts/check-service-icons.ts",
     "e2e:smoke:services": "node scripts/e2e-smoke-services.js",
     "e2e:smoke:providers": "node scripts/e2e-smoke-providers.js"
   },

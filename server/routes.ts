@@ -95,7 +95,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!normalized) {
           return res.json({ success: true, data: { items: [] } });
         }
-        SecurityLogger.logSensitiveOperation(0, "SERVICE_SUGGEST_QUERY", { q: normalized }, req.ip);
+        SecurityLogger.logSensitiveOperation(
+          0,
+          "SERVICE_SUGGEST_QUERY",
+          { q: normalized },
+          req.ip || ""
+        );
         const providers = cityRaw ? await storage.getAllProviders() : [];
         const normalizedCity = normalizeString(cityRaw);
         const scored = serviceCatalog
@@ -174,7 +179,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!normalizedQuery) {
         return res.json({ success: true, data: { items: [] } });
       }
-      SecurityLogger.logSensitiveOperation(0, "PROVIDER_SUGGEST_QUERY", { q: normalizedQuery }, req.ip);
+      SecurityLogger.logSensitiveOperation(
+        0,
+        "PROVIDER_SUGGEST_QUERY",
+        { q: normalizedQuery },
+        req.ip || ""
+      );
 
       const allProviders = await storage.getAllProviders();
       const normalizedCity = normalizeString(cityRaw);

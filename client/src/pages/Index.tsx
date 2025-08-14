@@ -9,16 +9,26 @@ import { Lightbulb, Search, User, MessageCircle, Star, Wrench, Droplets, Sparkle
 import { Link } from "wouter";
 import type { Service } from "@shared/schema";
 import { useGeolocation } from "@/hooks/use-geolocation";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getNameBySlug, useServicesCatalog } from "@/lib/servicesCatalog";
+import HomeQuickSuggestions from "@/components/home/HomeQuickSuggestions";
 
 export default function Index() {
   const { t, language } = useLanguage();
-  const { city: userLocation } = useGeolocation();
+  const { city: geoCity } = useGeolocation();
   const numberFormatter = new Intl.NumberFormat(language);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
   useServicesCatalog();
+
+  const storedCity =
+    typeof window !== "undefined" ? localStorage.getItem("khadamat-city") || "" : "";
+  const [city, setCity] = useState(storedCity);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (!city && geoCity) setCity(geoCity);
+  }, [geoCity, city]);
 
   // Fetch popular services
   const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
@@ -75,7 +85,16 @@ export default function Index() {
           
           {/* Smart Search Bar avec suggestions */}
           <div id="search">
-            <SmartSearch showSuggestions={true} />
+            <SmartSearch
+              showSuggestions={true}
+              defaultLocation={city}
+              onServiceQueryChange={setSearchQuery}
+              onCityChange={(c) => {
+                setCity(c);
+                localStorage.setItem("khadamat-city", c);
+              }}
+            />
+            <HomeQuickSuggestions city={city} query={searchQuery} />
           </div>
 
         </div>
@@ -140,7 +159,7 @@ export default function Index() {
                   return (
                     <Link
                       key={index}
-                      href={`/prestataires?service=${encodeURIComponent(service.slug)}${userLocation ? `&location=${encodeURIComponent(userLocation)}` : ""}`}
+                      href={`/prestataires?service=${encodeURIComponent(service.slug)}${city ? `&location=${encodeURIComponent(city)}` : ""}`}
                       className="group block cursor-pointer relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl md:rounded-2xl"
                     >
                       <div className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-6 text-center hover:shadow-xl hover:border-orange-300 transition-[transform,box-shadow,border-color] duration-300 transform hover:-translate-y-1 shadow-md service-card-pulse">
