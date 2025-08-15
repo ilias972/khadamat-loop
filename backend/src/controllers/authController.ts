@@ -12,6 +12,46 @@ import { logAction } from '../middlewares/audit';
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
 const prisma = new PrismaClient();
+const refreshExpireMs = 7 * 24 * 60 * 60 * 1000;
+const secureCookie = process.env.STAGE === 'prod';
+
+function signTokens(userId: number, role: string, mfa?: boolean) {
+  const secret = process.env.JWT_SECRET!;
+  const jti = crypto.randomUUID();
+  const accessToken = jwt.sign(
+    { id: userId.toString(), role: role.toLowerCase() as UserRole, mfa },
+    secret,
+    { expiresIn: '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { id: userId.toString(), role: role.toLowerCase() as UserRole, mfa, jti },
+    secret,
+    { expiresIn: '7d' }
+  );
+  return { accessToken, refreshToken, jti };
+}
+
+function setRefreshCookie(res: Response, token: string) {
+  res.cookie('refreshToken', token, {
+    httpOnly: true,
+    secure: secureCookie,
+    sameSite: 'strict',
+    maxAge: refreshExpireMs,
+  });
+}
+
+function parseRefreshToken(req: Request): string | null {
+  const raw = req.headers.cookie || '';
+  const found = raw
+    .split(';')
+    .map((s) => s.trim())
+    .find((s) => s.startsWith('refreshToken='));
+  return found ? decodeURIComponent(found.split('=')[1]) : null;
+}
+
+function hashJti(jti: string) {
+  return crypto.createHash('sha256').update(jti).digest('hex');
+}
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -86,12 +126,15 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       return res.json({ success: true, data: { mfaRequired: true, pendingToken } });
     }
 
-    const accessToken = jwt.sign(
-      { id: user.id.toString(), role: user.role.toLowerCase() as UserRole },
-      secret,
-      { expiresIn: '15m' }
-    );
-
+    const { accessToken, refreshToken, jti } = signTokens(user.id, user.role);
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        jtiHash: hashJti(jti),
+        expiresAt: new Date(Date.now() + refreshExpireMs),
+      },
+    });
+    setRefreshCookie(res, refreshToken);
     res.json({
       success: true,
       data: {
@@ -163,7 +206,15 @@ export async function verifyMfa(req: Request, res: Response, next: NextFunction)
         error: { code: 401, message: 'Invalid MFA code', timestamp: new Date().toISOString() },
       });
     }
-    const accessToken = jwt.sign({ id: userId.toString(), role: payload.role as UserRole, mfa: true }, secret, { expiresIn: '15m' });
+    const { accessToken, refreshToken, jti } = signTokens(userId, payload.role as string, true);
+    await prisma.refreshToken.create({
+      data: {
+        userId,
+        jtiHash: hashJti(jti),
+        expiresAt: new Date(Date.now() + refreshExpireMs),
+      },
+    });
+    setRefreshCookie(res, refreshToken);
     res.json({ success: true, data: { accessToken } });
   } catch (err) {
     next(err);
@@ -192,7 +243,122 @@ export async function profile(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+export async function refresh(req: Request, res: Response, next: NextFunction) {
+  try {
+    const token = parseRefreshToken(req);
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 401, message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return next({ status: 500, message: 'JWT secret not configured' });
+    }
+    let payload: any;
+    try {
+      payload = jwt.verify(token, secret);
+    } catch {
+      return res.status(401).json({
+        success: false,
+        error: { code: 401, message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+    const jti = payload?.jti as string | undefined;
+    if (!jti) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 401, message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+    const record = await prisma.refreshToken.findUnique({ where: { jtiHash: hashJti(jti) } });
+    if (!record || record.revokedAt || record.expiresAt < new Date()) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 401, message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+    const user = await prisma.user.findUnique({ where: { id: record.userId } });
+    if (!user || user.isDisabled) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 401, message: 'Invalid token', timestamp: new Date().toISOString() },
+      });
+    }
+    if (!payload.mfa) {
+      const mfa = await prisma.mfaSecret.findUnique({ where: { userId: user.id }, select: { enabledAt: true } });
+      if (mfa && mfa.enabledAt) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 401, message: 'MFA required', timestamp: new Date().toISOString() },
+        });
+      }
+    }
+
+    await prisma.refreshToken.update({ where: { id: record.id }, data: { revokedAt: new Date() } });
+    const { accessToken, refreshToken, jti: newJti } = signTokens(user.id, user.role, payload.mfa);
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        jtiHash: hashJti(newJti),
+        expiresAt: new Date(Date.now() + refreshExpireMs),
+      },
+    });
+    setRefreshCookie(res, refreshToken);
+    res.json({ success: true, data: { accessToken } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function logout(req: Request, res: Response) {
+  const token = parseRefreshToken(req);
+  if (token) {
+    try {
+      const secret = process.env.JWT_SECRET!;
+      const payload: any = jwt.verify(token, secret);
+      if (payload?.jti) {
+        await prisma.refreshToken.updateMany({
+          where: { jtiHash: hashJti(payload.jti), revokedAt: null },
+          data: { revokedAt: new Date() },
+        });
+      }
+    } catch {}
+  }
+  res.cookie('refreshToken', '', {
+    httpOnly: true,
+    secure: secureCookie,
+    sameSite: 'strict',
+    maxAge: 0,
+  });
+  res.json({ success: true });
+}
+
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = parseInt(req.user?.id || '', 10);
+    const { oldPassword, newPassword } = req.body as { oldPassword: string; newPassword: string };
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return next({ status: 404, message: 'User not found' });
+    }
+    const valid = await verifyPassword(oldPassword, user.password);
+    if (!valid) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: 'Invalid current password', timestamp: new Date().toISOString() },
+      });
+    }
+    const hashed = await hashPassword(newPassword);
+    await prisma.user.update({ where: { id }, data: { password: hashed } });
+    await prisma.refreshToken.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+export async function requestPasswordReset(req: Request, res: Response, next: NextFunction) {
   const { email } = req.body as { email: string };
   const generic = { success: true, message: 'If an account exists, an email has been sent.' };
   try {
@@ -219,7 +385,7 @@ export async function forgotPassword(req: Request, res: Response, next: NextFunc
   }
 }
 
-export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+export async function confirmResetPassword(req: Request, res: Response, next: NextFunction) {
   const { token, newPassword } = req.body as { token: string; newPassword: string };
   try {
     const hash = crypto.createHash('sha256').update(token + (process.env.RESET_TOKEN_PEPPER || '')).digest('hex');
