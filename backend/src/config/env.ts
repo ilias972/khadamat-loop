@@ -12,5 +12,11 @@ export const env = {
   sentryDsn: process.env.SENTRY_DSN || '',
   redisUrl: process.env.REDIS_URL,
   healthReadyDelayMs: parseInt(process.env.HEALTH_READY_DELAY_MS || '0', 10),
-  appVersion: process.env.APP_VERSION || '0.0.0'
+  appVersion: process.env.APP_VERSION || '0.0.0',
+  searchRadiusKm: parseInt(process.env.SEARCH_RADIUS_KM || '30', 10),
+  searchRanking: process.env.SEARCH_RANKING || 'popularity',
+  piiRetentionDays: parseInt(process.env.PII_RETENTION_DAYS || '365', 10),
+  piiExportMaxMb: parseInt(process.env.PII_EXPORT_MAX_MB || '10', 10),
+  piiExportFormat: process.env.PII_EXPORT_FORMAT || 'json',
+  piiExportRatePerDay: parseInt(process.env.PII_EXPORT_RATE_PER_DAY || '3', 10)
 };
