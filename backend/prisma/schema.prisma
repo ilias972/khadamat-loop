@@ -327,3 +327,15 @@ model PasswordResetToken {
   @@index([userId, expiresAt])
 }
 
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jtiHash   String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+}
+

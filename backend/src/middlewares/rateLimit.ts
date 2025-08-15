@@ -38,3 +38,6 @@ export const paymentsLimiter = createLimiter(100, 'Too many requests, please try
 export const mfaLimiter = createLimiter(parseInt(mfaCount, 10) || 5, 'Too many MFA attempts, please try again later.', mfaWindowMs);
 export const forgotPasswordLimiter = createLimiter(3, 'Too many password reset requests, please try again later.');
 export const resetPasswordLimiter = createLimiter(10, 'Too many password reset attempts, please try again later.');
+export const refreshLimiter = createLimiter(20, 'Too many refresh attempts, please try again later.');
+export const logoutLimiter = createLimiter(20, 'Too many logout attempts, please try again later.');
+export const changePasswordLimiter = createLimiter(5, 'Too many password change attempts, please try again later.');
