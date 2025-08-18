@@ -1,9 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = env("PRISMA_PROVIDER")
   url      = env("DATABASE_URL")
 }
 
@@ -13,12 +14,411 @@ enum Role {
   ADMIN
 }
 
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+enum SubscriptionType {
+  CLUB_PRO
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULE_PROPOSED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum VerificationStatus {
+  PENDING
+  SUBMITTED
+  VERIFIED
+  REJECTED
+}
+
+enum DisclosureStatus {
+  PENDING
+  APPROVED
+  DENIED
+  FULFILLED
+}
+
+enum KeyStatus {
+  ACTIVE
+  RETIRED
+}
+
 model User {
+  id                   Int           @id @default(autoincrement())
+  email                String        @unique
+  passwordHash         String
+  role                 Role          @default(CLIENT)
+  displayName          String?
+  normalizedDisplayName String?      @db.VarChar(256)
+  emailVerified        Boolean       @default(false)
+  isDisabled           Boolean       @default(false)
+  isDemo               Boolean       @default(false)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  provider             Provider?
+  pii                  UserPII?
+  mfaSecret            MfaSecret?
+  subscriptions        Subscription[]
+  verifications        Verification[]
+  favorites            Favorite[]
+  reviews              Review[]      @relation("ReviewsByClient")
+  messages             Message[]     @relation("MessagesBySender")
+  notifications        Notification[]
+  smsLogs              SmsLog[]
+  auditActor           AuditLog[]    @relation("AuditAsActor")
+  auditTarget          AuditLog[]    @relation("AuditAsTarget")
+  bookingsAsClient     Booking[]     @relation("BookingsAsClient")
+  bookingsAsProvider   Booking[]     @relation("BookingsAsProvider")
+
+  @@index([role, isDisabled])
+  @@index([normalizedDisplayName])
+}
+
+model City {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  lat       Float
+  lng       Float
+  country   String    @default("MA")
+  region    String?
+  providers Provider[]
+
+  @@index([name])
+  @@index([lat, lng])
+}
+
+model Provider {
+  id          Int             @id @default(autoincrement())
+  userId      Int             @unique
+  displayName String?
+  bio         String?
+  cityId      Int?
+  lat         Float?
+  lng         Float?
+  ratingAvg   Float           @default(0)
+  ratingCount Int             @default(0)
+  isClubPro   Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city        City?           @relation(fields: [cityId], references: [id])
+  services    ProviderService[]
+  reviews     Review[]        @relation("ReviewsForProvider")
+  favorites   Favorite[]
+
+  @@index([cityId])
+  @@index([ratingAvg, ratingCount])
+}
+
+model ServiceCatalog {
+  id            Int      @id @default(autoincrement())
+  code          String
+  slug          String   @unique
+  name_fr       String
+  name_ar       String
+  category_code String
+  is_active     Boolean  @default(true)
+  sort_order    Int      @default(0)
+
+  providers     ProviderService[]
+
+  @@unique([category_code, name_fr])
+  @@index([category_code, sort_order])
+}
+
+model ProviderService {
+  providerId Int
+  serviceId  Int
+  tagsJson   Json?
+
+  provider   Provider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  service    ServiceCatalog @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, serviceId])
+  @@index([serviceId])
+}
+
+model ServiceProposal {
+  id             Int             @id @default(autoincrement())
+  providerId     Int
+  category_code  String
+  name_fr        String
+  name_ar        String?
+  normalized_slug String
+  status         String          @default("PENDING")
+  canonicalId    Int?
+  createdAt      DateTime        @default(now())
+
+  provider       Provider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  canonical      ServiceCatalog? @relation(fields: [canonicalId], references: [id])
+
+  @@index([normalized_slug, category_code], map: "idx_prop_slug_cat")
+}
+
+model Booking {
+  id            Int           @id @default(autoincrement())
+  clientId      Int
+  providerId    Int
+  scheduledDay  String
+  status        BookingStatus  @default(PENDING)
+  description   String
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  client        User           @relation("BookingsAsClient", fields: [clientId], references: [id], onDelete: Cascade)
+  provider      User           @relation("BookingsAsProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  conversation  Conversation?
+
+  reviews       Review[]
+
+  @@index([clientId, status, scheduledDay], map: "idx_booking_client_status_day")
+  @@index([providerId, status, scheduledDay], map: "idx_booking_provider_status_day")
+}
+
+model Conversation {
+  id             Int      @id @default(autoincrement())
+  clientId       Int
+  providerUserId Int
+  bookingId      Int?
+
+  createdAt      DateTime @default(now())
+
+  booking        Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  client         User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  providerUser   User     @relation(fields: [providerUserId], references: [id], onDelete: Cascade)
+  messages       Message[]
+
+  @@index([clientId, providerUserId])
+  @@unique([bookingId])
+}
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
+  text           String?
+  fileUrl        String?
+  fileType       String?
+  fileSize       Int?
+  isRead         Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("MessagesBySender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, isRead, createdAt], map: "idx_msg_unread")
+}
+
+model Review {
   id         Int      @id @default(autoincrement())
-  email      String   @unique
-  password   String
-  role       Role     @default(CLIENT)
-  isVerified Boolean  @default(false)
+  providerId Int
+  bookingId  Int
+  authorId   Int
+  rating     Int
+  comment    String?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+  provider   Provider @relation("ReviewsForProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  author     User     @relation("ReviewsByClient", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, authorId], map: "uniq_booking_author")
+  @@index([providerId, rating, createdAt])
+}
+
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  providerId Int
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, providerId])
+  @@index([userId])
+}
+
+model Subscription {
+  id          Int                @id @default(autoincrement())
+  userId      Int
+  type        SubscriptionType   @default(CLUB_PRO)
+  status      SubscriptionStatus @default(PENDING)
+  amountCents Int                @default(5000)
+  currency    String             @default("mad")
+  autoRenew   Boolean            @default(true)
+  startAt     DateTime?
+  endAt       DateTime?
+  externalId  String?
+
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status], map: "idx_sub_user_status")
+  @@index([userId, endAt], map: "idx_sub_end_date")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt], map: "idx_notif_user_read_date")
+}
+
+model SmsLog {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  to               String
+  template         String?
+  status           String
+  providerMessageId String?
+  error            String?
+  createdAt        DateTime @default(now())
+
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([to, createdAt])
+  @@index([status, createdAt])
+}
+
+model Verification {
+  id             Int                @id @default(autoincrement())
+  userId         Int
+  provider       String
+  externalId     String?            @unique
+  status         VerificationStatus @default(PENDING)
+  documentType   String?
+  docNumberHash  String?
+  docNumberLast4 String?
+  verifiedAt     DateTime?
+  data           Json?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
+
+model UserPII {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @unique
+  legalName      String?
+  dateOfBirth    DateTime?
+  currentAddress String?
+  addressCity    String?
+  addressRegion  String?
+  addressPostal  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model KycVault {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  encDoc      Bytes?
+  encDocTag   Bytes?
+  encDocNonce Bytes?
+  keyId       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model KeyringKey {
+  id        Int       @id @default(autoincrement())
+  kid       String    @unique
+  status    KeyStatus @default(ACTIVE)
+  createdAt DateTime  @default(now())
+  retiredAt DateTime?
+}
+
+model DisclosureRequest {
+  id           Int             @id @default(autoincrement())
+  requester    String
+  purpose      String
+  status       DisclosureStatus @default(PENDING)
+  targetUserId Int?
+  createdBy    Int?
+  createdAt    DateTime @default(now())
+  respondedAt  DateTime?
+  exportUrl    String?
+
+  targetUser   User?    @relation(fields: [targetUserId], references: [id], onDelete: SetNull)
+  admin        User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+model LegalHold {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  reason    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  releasedAt DateTime?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, active])
+}
+
+model MfaSecret {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  encSecret         Bytes
+  encTag            Bytes
+  encNonce          Bytes
+  recoveryCodesHash Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id           Int      @id @default(autoincrement())
+  actorUserId  Int?
+  targetUserId Int?
+  action       String
+  ip           String?
+  userAgent    String?
+  meta         Json?
+  createdAt    DateTime @default(now())
+
+  actor        User?    @relation("AuditAsActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  target       User?    @relation("AuditAsTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([action, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([targetUserId, createdAt])
 }
