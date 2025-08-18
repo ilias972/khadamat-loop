@@ -98,6 +98,16 @@ NODE_ENV=development
 PORT=3000
 ```
 
+### Options Prisma (optionnel)
+En cas de blocage du CDN Prisma, vous pouvez définir ces variables d'environnement (non commitées) :
+
+```bash
+PRISMA_ENGINES_MIRROR=https://prisma-builds.s3.us-east-2.amazonaws.com
+PRISMA_CLI_QUERY_ENGINE_TYPE=binary
+```
+
+Ces variables sont lues par le `postinstall` et `scripts/check-prisma.js`.
+
 ### **Personnalisation**
 - **Couleurs** : Modifiez `tailwind.config.ts`
 - **Traductions** : Éditez `client/src/contexts/LanguageContext.tsx`
