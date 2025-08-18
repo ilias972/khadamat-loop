@@ -22,7 +22,7 @@
     "db:test:reset": "prisma db push --force-reset --accept-data-loss",
     "test:prepare": "node scripts/test-db-prepare.js",
     "pretest": "node scripts/pretest-guard.js",
-    "test": "node -e \"if(process.env.OFFLINE_SKIP_TESTS==='true'){console.log('[tests] skipped (OFFLINE_SKIP_TESTS=true)'); process.exit(0);} process.env.NODE_ENV='test'; require('child_process').spawn('npx', ['jest','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
+    "test": "node -e \"if(process.env.OFFLINE_SKIP_TESTS==='true') process.exit(0); process.env.NODE_ENV='test'; require('child_process').spawn('npx', ['jest','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
     "test:ci": "node -e \"process.env.NODE_ENV='test'; process.env.OFFLINE_SKIP_TESTS='false'; require('child_process').spawn('npx', ['jest','--ci','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
     "test:watch": "jest --watch",
     "e2e:clubpro:curl": "node scripts/print-e2e-curls.js",
@@ -44,6 +44,8 @@
     "setup:windows": "npm run registry:public && npm ci || npm install",
     "setup:mac": "npm run registry:public && npm ci || npm install",
     "doctor": "npm run registry:show && node scripts/check-prisma.js",
+    "tests:setup": "npm run registry:auto && (npm ci || npm install) && npm run test:prepare || (echo \"[tests] install bloquée → exécutez OFFLINE_SKIP_TESTS=true npm test\" && exit 0)",
+    "tests:online": "node -e \"process.env.OFFLINE_SKIP_TESTS='false'; process.env.FORCE_ONLINE='true'; require('child_process').spawn('npm', ['run','test'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
     "compose:up": "docker compose up --build",
     "compose:down": "docker compose down -v"
   },
