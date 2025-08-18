@@ -5,9 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "preinstall": "node -e \"console.log('npm registry:', process.env.npm_config_registry||'default')\"",
-    "postinstall": "npm run prisma:generate || true",
+    "postinstall": "node -e \"try{require('fs').statSync('node_modules/@prisma/client')}catch(e){}\" && npx prisma generate || true",
     "dev": "node scripts/run-dev.js",
-    "build": "npx tsc -p tsconfig.json",
+    "build": "tsc -b",
     "start": "node scripts/run-start.js",
     "run:env": "node scripts/run-with-env.js",
     "db:status": "npx prisma migrate status",
@@ -29,7 +29,15 @@
     "kyc:retention:run": "ts-node scripts/run-kyc-retention.ts",
     "e2e:optionB": "bash scripts/e2e-optionB.sh",
     "prisma:version": "npx prisma --version",
-    "prisma:generate": "npx prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "registry:show": "node tools/registry/show-registry.js",
+    "registry:public": "node tools/registry/ensure-public-registry.js",
+    "predev": "node scripts/check-prisma.js",
+    "prestart": "node scripts/check-prisma.js",
+    "build:clean": "node scripts/clean.js && tsc -b",
+    "setup:windows": "npm run registry:public && npm ci || npm install",
+    "setup:mac": "npm run registry:public && npm ci || npm install",
+    "doctor": "npm run registry:show && node scripts/check-prisma.js"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
