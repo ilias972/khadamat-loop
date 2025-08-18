@@ -36,10 +36,22 @@ if (dbAvailable) {
       logger.info('DB connected');
     })
     .catch((err: any) => {
-      logger.warn(`DB connection failed: ${err.message}`);
+      const msg = `DB connection failed: ${err.message}`;
+      if (env.forceOnline) {
+        logger.error(msg);
+        process.exit(1);
+      } else {
+        logger.warn(msg);
+      }
     });
 } else {
-  logger.warn('Prisma indisponible (offline)');
+  const msg = 'Prisma indisponible (offline)';
+  if (env.forceOnline) {
+    logger.error(msg);
+    process.exit(1);
+  } else {
+    logger.warn(msg);
+  }
 }
 
 async function hardenForTests() {

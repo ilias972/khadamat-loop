@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const { spawn } = require('child_process');
 const offline = process.env.OFFLINE_MODE === 'true';
+const force = process.env.FORCE_ONLINE === 'true';
 
 async function main() {
   try {
@@ -22,7 +23,7 @@ async function main() {
   } catch (err) {
     console.error("[KO] Prisma client generation failed. Possible cause: 403 d'install, binaire manquant");
     if (err && err.message) console.error(err.message);
-    if (offline) {
+    if (offline && !force) {
       console.warn('[offline] prisma indisponible, continuité sans DB');
       process.exit(0);
     }
