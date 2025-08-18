@@ -1,20 +1,30 @@
-version: '3.8'
 services:
-  app:
-    build: .
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/khadamat
-      - FRONTEND_URL=${FRONTEND_URL}
-      - SENTRY_DSN=${SENTRY_DSN}
-    ports: ["3000:3000"]
-    depends_on: [db]
   db:
     image: postgres:15
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=khadamat
+      POSTGRES_USER: khadamat
+      POSTGRES_PASSWORD: khadamat
+      POSTGRES_DB: khadamat
+    ports:
+      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes: { pgdata: {} }
+      - dbdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "postgresql://khadamat:khadamat@db:5432/khadamat?schema=public"
+      FORCE_ONLINE: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - .:/workspace/backend
+      - /workspace/backend/node_modules
+
+volumes:
+  dbdata:

@@ -1,0 +1,9 @@
+FROM node:lts AS base
+WORKDIR /workspace/backend
+COPY package*.json prisma/ tsconfig.json ./
+RUN npm ci
+RUN npx prisma generate
+
+FROM base AS dev
+COPY src ./src
+CMD ["npm", "run", "dev"]

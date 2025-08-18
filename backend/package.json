@@ -8,6 +8,7 @@
     "postinstall": "node -e \"try{require('fs').statSync('node_modules/@prisma/client')}catch(e){}\" && npx prisma generate || true",
     "predev": "node scripts/check-prisma.js || echo \"(offline) prisma non g\u00e9n\u00e9r\u00e9\"",
     "dev": "node scripts/run-dev.js",
+    "dev:force-online": "node -e \"process.env.FORCE_ONLINE='true'; require('./scripts/run-dev')\"",
     "prestart": "node scripts/check-prisma.js || echo \"(offline) prisma non g\u00e9n\u00e9r\u00e9\"",
     "start": "node scripts/run-start.js",
     "build": "tsc -b",
@@ -42,7 +43,9 @@
     "setup:mirror": "npm config set registry https://registry.npmmirror.com/ && npm config set @prisma:registry https://registry.npmmirror.com/ && npm config set strict-ssl true && (npm ci || npm install) && npm run build",
     "setup:windows": "npm run registry:public && npm ci || npm install",
     "setup:mac": "npm run registry:public && npm ci || npm install",
-    "doctor": "npm run registry:show && node scripts/check-prisma.js"
+    "doctor": "npm run registry:show && node scripts/check-prisma.js",
+    "compose:up": "docker compose up --build",
+    "compose:down": "docker compose down -v"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
