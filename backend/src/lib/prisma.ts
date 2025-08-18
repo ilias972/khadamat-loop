@@ -10,6 +10,13 @@ if (process.env.NODE_ENV === 'production' && env.offlineMode && !env.productionO
   process.exit(1);
 }
 
+if (!process.env.PRISMA_ENGINES_MIRROR && env.prismaEnginesMirror) {
+  process.env.PRISMA_ENGINES_MIRROR = env.prismaEnginesMirror;
+}
+if (env.prismaEnginesChecksumIgnore) {
+  process.env.PRISMA_ENGINES_CHECKSUM_IGNORE = 'true';
+}
+
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { PrismaClient, Prisma: PrismaNS } = require('@prisma/client');
