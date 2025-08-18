@@ -3,34 +3,58 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const tmpDir = path.resolve(__dirname, '../.tmp');
+fs.mkdirSync(tmpDir, { recursive: true });
+
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./.tmp/test.sqlite';
+}
+
 const envPath = path.resolve(__dirname, '../.env.test');
 if (fs.existsSync(envPath)) {
-  const env = fs.readFileSync(envPath, 'utf8');
-  env.split('\n').forEach(line => {
-    const m = line.match(/^([^#=]+)=\"?(.*)\"?$/);
-    if (m) {
-      const key = m[1].trim();
-      const val = m[2].trim();
-      if (key && !process.env[key]) process.env[key] = val;
-    }
-  });
+  try {
+    const content = fs.readFileSync(envPath, 'utf8');
+    content.split(/\r?\n/).forEach(line => {
+      const match = line.match(/^([^#=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        let val = match[2].trim();
+        if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+        if (key && !process.env[key]) process.env[key] = val;
+      }
+    });
+  } catch (err) {
+    console.warn('Could not load .env.test:', err.message);
+  }
+}
+
+function handleFailure() {
+  if (process.env.OFFLINE_SKIP_TESTS === 'true') {
+    console.log('offline → skip prepare');
+    process.exit(0);
+  }
+  process.exit(1);
 }
 
 function run(cmd, args) {
-  return spawnSync(cmd, args, { stdio: 'inherit', env: process.env });
+  const r = spawnSync(cmd, args, { stdio: 'inherit', env: process.env, shell: process.platform === 'win32' });
+  if (r.error || r.status !== 0) return false;
+  return true;
 }
 
-let r = run('npx', ['prisma', 'migrate', 'reset', '--force', '--skip-generate', '--skip-seed']);
-if (r.status === 0) {
-  console.log('Using prisma migrate reset');
-  process.exit(0);
+console.log('Running prisma generate...');
+if (!run('npx', ['prisma', 'generate'])) {
+  console.warn('prisma generate failed');
+  handleFailure();
 }
 
-console.warn('migrate reset failed, falling back to prisma db push');
-let r2 = run('npx', ['prisma', 'db', 'push']);
-if (r2.status === 0) {
-  console.log('Fallback to prisma db push');
-} else {
-  console.warn('prisma db push failed');
+console.log('Running prisma migrate reset...');
+if (!run('npx', ['prisma', 'migrate', 'reset', '--force', '--skip-seed'])) {
+  console.warn('migrate reset failed, falling back to prisma db push');
+  if (!run('npx', ['prisma', 'db', 'push'])) {
+    console.warn('prisma db push failed');
+    handleFailure();
+  }
 }
+
 process.exit(0);
