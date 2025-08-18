@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const envPath = path.resolve(__dirname, '../.env.test');
-if (fs.existsSync(envPath)) {
-  try {
+try {
+  if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, 'utf8');
     content.split(/\r?\n/).forEach(line => {
       const match = line.match(/^([^#=]+)=(.*)$/);
@@ -15,21 +15,22 @@ if (fs.existsSync(envPath)) {
         if (key && !process.env[key]) process.env[key] = val;
       }
     });
-  } catch (err) {
-    console.warn('Could not load .env.test:', err.message);
   }
+} catch (err) {
+  console.warn('Could not load .env.test:', err.message);
 }
 
 if (process.env.OFFLINE_SKIP_TESTS === 'true') {
-  console.log('[tests] skipped (OFFLINE_SKIP_TESTS=true)');
+  console.log('[tests] offline mode → tests skipped (OFFLINE_SKIP_TESTS=true)');
   process.exit(0);
 }
 
 try {
   require.resolve('jest');
 } catch (err) {
-  console.error('jest introuvable (deps non installées). Pour ignorer, définir OFFLINE_SKIP_TESTS=true.');
-  process.exit(1);
+  console.error('[tests] jest introuvable (dépendances non installées).\n- Pour ignorer : OFFLINE_SKIP_TESTS=true npm test\n- Pour tenter l\'install : npm run tests:setup');
+  if (process.env.OFFLINE_SKIP_TESTS !== 'true') process.exit(1);
+  process.exit(0);
 }
 
 process.exit(0);
