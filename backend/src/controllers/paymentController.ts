@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { stripe } from '../config/stripe';
 import { env } from '../config/env';
 import { addMonths } from '../utils/date';
 import { createNotification } from '../services/notifications';
 import { sendSubscriptionSMS } from '../services/smsEvents';
-
-const prisma = new PrismaClient();
 
 export async function createClubProCheckout(req: Request, res: Response, next: NextFunction) {
   try {
@@ -24,7 +22,7 @@ export async function createClubProCheckout(req: Request, res: Response, next: N
       return next({ status: 400, message: 'Create subscription via /api/subscriptions/club-pro' });
     }
 
-    let session: Stripe.Checkout.Session;
+    let session: any;
     if (process.env.STRIPE_PRICE_ID) {
       session = await stripe.checkout.sessions.create({
         mode: 'subscription',
@@ -67,7 +65,7 @@ export async function createClubProCheckout(req: Request, res: Response, next: N
 
 export async function handleStripeWebhook(req: Request, res: Response, _next: NextFunction) {
   const sig = req.headers['stripe-signature'];
-  let event: Stripe.Event;
+  let event: any;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET!);
@@ -75,8 +73,8 @@ export async function handleStripeWebhook(req: Request, res: Response, _next: Ne
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as any;
     const subscriptionId = session.metadata?.subscriptionId;
     if (subscriptionId) {
       const id = parseInt(subscriptionId, 10);

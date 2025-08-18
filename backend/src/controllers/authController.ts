@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { hashPassword, verifyPassword } from '../utils/password';
 import jwt from 'jsonwebtoken';
 import type { UserRole } from '../middlewares/auth';
@@ -11,7 +11,6 @@ import { logAction } from '../middlewares/audit';
 
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
-const prisma = new PrismaClient();
 const refreshExpireMs = 7 * 24 * 60 * 60 * 1000;
 const secureCookie = process.env.STAGE === 'prod';
 

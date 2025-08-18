@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, prisma } from '../lib/prisma';
 import { notifyUser } from '../utils/notify';
-
-const prisma = new PrismaClient();
 
 export async function createReview(req: Request, res: Response, next: NextFunction) {
   try {

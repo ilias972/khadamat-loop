@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Prisma, prisma } from '../lib/prisma';
 
 export async function listFavorites(req: Request, res: Response, next: NextFunction) {
   try {

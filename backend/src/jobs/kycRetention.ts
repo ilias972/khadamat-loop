@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 export async function runKycRetentionJob() {
   const metaDays = Number(process.env.KYC_RETENTION_DAYS ?? 30);

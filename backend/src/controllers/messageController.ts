@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { notifyUser } from '../utils/notify';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
 import { UPLOAD_DIR } from '../utils/upload';
-
-const prisma = new PrismaClient();
 
 export async function getConversations(req: Request, res: Response, next: NextFunction) {
   try {
@@ -120,8 +118,8 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     };
     if (bookingId) data.bookingId = bookingId;
     if (req.file) {
-      data.fileUrl = path.join(UPLOAD_DIR, req.file.filename);
-      data.fileType = req.file.mimetype;
+      data.fileUrl = path.join(UPLOAD_DIR, req.file.filename || '');
+      data.fileType = req.file.mimetype || '';
       data.fileSize = req.file.size;
     }
 
