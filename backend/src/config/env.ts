@@ -23,4 +23,6 @@ export const env = {
   piiExportMaxMb: parseInt(process.env.PII_EXPORT_MAX_MB || '10', 10),
   piiExportFormat: process.env.PII_EXPORT_FORMAT || 'json',
   piiExportRatePerDay: parseInt(process.env.PII_EXPORT_RATE_PER_DAY || '3', 10)
+  ,prismaEnginesMirror: process.env.PRISMA_ENGINES_MIRROR || 'https://binaries.prisma.sh/all'
+  ,prismaEnginesChecksumIgnore: process.env.PRISMA_ENGINES_CHECKSUM_IGNORE === 'true'
 };
