@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 export function requireKycFor(role: 'PROVIDER'|'CLIENT'|'BOTH' = 'PROVIDER') {
   return async (req: Request, res: Response, next: NextFunction) => {

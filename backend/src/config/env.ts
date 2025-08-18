@@ -13,6 +13,8 @@ export const env = {
   redisUrl: process.env.REDIS_URL,
   healthReadyDelayMs: parseInt(process.env.HEALTH_READY_DELAY_MS || '0', 10),
   appVersion: process.env.APP_VERSION || '0.0.0',
+  offlineMode: process.env.OFFLINE_MODE === 'true',
+  offlineSkipTests: process.env.OFFLINE_SKIP_TESTS === 'true',
   searchRadiusKm: parseInt(process.env.SEARCH_RADIUS_KM || '30', 10),
   searchRanking: process.env.SEARCH_RANKING || 'popularity',
   piiRetentionDays: parseInt(process.env.PII_RETENTION_DAYS || '365', 10),

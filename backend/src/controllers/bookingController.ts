@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { isValidDay, isFutureOrTodayDay } from '../utils/day';
 import { notifyUser } from '../utils/notify';
 import { createSystemMessage } from '../utils/messages';
 import { sendBookingSMS } from '../services/smsEvents';
-
-const prisma = new PrismaClient();
 
 const STATUS = {
   PENDING: 'PENDING',

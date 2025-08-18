@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { generateSecret, otpauthURL, verifyTotp } from '../utils/totp';
 import { encryptWithActiveKey, decryptWithKeyId } from '../config/keyring';
 import { verifyPassword } from '../utils/password';
 import crypto from 'node:crypto';
 
-const prisma = new PrismaClient();
 
 function hashRecovery(code: string) {
   const pepper = process.env.KYC_HASH_PEPPER || '';

@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { logger } from '../config/logger';
-const prisma = new PrismaClient();
 
 function dayToDate(day: string){ return new Date(day + 'T00:00:00Z'); }
 

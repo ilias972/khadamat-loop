@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { sendSMS } from './sms';
 import { template } from './smsTemplates';
-const prisma = new PrismaClient();
 
 function userLang(u:{preferredLang?: string | null}){ return (u.preferredLang === 'ar' ? 'ar' : 'fr') as 'fr'|'ar'; }
 const e164 = (p?: string | null) => (p && p.startsWith('+')) ? p : null;

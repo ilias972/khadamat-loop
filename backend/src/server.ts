@@ -26,27 +26,32 @@ import { authenticate, requireRole } from './middlewares/auth';
 import { requireMfa } from './middlewares/requireMfa';
 import { logger } from './config/logger';
 import { maintenanceGuard } from './middlewares/maintenance';
-import { startSchedulers } from './jobs/scheduler';
-import { PrismaClient } from '@prisma/client';
+import { prisma, dbAvailable } from './lib/prisma';
+import { dbGuard } from './middlewares/dbGuard';
 
-const prisma = new PrismaClient();
-prisma
-  .$connect()
-  .then(() => {
-    logger.info('DB connected');
-  })
-  .catch((err) => {
-    logger.warn(`DB connection failed: ${err.message}`);
-  });
+if (dbAvailable) {
+  prisma
+    .$connect()
+    .then(() => {
+      logger.info('DB connected');
+    })
+    .catch((err: any) => {
+      logger.warn(`DB connection failed: ${err.message}`);
+    });
+} else {
+  logger.warn('Prisma indisponible (offline)');
+}
 
 async function hardenForTests() {
   const isTest = (process.env.STAGE ?? process.env.NODE_ENV) === 'test';
-  if (!isTest) return;
+  if (!isTest || !dbAvailable) return;
 
-  await prisma.user.updateMany({
-    where: { isDemo: true, isDisabled: false },
-    data: { isDisabled: true }
-  }).catch(() => {});
+  await prisma.user
+    .updateMany({
+      where: { isDemo: true, isDisabled: false },
+      data: { isDisabled: true }
+    })
+    .catch(() => {});
 
   process.env.SMS_DISABLED_FOR_DEMO = 'true';
   process.env.EMAIL_DISABLED_FOR_DEMO = 'true';
@@ -54,7 +59,9 @@ async function hardenForTests() {
 
 hardenForTests()
   .catch(() => {})
-  .finally(() => prisma.$disconnect());
+  .finally(() => {
+    if (dbAvailable) prisma.$disconnect();
+  });
 
 if (process.env.SENTRY_DSN) {
   (async () => {
@@ -65,8 +72,8 @@ if (process.env.SENTRY_DSN) {
 
 const app = express();
 
-if (process.env.NODE_ENV !== 'test') {
-  startSchedulers();
+if (process.env.NODE_ENV !== 'test' && dbAvailable) {
+  import('./jobs/scheduler').then((m) => m.startSchedulers());
 }
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
@@ -108,18 +115,22 @@ setTimeout(() => {
 }, env.healthReadyDelayMs);
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime(), version: env.appVersion });
+  res.json({ up: true });
 });
 
 app.get('/ready', (_req, res) => {
-  if (!isReady) {
-    return res.status(503).json({ status: 'starting' });
+  if (!dbAvailable) {
+    return res.status(503).json({ ready: false, db: false });
   }
-  res.json({ status: 'ok' });
+  if (!isReady) {
+    return res.status(503).json({ ready: false });
+  }
+  res.json({ ready: true });
 });
 
 app.use(maintenanceGuard);
 
+app.use('/api', dbGuard);
 app.use('/api/mfa', mfaRouter);
 app.use('/api/auth', authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);

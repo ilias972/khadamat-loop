@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 const ENABLED = (process.env.SMS_ENABLED ?? 'false').toLowerCase() === 'true';
 const PROVIDER = (process.env.SMS_PROVIDER ?? 'twilio').toLowerCase();

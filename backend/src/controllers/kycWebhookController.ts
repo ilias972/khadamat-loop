@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { hashDocNumber, last4 } from '../utils/kycCrypto';
 import { encryptWithActiveKey } from '../config/keyring';
 import { logAction } from '../middlewares/audit';
-
-const prisma = new PrismaClient();
 
 function parseEvent(req: any) {
   const body = req.body;

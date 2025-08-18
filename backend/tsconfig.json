@@ -6,12 +6,18 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "outDir": "dist",
     "rootDir": "src"
   },
   "include": [
-    "src"
+    "src",
+    "src/shims"
+  ],
+  "exclude": [
+    "src/__tests__"
   ]
 }

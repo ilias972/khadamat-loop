@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { decryptWithKeyId } from '../config/keyring';
-
-const prisma = new PrismaClient();
 
 export const exportUserEvidence = async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma, prisma } from '../lib/prisma';
 import { logAction } from '../middlewares/audit';
-
-const prisma = new PrismaClient();
 
 export async function deleteReview(req: Request, res: Response, next: NextFunction) {
   try {
