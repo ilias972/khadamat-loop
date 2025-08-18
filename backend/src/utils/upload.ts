@@ -1,13 +1,13 @@
 import multer, { FileFilterCallback } from './multer';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { randomUUID } from 'crypto';
 import type { Request } from 'express';
 
-const uploadPath = process.env.UPLOAD_PATH || './uploads';
+export const UPLOAD_DIR = path.resolve(process.env.UPLOAD_PATH || 'uploads');
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true, mode: 0o700 });
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true, mode: 0o700 });
 }
 
 const storage = multer.diskStorage({
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     _file: any,
     cb: (error: Error | null, destination: string) => void,
   ) => {
-    cb(null, uploadPath);
+    cb(null, UPLOAD_DIR);
   },
   filename: (
     _req: Request,
