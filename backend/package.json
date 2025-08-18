@@ -6,9 +6,10 @@
   "scripts": {
     "preinstall": "node -e \"console.log('npm registry:', process.env.npm_config_registry||'default')\"",
     "postinstall": "npm run prisma:generate || true",
-    "dev": "npx tsx watch src/server.ts",
+    "dev": "node scripts/run-dev.js",
     "build": "npx tsc -p tsconfig.json",
-    "start": "node dist/server.js",
+    "start": "node scripts/run-start.js",
+    "run:env": "node scripts/run-with-env.js",
     "db:status": "npx prisma migrate status",
     "db:migrate": "npx prisma migrate dev --name init",
     "db:push": "npx prisma db push",
