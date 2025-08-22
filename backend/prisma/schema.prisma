@@ -170,6 +170,8 @@ model Message {
   @@index([bookingId])
   @@index([senderId, receiverId, createdAt])
   @@index([receiverId, isRead, createdAt], map: "idx_msg_rx_read_date")
+  @@index([senderId, createdAt], map: "idx_msg_sender_date")
+  @@index([senderId, fileUrl, createdAt], map: "idx_msg_sender_file_date")
 }
 
 model Review {
