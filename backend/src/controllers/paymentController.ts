@@ -6,6 +6,7 @@ import { env } from '../config/env';
 import { addMonths } from '../utils/date';
 import { createNotification } from '../services/notifications';
 import { sendSubscriptionSMS } from '../services/smsEvents';
+import { logger } from '../config/logger';
 
 export async function createClubProCheckout(req: Request, res: Response, next: NextFunction) {
   try {
@@ -63,39 +64,72 @@ export async function createClubProCheckout(req: Request, res: Response, next: N
   }
 }
 
-export async function handleStripeWebhook(req: Request, res: Response, _next: NextFunction) {
+export async function handleStripeWebhook(req: Request, res: Response) {
   const sig = req.headers['stripe-signature'];
   let event: any;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig as string, env.stripeWebhookSecret);
+  } catch (err: any) {
+    logger.error('stripe webhook signature invalid', { error: err.message });
+    return res.status(400).json({
+      success: false,
+      error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: 'Invalid signature', timestamp: new Date().toISOString() },
+    });
+  }
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET!);
-  } catch (err: any) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    await prisma.webhookEvent.create({
+      data: { provider: 'stripe', eventId: event.id, type: event.type, status: 'processing' },
+    });
+  } catch {
+    logger.warn('stripe webhook duplicate', { eventId: event.id });
+    return res.json({ received: true });
   }
 
+  try {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as any;
-    const subscriptionId = session.metadata?.subscriptionId;
-    if (subscriptionId) {
-      const id = parseInt(subscriptionId, 10);
-      const subscription = await prisma.subscription.findUnique({ where: { id } });
-      if (subscription && subscription.status !== 'ACTIVE') {
-        const startDate = new Date();
-        const endDate = addMonths(startDate, 12);
-        await prisma.subscription.update({
-          where: { id },
-          data: {
-            status: 'ACTIVE',
-            startDate,
-            endDate,
-            stripeId: session.id
-          }
-        });
-        createNotification(subscription.userId, 'SUBSCRIPTION_ACTIVATED', 'Abonnement Club Pro activé', 'Votre abonnement est maintenant actif.').catch((err) => console.error(err));
-        sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED').catch((err) => console.error(err));
+      const subscriptionId = session.metadata?.subscriptionId;
+      if (subscriptionId) {
+        const id = parseInt(subscriptionId, 10);
+        const subscription = await prisma.subscription.findUnique({ where: { id } });
+        if (subscription && subscription.status !== 'ACTIVE') {
+          const startDate = new Date();
+          const endDate = addMonths(startDate, 12);
+          await prisma.subscription.update({
+            where: { id },
+            data: {
+              status: 'ACTIVE',
+              startDate,
+              endDate,
+              stripeId: session.id,
+            },
+          });
+          createNotification(
+            subscription.userId,
+            'SUBSCRIPTION_ACTIVATED',
+            'Abonnement Club Pro activé',
+            'Votre abonnement est maintenant actif.'
+          ).catch((err) => logger.error(err));
+          sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED').catch((err) => logger.error(err));
+        }
       }
     }
+    await prisma.webhookEvent.update({
+      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
+      data: { status: 'processed', processedAt: new Date() },
+    });
+    logger.info('stripe webhook processed', { eventId: event.id });
+    return res.json({ received: true });
+  } catch (err: any) {
+    await prisma.webhookEvent.update({
+      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
+      data: { status: 'failed', processedAt: new Date() },
+    }).catch(() => {});
+    logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
+    return res.status(500).json({
+      success: false,
+      error: { code: 'WEBHOOK_PROCESSING_ERROR', message: 'Processing failed', timestamp: new Date().toISOString() },
+    });
   }
-
-  res.sendStatus(200);
 }

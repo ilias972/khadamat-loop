@@ -8,11 +8,13 @@ import { verifyTotp } from '../utils/totp';
 import crypto from 'node:crypto';
 import { sendEmail } from '../services/email';
 import { logAction } from '../middlewares/audit';
+import { env } from '../config/env';
 
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
 const refreshExpireMs = 7 * 24 * 60 * 60 * 1000;
-const secureCookie = process.env.STAGE === 'prod';
+const secureCookie = env.cookieSecure && process.env.NODE_ENV === 'production';
+const sameSite = env.cookieSameSite;
 
 function signTokens(userId: number, role: string, mfa?: boolean) {
   const secret = process.env.JWT_SECRET!;
@@ -34,7 +36,7 @@ function setRefreshCookie(res: Response, token: string) {
   res.cookie('refreshToken', token, {
     httpOnly: true,
     secure: secureCookie,
-    sameSite: 'strict',
+    sameSite: sameSite,
     maxAge: refreshExpireMs,
   });
 }
@@ -328,7 +330,7 @@ export async function logout(req: Request, res: Response) {
   res.cookie('refreshToken', '', {
     httpOnly: true,
     secure: secureCookie,
-    sameSite: 'strict',
+    sameSite: sameSite,
     maxAge: 0,
   });
   res.json({ success: true });
