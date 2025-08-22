@@ -89,6 +89,7 @@ export default function Index() {
           <div id="search">
             <SmartSearch
               showSuggestions={true}
+              showProvider={false}
               defaultLocation={city}
               onServiceQueryChange={setSearchQuery}
               onCityChange={(c) => {
