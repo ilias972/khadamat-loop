@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma';
 import { notifyUser } from '../utils/notify';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
-import { UPLOAD_DIR } from '../utils/upload';
+import { logAction } from '../middlewares/audit';
 
 export async function getConversations(req: Request, res: Response, next: NextFunction) {
   try {
@@ -102,6 +102,65 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     const receiver = await prisma.user.findUnique({ where: { id: receiverId } });
     if (!receiver) return next({ status: 404, message: 'Receiver not found' });
 
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [msgCount, attachCount, storage] = await Promise.all([
+      prisma.message.count({ where: { senderId, createdAt: { gte: since } } }),
+      prisma.message.count({
+        where: {
+          senderId,
+          createdAt: { gte: since },
+          fileUrl: { not: null },
+        },
+      }),
+      prisma.message.aggregate({
+        _sum: { fileSize: true },
+        where: { senderId, fileUrl: { not: null } },
+      }),
+    ]);
+
+    const MSG_MAX_PER_DAY = parseInt(process.env.MSG_MAX_PER_DAY || '200', 10);
+    const ATTACH_MAX_PER_DAY = parseInt(process.env.ATTACH_MAX_PER_DAY || '50', 10);
+    const USER_MAX_STORAGE =
+      parseInt(process.env.USER_MAX_STORAGE_MB || '200', 10) * 1024 * 1024;
+
+    if (msgCount >= MSG_MAX_PER_DAY) {
+      await logAction({
+        userId: senderId,
+        action: 'QUOTA_MSG',
+        resource: 'message',
+        ip: req.ip,
+        ua: req.headers['user-agent'],
+      });
+      return next({ status: 429, message: 'Daily message limit exceeded' });
+    }
+
+    if (req.file) {
+      if (attachCount >= ATTACH_MAX_PER_DAY) {
+        await logAction({
+          userId: senderId,
+          action: 'QUOTA_ATTACH',
+          resource: 'message',
+          ip: req.ip,
+          ua: req.headers['user-agent'],
+        });
+        return next({
+          status: 429,
+          message: 'Daily attachment limit exceeded',
+        });
+      }
+      const totalSize = (storage._sum.fileSize || 0) + req.file.size;
+      if (totalSize > USER_MAX_STORAGE) {
+        await logAction({
+          userId: senderId,
+          action: 'QUOTA_STORAGE',
+          resource: 'message',
+          ip: req.ip,
+          ua: req.headers['user-agent'],
+        });
+        return next({ status: 429, message: 'Storage quota exceeded' });
+      }
+    }
+
     if (bookingId) {
       const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
       if (!booking) return next({ status: 404, message: 'Booking not found' });
@@ -118,7 +177,9 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     };
     if (bookingId) data.bookingId = bookingId;
     if (req.file) {
-      data.fileUrl = path.join(UPLOAD_DIR, req.file.filename || '');
+      const filePath =
+        req.file.path || path.join(req.file.destination, req.file.filename);
+      data.fileUrl = filePath;
       data.fileType = req.file.mimetype || '';
       data.fileSize = req.file.size;
     }
@@ -127,7 +188,16 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
 
     notifyUser(receiverId, 'MESSAGE_RECEIVED', 'Nouveau message', '...');
 
-    res.status(201).json({ success: true, data: { message } });
+    const response: any = { message };
+    if (message.fileUrl) {
+      response.file = {
+        fileUrl: message.fileUrl,
+        fileType: message.fileType,
+        fileSize: message.fileSize,
+      };
+    }
+
+    res.status(201).json({ success: true, data: response });
   } catch (err) {
     next(err);
   }
