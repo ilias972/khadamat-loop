@@ -70,20 +70,33 @@ export async function confirmBooking(req: Request, res: Response, next: NextFunc
     if (booking.providerId !== userId) return next({ status: 403, message: 'Forbidden' });
     if (booking.status !== STATUS.PENDING) return next({ status: 409, message: 'Invalid status' });
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: STATUS.CONFIRMED, proposedDay: null },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.update({
+        where: { id },
+        data: { status: STATUS.CONFIRMED, proposedDay: null },
+      });
 
-    await createSystemMessage({
-      bookingId: updated.id,
-      senderId: userId,
-      receiverId: updated.clientId,
-      content: 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
-    });
+      await createSystemMessage(
+        {
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: b.clientId,
+          content: 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
+        },
+        tx
+      );
+      await notifyUser(
+        b.clientId,
+        'BOOKING_CONFIRMED',
+        'Réservation acceptée',
+        'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
+        { bookingId: b.id },
+        tx
+      );
+      await sendBookingSMS(b.clientId, 'BOOKING_CONFIRMED', b.id, tx);
 
-    notifyUser(updated.clientId, 'BOOKING_CONFIRMED', 'Réservation acceptée', 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.', { bookingId: updated.id });
-    sendBookingSMS(updated.clientId, 'BOOKING_CONFIRMED', updated.id).catch((err) => console.error(err));
+      return b;
+    });
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -108,20 +121,33 @@ export async function proposeDay(req: Request, res: Response, next: NextFunction
       return next({ status: 409, message: 'Invalid status' });
     }
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: STATUS.RESCHEDULE_PROPOSED, proposedDay },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.update({
+        where: { id },
+        data: { status: STATUS.RESCHEDULE_PROPOSED, proposedDay },
+      });
 
-    await createSystemMessage({
-      bookingId: updated.id,
-      senderId: userId,
-      receiverId: updated.clientId,
-      content: `Nouveau jour propos\u00e9 : ${proposedDay}.`,
-    });
+      await createSystemMessage(
+        {
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: b.clientId,
+          content: `Nouveau jour propos\u00e9 : ${proposedDay}.`,
+        },
+        tx
+      );
+      await notifyUser(
+        b.clientId,
+        'BOOKING_RESCHEDULE_PROPOSED',
+        'Proposition de nouveau jour',
+        `Nouveau jour proposé: ${proposedDay}.`,
+        { bookingId: b.id },
+        tx
+      );
+      await sendBookingSMS(b.clientId, 'BOOKING_RESCHEDULE_PROPOSED', b.id, tx);
 
-    notifyUser(updated.clientId, 'BOOKING_RESCHEDULE_PROPOSED', 'Proposition de nouveau jour', `Nouveau jour proposé: ${proposedDay}.`, { bookingId: updated.id });
-    sendBookingSMS(updated.clientId, 'BOOKING_RESCHEDULE_PROPOSED', updated.id).catch((err) => console.error(err));
+      return b;
+    });
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -141,24 +167,37 @@ export async function acceptReschedule(req: Request, res: Response, next: NextFu
       return next({ status: 409, message: 'Invalid status' });
     }
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: {
-        scheduledDay: booking.proposedDay,
-        proposedDay: null,
-        status: STATUS.CONFIRMED,
-      },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.update({
+        where: { id },
+        data: {
+          scheduledDay: booking.proposedDay,
+          proposedDay: null,
+          status: STATUS.CONFIRMED,
+        },
+      });
 
-    await createSystemMessage({
-      bookingId: updated.id,
-      senderId: userId,
-      receiverId: updated.providerId,
-      content: `Le client a accept\u00e9 le nouveau jour : ${updated.scheduledDay}.`,
-    });
+      await createSystemMessage(
+        {
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: b.providerId,
+          content: `Le client a accept\u00e9 le nouveau jour : ${b.scheduledDay}.`,
+        },
+        tx
+      );
+      await notifyUser(
+        b.providerId,
+        'BOOKING_RESCHEDULE_ACCEPTED',
+        'Nouveau jour accepté',
+        `Le client a accepté le nouveau jour : ${b.scheduledDay}.`,
+        { bookingId: b.id },
+        tx
+      );
+      await sendBookingSMS(b.providerId, 'BOOKING_RESCHEDULE_ACCEPTED', b.id, tx);
 
-    notifyUser(updated.providerId, 'BOOKING_RESCHEDULE_ACCEPTED', 'Nouveau jour accepté', `Le client a accepté le nouveau jour : ${updated.scheduledDay}.`, { bookingId: updated.id });
-    sendBookingSMS(updated.providerId, 'BOOKING_RESCHEDULE_ACCEPTED', updated.id).catch((err) => console.error(err));
+      return b;
+    });
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -177,20 +216,33 @@ export async function rejectBooking(req: Request, res: Response, next: NextFunct
       return next({ status: 409, message: 'Invalid status' });
     }
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: STATUS.REJECTED },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.update({
+        where: { id },
+        data: { status: STATUS.REJECTED },
+      });
 
-    await createSystemMessage({
-      bookingId: updated.id,
-      senderId: userId,
-      receiverId: updated.clientId,
-      content: 'Le prestataire a refus\u00e9 la r\u00e9servation.',
-    });
+      await createSystemMessage(
+        {
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: b.clientId,
+          content: 'Le prestataire a refus\u00e9 la r\u00e9servation.',
+        },
+        tx
+      );
+      await notifyUser(
+        b.clientId,
+        'BOOKING_REJECTED',
+        'Réservation refusée',
+        'Le prestataire a refusé la réservation.',
+        { bookingId: b.id },
+        tx
+      );
+      await sendBookingSMS(b.clientId, 'BOOKING_REJECTED', b.id, tx);
 
-    notifyUser(updated.clientId, 'BOOKING_REJECTED', 'Réservation refusée', 'Le prestataire a refusé la réservation.', { bookingId: updated.id });
-    sendBookingSMS(updated.clientId, 'BOOKING_REJECTED', updated.id).catch((err) => console.error(err));
+      return b;
+    });
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -213,20 +265,33 @@ export async function cancelBooking(req: Request, res: Response, next: NextFunct
       return next({ status: 409, message: 'Invalid status' });
     }
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: STATUS.CANCELLED },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.update({
+        where: { id },
+        data: { status: STATUS.CANCELLED },
+      });
 
-    await createSystemMessage({
-      bookingId: updated.id,
-      senderId: userId,
-      receiverId: updated.providerId,
-      content: 'Le client a annul\u00e9 la r\u00e9servation.',
-    });
+      await createSystemMessage(
+        {
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: b.providerId,
+          content: 'Le client a annul\u00e9 la r\u00e9servation.',
+        },
+        tx
+      );
+      await notifyUser(
+        b.providerId,
+        'BOOKING_CANCELLED',
+        'Réservation annulée',
+        'Le client a annulé la réservation.',
+        { bookingId: b.id },
+        tx
+      );
+      await sendBookingSMS(b.providerId, 'BOOKING_CANCELLED', b.id, tx);
 
-    notifyUser(updated.providerId, 'BOOKING_CANCELLED', 'Réservation annulée', 'Le client a annulé la réservation.', { bookingId: updated.id });
-    sendBookingSMS(updated.providerId, 'BOOKING_CANCELLED', updated.id).catch((err) => console.error(err));
+      return b;
+    });
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {

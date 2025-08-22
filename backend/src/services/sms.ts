@@ -58,23 +58,58 @@ async function sendViaVonage(to: string, body: string) {
 }
 
 export async function sendSMS({
-  userId, to, body, type, bookingId
-}: { userId: number; to: string; body: string; type: string; bookingId?: number }) {
+  userId,
+  to,
+  body,
+  type,
+  bookingId,
+  client = prisma,
+  sendNow = client === prisma,
+}: {
+  userId: number;
+  to: string;
+  body: string;
+  type: string;
+  bookingId?: number;
+  client?: any;
+  sendNow?: boolean;
+}) {
   try {
-    await prisma.smsMessage.create({ data: { userId, to, body: truncate(body), type, bookingId: bookingId ?? null, status: 'QUEUED', provider: PROVIDER } });
+    await client.smsMessage.create({
+      data: {
+        userId,
+        to,
+        body: truncate(body),
+        type,
+        bookingId: bookingId ?? null,
+        status: 'QUEUED',
+        provider: PROVIDER,
+      },
+    });
   } catch {
     return { skipped: true };
+  }
+
+  if (!sendNow || client !== prisma) {
+    return { queued: true };
   }
 
   const { inRange, msUntilEnd } = inQuietHours();
   const attemptSend = async (attempt: number): Promise<void> => {
     if (!ENABLED) {
-      await prisma.smsMessage.updateMany({ where:{ userId, bookingId: bookingId ?? null, type }, data:{ status:'SENT', provider:'disabled' }});
+      await prisma.smsMessage.updateMany({
+        where: { userId, bookingId: bookingId ?? null, type },
+        data: { status: 'SENT', provider: 'disabled' },
+      });
       return;
     }
     try {
-      const res = PROVIDER === 'vonage' ? await sendViaVonage(to, body) : await sendViaTwilio(to, body);
-      await prisma.smsMessage.updateMany({ where:{ userId, bookingId: bookingId ?? null, type }, data:{ status: res.status, providerMessageId: res.providerMessageId } });
+      const res =
+        PROVIDER === 'vonage' ? await sendViaVonage(to, body) : await sendViaTwilio(to, body);
+      await prisma.smsMessage.updateMany({
+        where: { userId, bookingId: bookingId ?? null, type },
+        data: { status: res.status, providerMessageId: res.providerMessageId },
+      });
     } catch (err: any) {
       if (attempt + 1 < MAX_RETRIES) {
         logger.warn('sms send retry', { attempt: attempt + 1, error: String(err?.message || err) });
@@ -82,7 +117,10 @@ export async function sendSMS({
           attemptSend(attempt + 1).catch(() => {});
         }, RETRY_BACKOFF);
       } else {
-        await prisma.smsMessage.updateMany({ where:{ userId, bookingId: bookingId ?? null, type }, data:{ status:'FAILED', errorMessage: String(err?.message || err) } });
+        await prisma.smsMessage.updateMany({
+          where: { userId, bookingId: bookingId ?? null, type },
+          data: { status: 'FAILED', errorMessage: String(err?.message || err) },
+        });
         logger.error('sms send failed', { error: String(err?.message || err) });
       }
     }
