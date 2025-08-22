@@ -78,7 +78,7 @@ model City {
 model Provider {
   id           Int      @id @default(autoincrement())
   userId       Int      @unique
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio          String?
   specialties  String?
   experience   Int?
@@ -163,7 +163,7 @@ model Message {
   fileSize   Int?
   createdAt  DateTime  @default(now())
 
-  booking    Booking?  @relation(fields: [bookingId], references: [id])
+  booking    Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   sender     User      @relation("MessageSender", fields: [senderId], references: [id])
   receiver   User      @relation("MessageReceiver", fields: [receiverId], references: [id])
 
@@ -213,7 +213,7 @@ model Notification {
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead, createdAt], map: "idx_notif_user_read_date")
 }
@@ -285,7 +285,7 @@ model UserPII {
   addressPostal  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  user           User      @relation(fields: [userId], references: [id])
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -299,7 +299,7 @@ model KycVault {
   keyId       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([keyId])
  }
@@ -338,7 +338,7 @@ model MfaSecret {
   recoveryCodes String? // JSON array of hashed codes
   enabledAt DateTime?
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
