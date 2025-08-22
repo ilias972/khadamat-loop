@@ -130,6 +130,10 @@ export default function SmartSearch({
       : [];
 
   useEffect(() => {
+    if (!showProvider) {
+      setProviderSuggestions([]);
+      return;
+    }
     const controller = new AbortController();
     const handler = setTimeout(async () => {
       if (provider) {
@@ -158,16 +162,16 @@ export default function SmartSearch({
       clearTimeout(handler);
       controller.abort();
     };
-  }, [provider, city]);
+  }, [provider, city, showProvider]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedService) params.append("services", selectedService.slug);
     if (city) params.append("city", city);
-    if (provider) params.append("q", provider);
+    if (showProvider && provider) params.append("q", provider);
     const url = `/providers${params.toString() ? `?${params.toString()}` : ""}`;
     setLocation(url);
-    onSearch?.(serviceQuery, city, provider);
+    onSearch?.(serviceQuery, city, showProvider ? provider : undefined);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
