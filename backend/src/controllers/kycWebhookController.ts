@@ -3,6 +3,9 @@ import { prisma } from '../lib/prisma';
 import { hashDocNumber, last4 } from '../utils/kycCrypto';
 import { encryptWithActiveKey } from '../config/keyring';
 import { logAction } from '../middlewares/audit';
+import { stripe } from '../config/stripe';
+import { env } from '../config/env';
+import { logger } from '../config/logger';
 
 function parseEvent(req: any) {
   const body = req.body;
@@ -26,12 +29,34 @@ function parseEvent(req: any) {
 // A monter avec express.raw() AVANT json (comme Stripe payments)
 export const kycWebhook = async (req: Request, res: Response) => {
   try {
-    const event = parseEvent(req); // en prod: vérifier la signature du provider
-    if (!event) return res.status(400).json({ error: 'invalid_payload' });
+    let event: any;
+    if (env.stripeIdentityWebhookSecret) {
+      const sig = req.headers['stripe-signature'];
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig as string, env.stripeIdentityWebhookSecret);
+      } catch (err: any) {
+        logger.error('kyc webhook signature invalid', { error: err.message });
+        return res.status(400).json({
+          success: false,
+          error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: 'Invalid signature', timestamp: new Date().toISOString() },
+        });
+      }
+    } else {
+      logger.warn('kyc webhook without signature');
+      event = parseEvent(req);
+    }
+    if (!event) return res.status(400).json({ success: false, error: { code: 'INVALID_PAYLOAD', message: 'invalid_payload', timestamp: new Date().toISOString() } });
     const type = event?.type;
     const sess = event?.data?.object;
     const userId = Number(sess?.metadata?.userId);
-    if (!userId || !type) return res.status(400).json({ error: 'bad_request' });
+    if (!userId || !type) return res.status(400).json({ success: false, error: { code: 'BAD_REQUEST', message: 'bad_request', timestamp: new Date().toISOString() } });
+
+    try {
+      await prisma.webhookEvent.create({ data: { provider: 'kyc', eventId: event.id, type, status: 'processing' } });
+    } catch {
+      logger.warn('kyc webhook duplicate', { eventId: event.id });
+      return res.json({ received: true });
+    }
 
     if (type.endsWith('.verified')) {
       const documentType = sess?.last_verification_report?.document?.type || sess?.type || 'id_card';
@@ -63,6 +88,10 @@ export const kycWebhook = async (req: Request, res: Response) => {
       });
 
       await logAction({ userId, action: 'KYC_VERIFIED', resource: 'verification', resourceId: userId });
+      await prisma.webhookEvent.update({
+        where: { provider_eventId: { provider: 'kyc', eventId: event.id } },
+        data: { status: 'processed', processedAt: new Date() },
+      });
       return res.json({ received: true });
     }
 
@@ -71,11 +100,23 @@ export const kycWebhook = async (req: Request, res: Response) => {
         where: { externalId: sess.id }, data: { status: 'REJECTED' }
       });
       await logAction({ userId, action: 'KYC_REJECTED', resource: 'verification', resourceId: userId });
+      await prisma.webhookEvent.update({
+        where: { provider_eventId: { provider: 'kyc', eventId: event.id } },
+        data: { status: 'processed', processedAt: new Date() },
+      });
       return res.json({ received: true });
     }
 
+    await prisma.webhookEvent.update({
+      where: { provider_eventId: { provider: 'kyc', eventId: event.id } },
+      data: { status: 'ignored', processedAt: new Date() },
+    });
     return res.json({ received: true });
-  } catch (e) {
-    return res.status(400).json({ error: 'webhook_error' });
+  } catch (e: any) {
+    await prisma.webhookEvent.update({
+      where: { provider_eventId: { provider: 'kyc', eventId: (e as any)?.id || '' } },
+      data: { status: 'failed', processedAt: new Date() },
+    }).catch(() => {});
+    return res.status(400).json({ success: false, error: { code: 'WEBHOOK_ERROR', message: 'webhook_error', timestamp: new Date().toISOString() } });
   }
 };

@@ -363,3 +363,16 @@ model RefreshToken {
   @@index([userId, revokedAt])
 }
 
+model WebhookEvent {
+  id          Int      @id @default(autoincrement())
+  provider    String
+  eventId     String
+  type        String?
+  status      String?
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+
+  @@unique([provider, eventId], map: "uniq_provider_event")
+  @@index([createdAt])
+}
+

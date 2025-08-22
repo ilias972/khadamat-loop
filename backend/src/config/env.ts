@@ -22,7 +22,17 @@ export const env = {
   piiRetentionDays: parseInt(process.env.PII_RETENTION_DAYS || '365', 10),
   piiExportMaxMb: parseInt(process.env.PII_EXPORT_MAX_MB || '10', 10),
   piiExportFormat: process.env.PII_EXPORT_FORMAT || 'json',
-  piiExportRatePerDay: parseInt(process.env.PII_EXPORT_RATE_PER_DAY || '3', 10)
-  ,prismaEnginesMirror: process.env.PRISMA_ENGINES_MIRROR || 'https://binaries.prisma.sh/all'
-  ,prismaEnginesChecksumIgnore: process.env.PRISMA_ENGINES_CHECKSUM_IGNORE === 'true'
+  piiExportRatePerDay: parseInt(process.env.PII_EXPORT_RATE_PER_DAY || '3', 10),
+  prismaEnginesMirror: process.env.PRISMA_ENGINES_MIRROR || 'https://binaries.prisma.sh/all',
+  prismaEnginesChecksumIgnore: process.env.PRISMA_ENGINES_CHECKSUM_IGNORE === 'true',
+  stripeIdentityWebhookSecret: process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
+  adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || '',
+  trustProxy: process.env.TRUST_PROXY === 'true',
+  cookieSecure: process.env.COOKIE_SECURE === 'true',
+  cookieSameSite: (process.env.COOKIE_SAMESITE || 'lax') as 'lax' | 'strict' | 'none',
+  smsQuietStart: process.env.SMS_QUIET_START || '21:00',
+  smsQuietEnd: process.env.SMS_QUIET_END || '08:00',
+  smsMaxRetries: parseInt(process.env.SMS_MAX_RETRIES || '3', 10),
+  smsRetryBackoffMs: parseInt(process.env.SMS_RETRY_BACKOFF_MS || '60000', 10),
+  cacheTtlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || '600', 10),
 };

@@ -8,6 +8,7 @@ import cors from "cors";
 import { normalizeString } from "@shared/normalize";
 import { createRateLimit } from "./security/middleware";
 import { SEARCH_RADIUS_KM, SEARCH_RANKING } from "./config";
+import { cacheGet, cacheSet } from "./cache";
 
 // Import des middlewares de sécurité
 import { 
@@ -64,27 +65,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Routes de sécurité
   app.use("/api/auth", securityRoutes);
     // Catalogue services
-    app.get("/api/services/catalog", (req, res) => {
-    try {
-      const groupBy = req.query.groupBy;
-      if (groupBy === "category") {
-        const categoriesMap = new Map<string, { code: string; name_fr: string; name_ar: string; services: { id: number; code: string; slug: string; name_fr: string; name_ar: string }[] }>();
-        for (const s of serviceCatalog) {
-          let category = categoriesMap.get(s.category_code);
-          if (!category) {
-            category = { code: s.category_code, name_fr: s.name_fr, name_ar: s.name_ar, services: [] };
-            categoriesMap.set(s.category_code, category);
-          }
-          category.services.push({ id: s.id, code: s.code, slug: s.slug, name_fr: s.name_fr, name_ar: s.name_ar });
+    app.get("/api/services/catalog", async (req, res) => {
+      try {
+        const groupBy = req.query.groupBy;
+        const key = groupBy === "category" ? "services:catalog:cat" : "services:catalog:all";
+        const cached = await cacheGet(key);
+        if (cached) {
+          return res.json(JSON.parse(cached));
         }
-        const categories = Array.from(categoriesMap.values());
-        res.json({ success: true, data: { categories } });
-      } else {
-        res.json({ success: true, data: serviceCatalog });
+        if (groupBy === "category") {
+          const categoriesMap = new Map<string, { code: string; name_fr: string; name_ar: string; services: { id: number; code: string; slug: string; name_fr: string; name_ar: string }[] }>();
+          for (const s of serviceCatalog) {
+            let category = categoriesMap.get(s.category_code);
+            if (!category) {
+              category = { code: s.category_code, name_fr: s.name_fr, name_ar: s.name_ar, services: [] };
+              categoriesMap.set(s.category_code, category);
+            }
+            category.services.push({ id: s.id, code: s.code, slug: s.slug, name_fr: s.name_fr, name_ar: s.name_ar });
+          }
+          const categories = Array.from(categoriesMap.values());
+          const result = { success: true, data: { categories } };
+          await cacheSet(key, JSON.stringify(result), 600);
+          res.json(result);
+        } else {
+          const result = { success: true, data: serviceCatalog };
+          await cacheSet(key, JSON.stringify(result), 600);
+          res.json(result);
+        }
+      } catch (error) {
+        res.status(500).json({ success: false, error: "Failed to fetch catalog" });
       }
-    } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to fetch catalog" });
-    }
     });
     app.get("/api/services/suggest", serviceSuggestRate, async (req, res) => {
       try {
@@ -95,6 +105,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const normalized = normalizeString(qRaw);
         if (!normalized) {
           return res.json({ success: true, data: { items: [] } });
+        }
+        const cacheKey = `services:suggest:${qRaw}|${cityRaw}|${req.query.lat || ''}|${req.query.lng || ''}|${limit}`;
+        const cached = await cacheGet(cacheKey);
+        if (cached) {
+          return res.json(JSON.parse(cached));
         }
         SecurityLogger.logSensitiveOperation(
           0,
@@ -143,7 +158,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (a.score !== b.score) return a.score - b.score;
           return b.providersCountInCity - a.providersCountInCity;
         });
-        res.json({ success: true, data: { items: items.map(({ score, ...rest }) => rest) } });
+        const result = { success: true, data: { items: items.map(({ score, ...rest }) => rest) } };
+        await cacheSet(cacheKey, JSON.stringify(result), 180);
+        res.json(result);
       } catch (error) {
         res.status(500).json({ success: false, error: "Failed to suggest services" });
       }

@@ -1,12 +1,12 @@
 import { createClient } from 'redis';
-import { env } from '../config/env';
 
-const defaultTtl = env.cacheTtlSeconds;
+const redisUrl = process.env.REDIS_URL;
+const defaultTtl = parseInt(process.env.CACHE_TTL_SECONDS || '600', 10);
 let client: any;
 const memory = new Map<string, { value: string; expires: number }>();
 
-if (env.redisUrl) {
-  client = createClient({ url: env.redisUrl });
+if (redisUrl) {
+  client = createClient({ url: redisUrl });
   client.on('error', () => {});
   client.connect().catch(() => {});
 }

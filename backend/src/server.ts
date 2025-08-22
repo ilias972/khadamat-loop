@@ -28,6 +28,7 @@ import { logger } from './config/logger';
 import { maintenanceGuard } from './middlewares/maintenance';
 import { prisma, dbAvailable } from './lib/prisma';
 import { dbGuard } from './middlewares/dbGuard';
+import { ipAllowList } from './middlewares/ipAllowList';
 
 if (dbAvailable) {
   prisma
@@ -83,28 +84,36 @@ if (process.env.SENTRY_DSN) {
 }
 
 const app = express();
+if (env.trustProxy) {
+  app.set('trust proxy', 1);
+}
 
 if (process.env.NODE_ENV !== 'test' && dbAvailable) {
   import('./jobs/scheduler').then((m) => m.startSchedulers());
 }
-
-app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
 app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
 
 app.use(express.json());
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(
-  helmet({
-    contentSecurityPolicy: {
-      useDefaults: true,
-      directives: {
-        "img-src": ["'self'", 'data:', 'https:'],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["'self'", env.frontendUrl],
-      },
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://js.stripe.com'],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'", env.frontendUrl, 'https://api.stripe.com'],
+      frameSrc: ["'self'", 'https://js.stripe.com'],
+      upgradeInsecureRequests: [],
     },
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
+app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
+app.use(helmet.xContentTypeOptions());
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet.hsts());
+}
 app.use(
   cors({
     origin: env.frontendUrl,
@@ -114,7 +123,6 @@ app.use(
 );
 
 if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 1);
   app.use((req, res, next) => {
     if (req.secure || req.headers['x-forwarded-proto'] === 'https') return next();
     res.redirect('https://' + req.headers.host + req.url);
@@ -158,7 +166,7 @@ app.use('/api/kyc', kycRoutes);
 app.use('/api/pii', piiRoutes);
 app.use('/api/sms', smsRouter);
 app.use('/api/admin', adminDisclosure);
-app.use('/api/admin', authenticate, requireRole('admin'), requireMfa, adminRouter);
+app.use('/api/admin', ipAllowList(), authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
 
 app.use(errorHandler);
