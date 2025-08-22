@@ -169,6 +169,30 @@ Pour toute question ou problème :
 - Consultez les logs dans le dossier `logs/`
 - Contactez l'équipe de développement
 
+## 🔥 Smoke & Debug
+
+Des scripts de smoke tests sont disponibles pour vérifier rapidement les points clés de l'API.
+
+### Variables requises
+
+- `BACKEND_BASE_URL` : URL de base du backend (défaut `http://localhost:3000`).
+- `STRIPE_WEBHOOK_SECRET` : nécessaire pour `smoke:webhooks`.
+- `SMOKE_TOKEN_CLIENT` : jeton JWT d'un utilisateur client pour `smoke:pii`.
+
+### Résultats
+
+- **PASS** : le test s'est exécuté et a reçu une réponse valide.
+- **FAIL** : le test a rencontré une erreur inattendue.
+- **SKIPPED** : prérequis manquants (ex. absence de secret ou de jeton).
+
+### Exécution
+
+```bash
+npm run smoke:all
+```
+
+Chaque script est tolérant aux environnements vides : un `SKIPPED` n'est pas bloquant.
+
 ## 📄 Licence
 
 Ce projet est développé pour la plateforme Khadamat.

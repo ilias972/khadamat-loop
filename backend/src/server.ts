@@ -18,6 +18,7 @@ import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import adminDisclosure from './routes/adminDisclosure';
 import statsRouter from './routes/stats';
+import searchRoutes from './routes/search';
 import mfaRouter from './routes/mfa';
 import kycRoutes from './routes/kyc';
 import piiRoutes from './routes/pii';
@@ -170,6 +171,7 @@ app.use('/api/sms', smsRouter);
 app.use('/api/admin', adminDisclosure);
 app.use('/api/admin', ipAllowList(), authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
+app.use('/api', searchRoutes);
 
 app.use(errorHandler);
 

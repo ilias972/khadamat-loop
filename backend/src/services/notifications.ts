@@ -5,7 +5,10 @@ export async function createNotification(
   type: string,
   title: string,
   message: string,
-  data?: Record<string, any>
+  data?: Record<string, any>,
+  tx: any = prisma
 ) {
-  return prisma.notification.create({ data: { userId, type, title, message, data: data ? JSON.stringify(data) : null } });
+  return tx.notification.create({
+    data: { userId, type, title, message, data: data ? JSON.stringify(data) : null },
+  });
 }
