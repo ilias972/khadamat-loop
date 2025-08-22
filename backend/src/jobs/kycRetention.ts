@@ -1,4 +1,6 @@
 import { prisma } from '../lib/prisma';
+import { env } from '../config/env';
+import { logger } from '../config/logger';
 
 export async function runKycRetentionJob() {
   const metaDays = Number(process.env.KYC_RETENTION_DAYS ?? 30);
@@ -23,4 +25,10 @@ export async function runKycRetentionJob() {
       data: { encDoc: null, encDocTag: null, encDocNonce: null }
     });
   }
+
+  const piiCut = new Date(Date.now() - env.piiRetentionDays * 24 * 3600 * 1000);
+  const purged = await prisma.userPII.deleteMany({
+    where: { updatedAt: { lt: piiCut }, user: { legalHold: null } }
+  });
+  logger.info('PII retention purge', { count: purged.count });
 }
