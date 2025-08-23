@@ -139,7 +139,7 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", 'https://js.stripe.com'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'"],
       imgSrc: ["'self'", 'data:', 'blob:'],
       connectSrc: ["'self'", ...env.corsOrigins, 'https://api.stripe.com'],
       frameSrc: ["'self'", 'https://js.stripe.com'],

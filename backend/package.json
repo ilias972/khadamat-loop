@@ -52,6 +52,7 @@
     "ops:wait": "node scripts/ops/wait-backend.js",
     "ops:spawn": "node scripts/ops/spawn-backend.js",
     "ops:kill": "node scripts/ops/kill-backend.js",
+    "ops:csp-cors": "node scripts/ops/csp-cors.check.js",
 
     "online:payments": "node scripts/online/payments.check.js",
     "online:kyc": "node scripts/online/kyc.check.js",
