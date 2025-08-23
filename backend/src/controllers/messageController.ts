@@ -5,6 +5,9 @@ import { dispatchNotification } from '../services/dispatchNotification';
 import { messagesSentTotal } from '../metrics';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
+import { randomUUID } from 'crypto';
+import { UPLOAD_DIR } from '../utils/upload';
+import { normalizeUpload, persistNormalizedUpload } from '../upload/fileAdapter';
 import { logAction } from '../middlewares/audit';
 
 export async function getConversations(req: Request, res: Response, next: NextFunction) {
@@ -98,8 +101,10 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
   try {
     const senderId = parseInt(req.user?.id || '', 10);
     const { receiverId, content, bookingId } = req.body;
+    const file = (req as any).file ?? (req as any).files?.file ?? (req as any).files?.attachment;
+    const up = normalizeUpload(file);
 
-    if (!content && !req.file) {
+    if (!content && !up) {
       return next({ status: 400, message: 'Message must have content or file' });
     }
 
@@ -138,7 +143,7 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
       return next({ status: 429, message: 'Daily message limit exceeded' });
     }
 
-    if (req.file) {
+    if (up) {
       if (attachCount >= ATTACH_MAX_PER_DAY) {
         await logAction({
           userId: senderId,
@@ -152,7 +157,7 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
           message: 'Daily attachment limit exceeded',
         });
       }
-      const totalSize = (storage._sum.fileSize || 0) + req.file.size;
+      const totalSize = (storage._sum.fileSize || 0) + up.size;
       if (totalSize > USER_MAX_STORAGE) {
         await logAction({
           userId: senderId,
@@ -180,12 +185,23 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
       isRead: false,
     };
     if (bookingId) data.bookingId = bookingId;
-    if (req.file) {
-      const filePath =
-        req.file.path || path.join(req.file.destination, req.file.filename);
-      data.fileUrl = filePath;
-      data.fileType = req.file.mimetype || '';
-      data.fileSize = req.file.size;
+    if (up) {
+      const now = new Date();
+      const dest = path.join(
+        UPLOAD_DIR,
+        String(now.getFullYear()),
+        String(now.getMonth() + 1).padStart(2, '0')
+      );
+      const ext = path
+        .extname(up.originalName || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9.]/g, '');
+      const unique = randomUUID();
+      const target = path.join(dest, `${unique}${ext}`);
+      await persistNormalizedUpload(up, target);
+      data.fileUrl = target;
+      data.fileType = up.mime || '';
+      data.fileSize = up.size;
     }
 
     const message = await prisma.message.create({ data });
