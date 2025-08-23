@@ -4,6 +4,7 @@ import { ZodError } from 'zod';
 import { logger } from '../config/logger';
 import { env } from '../config/env';
 import { ERROR_MESSAGES } from '../i18n/errors';
+import { Sentry } from '../config/sentry';
 
 export function errorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
   let status = err?.status || 500;
@@ -48,6 +49,9 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
   const message = msgTemplate[lang];
 
   logger.error(message, { id: req.id, status, stack: err?.stack });
+  if (Sentry) {
+    Sentry.captureException(err);
+  }
   res.status(status).json({
     success: false,
     error: {

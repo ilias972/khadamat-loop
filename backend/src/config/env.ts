@@ -64,6 +64,7 @@ export const env = {
     .split(',')
     .map((v) => parseInt(v, 10))
     .filter((v) => !isNaN(v)),
+  metricsBucket: process.env.METRICS_BUCKET || 'khadamat-api',
   i18nDefaultLang: process.env.I18N_DEFAULT_LANG || 'fr',
   notifDefaultEmail: (process.env.NOTIF_DEFAULT_EMAIL ?? 'true') === 'true',
   notifDefaultSms: (process.env.NOTIF_DEFAULT_SMS ?? 'true') === 'true',

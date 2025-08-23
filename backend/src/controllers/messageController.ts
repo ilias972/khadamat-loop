@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { notifyUser } from '../utils/notify';
-import { sendMessageEmail } from '../services/emailEvents';
+import { dispatchNotification } from '../services/dispatchNotification';
+import { messagesSentTotal } from '../metrics';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
 import { logAction } from '../middlewares/audit';
@@ -190,7 +191,12 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     const message = await prisma.message.create({ data });
 
     notifyUser(receiverId, 'MESSAGE_RECEIVED', 'Nouveau message', '...');
-    sendMessageEmail(receiverId).catch(() => {});
+    await dispatchNotification({
+      event: 'message.received',
+      userId: receiverId,
+      acceptLanguage: req.headers['accept-language'] as string,
+    });
+    messagesSentTotal?.inc();
 
     const response: any = { message };
     if (message.fileUrl) {

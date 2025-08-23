@@ -8,6 +8,7 @@ import { createNotification } from '../services/notifications';
 import { sendSubscriptionSMS } from '../services/smsEvents';
 import { sendSubscriptionEmail } from '../services/emailEvents';
 import { logger } from '../config/logger';
+import { webhooksProcessedTotal } from '../metrics';
 
 export async function createClubProCheckout(req: Request, res: Response, next: NextFunction) {
   try {
@@ -84,6 +85,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     });
   } catch {
     logger.warn('stripe webhook duplicate', { eventId: event.id });
+    webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'replayed' });
     return res.json({ received: true });
   }
 
@@ -131,6 +133,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       });
     });
     logger.info('stripe webhook processed', { eventId: event.id });
+    webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'ok' });
     return res.json({ received: true });
   } catch (err: any) {
     await prisma.webhookEvent.update({
@@ -138,6 +141,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       data: { status: 'failed', processedAt: new Date() },
     }).catch(() => {});
     logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
+    webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'fail' });
     return res.status(500).json({
       success: false,
       error: { code: 'WEBHOOK_PROCESSING_ERROR', message: 'Processing failed', timestamp: new Date().toISOString() },
