@@ -1,3 +1,10 @@
+if (
+  !process.env.PRISMA_CLIENT_ENGINE_TYPE &&
+  process.env.NODE_ENV !== 'production'
+) {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'library';
+}
+
 export const env = {
   port: parseInt(process.env.PORT || '3000', 10),
   frontendUrl: process.env.FRONTEND_URL || '*',

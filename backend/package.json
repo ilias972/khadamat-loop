@@ -6,10 +6,12 @@
   "scripts": {
     "preinstall": "node -e \"console.log('npm registry:', process.env.npm_config_registry||'default')\"",
     "postinstall": "node -e \"try{require('fs').statSync('node_modules/@prisma/client')}catch(e){}\" && npx prisma generate || true",
-    "predev": "node scripts/check-prisma.js || echo \"(offline) prisma non généré\"",
+    "prisma:self-heal": "node scripts/prisma/self-heal.js",
+    "prisma:prepare:test": "node scripts/prisma/prepare-test-db.js",
+    "predev": "npm run prisma:self-heal",
     "dev": "node scripts/run-dev.js",
     "dev:force-online": "node -e \"process.env.FORCE_ONLINE='true'; require('./scripts/run-dev')\"",
-    "prestart": "node scripts/check-prisma.js || echo \"(offline) prisma non généré\"",
+    "prestart": "npm run prisma:self-heal",
     "start": "node scripts/run-start.js",
     "build": "tsc -b",
     "run:env": "node scripts/run-with-env.js",
@@ -24,7 +26,7 @@
     "db:bootstrap:sqlite": "node scripts/db-bootstrap-sqlite.js",
     "db:seed:sql": "node scripts/db-seed-sql.js",
     "test:prepare": "node scripts/test-db-prepare.js",
-    "pretest": "node scripts/pretest-guard.js",
+    "pretest": "node scripts/prisma/self-heal.js && node scripts/prisma/prepare-test-db.js",
     "test": "node scripts/test/smart-runner.js",
     "test:smart": "node scripts/test/smart-runner.js",
     "test:ci": "node -e \"process.env.NODE_ENV='test'; process.env.OFFLINE_SKIP_TESTS='false'; require('child_process').spawn('npx', ['jest','--ci','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
@@ -79,8 +81,8 @@
     "db:backup:cleanup": "node scripts/db/cleanup.js",
     "audit:ci": "node scripts/audit-ci.js",
     "ci:check": "node scripts/ci/check.js",
-    "ci:check:local": "node scripts/env/load.js backend/.env.online.local -- npm run ci:check",
-    "ci:check:staging": "node scripts/env/load.js backend/.env.online.staging -- npm run ci:check"
+    "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ci:check",
+    "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ci:check"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
