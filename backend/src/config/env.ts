@@ -59,4 +59,10 @@ export const env = {
   backupEnabled: (process.env.BACKUP_ENABLED ?? 'true') === 'true',
   backupDir: process.env.BACKUP_DIR || './backups',
   backupRetentionDays: parseInt(process.env.BACKUP_RETENTION_DAYS || '14', 10),
+  mockEmail: process.env.MOCK_EMAIL === 'true',
+  mockSms: process.env.MOCK_SMS === 'true',
+  mockRedis: process.env.MOCK_REDIS === 'true',
+  mockStripe: process.env.MOCK_STRIPE === 'true',
+  dbDialect: process.env.DB_DIALECT || 'sqlite',
+  pgUrl: process.env.PG_URL || '',
 };
