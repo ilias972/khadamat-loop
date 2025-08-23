@@ -4,6 +4,7 @@ import { isValidDay, isFutureOrTodayDay } from '../utils/day';
 import { notifyUser } from '../utils/notify';
 import { createSystemMessage } from '../utils/messages';
 import { sendBookingSMS } from '../services/smsEvents';
+import { sendBookingEmail } from '../services/emailEvents';
 
 const STATUS = {
   PENDING: 'PENDING',
@@ -54,6 +55,7 @@ export async function createBooking(req: Request, res: Response, next: NextFunct
 
     notifyUser(providerId, 'BOOKING_REQUEST', 'Nouvelle réservation', `Un client a demandé une prestation le ${booking.scheduledDay}`, { bookingId: booking.id });
     sendBookingSMS(providerId, 'BOOKING_REQUEST', booking.id).catch((err) => console.error(err));
+    sendBookingEmail(providerId, 'BOOKING_REQUEST', booking.id).catch(() => {});
 
     res.status(201).json({ success: true, data: { booking } });
   } catch (err) {
@@ -94,6 +96,7 @@ export async function confirmBooking(req: Request, res: Response, next: NextFunc
         tx
       );
       await sendBookingSMS(b.clientId, 'BOOKING_CONFIRMED', b.id, tx);
+      await sendBookingEmail(b.clientId, 'BOOKING_CONFIRMED', b.id, tx);
 
       return b;
     });
@@ -240,6 +243,7 @@ export async function rejectBooking(req: Request, res: Response, next: NextFunct
         tx
       );
       await sendBookingSMS(b.clientId, 'BOOKING_REJECTED', b.id, tx);
+      await sendBookingEmail(b.clientId, 'BOOKING_REJECTED', b.id, tx);
 
       return b;
     });
@@ -289,6 +293,7 @@ export async function cancelBooking(req: Request, res: Response, next: NextFunct
         tx
       );
       await sendBookingSMS(b.providerId, 'BOOKING_CANCELLED', b.id, tx);
+      await sendBookingEmail(b.providerId, 'BOOKING_CANCELLED', b.id, tx);
 
       return b;
     });

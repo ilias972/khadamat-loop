@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { invalidateServiceCatalog, invalidateSuggest, invalidateSearchNear } from '../cache/invalidate';
 
 export async function listServices(req: Request, res: Response, next: NextFunction) {
   try {
@@ -79,6 +80,9 @@ export async function createService(req: Request, res: Response, next: NextFunct
         isPopular: req.body.isPopular ?? false,
       },
     });
+    await invalidateServiceCatalog();
+    await invalidateSuggest();
+    await invalidateSearchNear();
 
     res.status(201).json({ success: true, data: { service } });
   } catch (err) {
@@ -114,6 +118,9 @@ export async function updateService(req: Request, res: Response, next: NextFunct
         isPopular: req.body.isPopular,
       },
     });
+    await invalidateServiceCatalog();
+    await invalidateSuggest();
+    await invalidateSearchNear();
 
     res.json({ success: true, data: { service: updated } });
   } catch (err) {
@@ -137,6 +144,9 @@ export async function deleteService(req: Request, res: Response, next: NextFunct
     }
 
     await prisma.service.delete({ where: { id } });
+    await invalidateServiceCatalog();
+    await invalidateSuggest();
+    await invalidateSearchNear();
     res.json({ success: true });
   } catch (err) {
     next(err);

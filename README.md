@@ -193,6 +193,12 @@ npm run smoke:all
 
 Chaque script est tolérant aux environnements vides : un `SKIPPED` n'est pas bloquant.
 
+## 🔒 Supply-chain & audit des dépendances
+
+La commande `npm run audit:ci` tente d'exécuter `npm audit` et affiche un résumé des vulnérabilités. En environnement sans réseau, l'audit est ignoré proprement.
+
+Pour activer un audit complet en CI, fournir un accès réseau sortant puis lancer `npm run audit:ci`. Les vulnérabilités jugées non bloquantes peuvent être ignorées de manière raisonnée via des fichiers de configuration (`npm audit fix --omit=dev` ou `.npmrc`).
+
 ## 📄 Licence
 
 Ce projet est développé pour la plateforme Khadamat.
