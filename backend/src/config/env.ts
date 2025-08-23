@@ -41,5 +41,12 @@ export const env = {
   authLockoutMinutes: parseInt(process.env.AUTH_LOCKOUT_MINUTES || '30', 10),
   metricsEnabled: process.env.METRICS_ENABLED === 'true',
   metricsToken: process.env.METRICS_TOKEN || '',
+  metricsBucketsMs: (process.env.METRICS_BUCKETS_MS || '25,50,100,250,500,1000,2000')
+    .split(',')
+    .map((v) => parseInt(v, 10))
+    .filter((v) => !isNaN(v)),
   i18nDefaultLang: process.env.I18N_DEFAULT_LANG || 'fr',
+  notifDefaultEmail: (process.env.NOTIF_DEFAULT_EMAIL ?? 'true') === 'true',
+  notifDefaultSms: (process.env.NOTIF_DEFAULT_SMS ?? 'true') === 'true',
+  notifDefaultPush: (process.env.NOTIF_DEFAULT_PUSH ?? 'false') === 'true',
 };

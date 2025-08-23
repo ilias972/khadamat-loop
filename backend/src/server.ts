@@ -35,6 +35,7 @@ import { rateGlobal } from './middlewares/rateGlobal';
 import { requestId } from './middlewares/requestId';
 import { requestLogger } from './middlewares/requestLogger';
 import { cacheControl } from './middlewares/cacheControl';
+import { setupMetrics, metricsRequestTimer } from './metrics';
 
 if (dbAvailable) {
   prisma
@@ -107,6 +108,8 @@ if (process.env.NODE_ENV !== 'test' && dbAvailable) {
 app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
 app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
 
+setupMetrics(app);
+
 app.use(express.json());
 app.use(requestId);
 app.use(requestLogger);
@@ -167,6 +170,7 @@ app.get('/ready', (_req, res) => {
 app.use(maintenanceGuard);
 
 app.use('/api', rateGlobal);
+app.use('/api', metricsRequestTimer);
 app.use('/api', dbGuard);
 app.use('/api/mfa', mfaRouter);
 app.use('/api/auth', authRoutes);

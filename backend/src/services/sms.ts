@@ -1,11 +1,10 @@
 import { prisma } from '../lib/prisma';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
+import { getOrCreateNotificationPrefs } from './notificationPrefs';
 
 const ENABLED = (process.env.SMS_ENABLED ?? 'false').toLowerCase() === 'true';
 const PROVIDER = (process.env.SMS_PROVIDER ?? 'twilio').toLowerCase();
-const QUIET_START = env.smsQuietStart; // HH:mm
-const QUIET_END = env.smsQuietEnd; // HH:mm
 const MAX_RETRIES = env.smsMaxRetries;
 const RETRY_BACKOFF = env.smsRetryBackoffMs;
 
@@ -16,9 +15,9 @@ function parseTime(t: string) {
   return { h, m };
 }
 
-function inQuietHours(now: Date = new Date()) {
-  const { h: sh, m: sm } = parseTime(QUIET_START);
-  const { h: eh, m: em } = parseTime(QUIET_END);
+function inQuietHours(startStr: string, endStr: string, now: Date = new Date()) {
+  const { h: sh, m: sm } = parseTime(startStr);
+  const { h: eh, m: em } = parseTime(endStr);
   const start = new Date(now);
   start.setHours(sh, sm, 0, 0);
   const end = new Date(now);
@@ -74,6 +73,12 @@ export async function sendSMS({
   client?: any;
   sendNow?: boolean;
 }) {
+  const prefs = await getOrCreateNotificationPrefs(userId, client);
+  if (!prefs.smsOn) {
+    logger.info('skipped_due_to_prefs', { userId, channel: 'sms' });
+    return { skipped: true };
+  }
+
   try {
     await client.smsMessage.create({
       data: {
@@ -94,7 +99,9 @@ export async function sendSMS({
     return { queued: true };
   }
 
-  const { inRange, msUntilEnd } = inQuietHours();
+  const quietStart = prefs.quietStart || env.smsQuietStart;
+  const quietEnd = prefs.quietEnd || env.smsQuietEnd;
+  const { inRange, msUntilEnd } = inQuietHours(quietStart, quietEnd);
   const attemptSend = async (attempt: number): Promise<void> => {
     if (!ENABLED) {
       await prisma.smsMessage.updateMany({

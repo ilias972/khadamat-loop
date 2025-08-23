@@ -116,6 +116,11 @@ export async function handleStripeWebhook(req: Request, res: Response) {
             await sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
           }
         }
+      } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+        const sub = event.data.object as any;
+        const stripeId = sub.id as string;
+        const autoRenew = !sub.cancel_at_period_end;
+        await tx.subscription.updateMany({ where: { stripeId }, data: { autoRenew, status: event.type === 'customer.subscription.deleted' ? 'EXPIRED' : undefined } });
       }
 
       await tx.webhookEvent.update({

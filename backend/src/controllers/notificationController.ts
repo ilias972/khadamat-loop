@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { getOrCreateNotificationPrefs, updateNotificationPrefs } from '../services/notificationPrefs';
 
 export async function listNotifications(req: Request, res: Response, next: NextFunction) {
   try {
@@ -47,4 +48,25 @@ export async function unreadCount(req: Request, res: Response, next: NextFunctio
     const unreadTotal = await prisma.notification.count({ where: { userId, isRead: false } });
     res.json({ success: true, data: { unreadTotal } });
   } catch (err) { next(err); }
+}
+
+export async function getNotificationPrefs(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = parseInt(req.user?.id || '', 10);
+    const prefs = await getOrCreateNotificationPrefs(userId);
+    res.json({ success: true, data: prefs });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function putNotificationPrefs(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = parseInt(req.user?.id || '', 10);
+    await getOrCreateNotificationPrefs(userId);
+    const prefs = await updateNotificationPrefs(userId, req.body);
+    res.json({ success: true, data: prefs });
+  } catch (err) {
+    next(err);
+  }
 }
