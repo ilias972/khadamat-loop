@@ -37,6 +37,7 @@ function setRefreshCookie(res: Response, token: string) {
     httpOnly: true,
     secure: secureCookie,
     sameSite: sameSite,
+    domain: env.cookieDomain,
     maxAge: refreshExpireMs,
   });
 }
@@ -364,6 +365,7 @@ export async function logout(req: Request, res: Response) {
     httpOnly: true,
     secure: secureCookie,
     sameSite: sameSite,
+    domain: env.cookieDomain,
     maxAge: 0,
   });
   res.json({ success: true });
