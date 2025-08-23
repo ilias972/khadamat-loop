@@ -31,6 +31,10 @@ import { maintenanceGuard } from './middlewares/maintenance';
 import { prisma, dbAvailable } from './lib/prisma';
 import { dbGuard } from './middlewares/dbGuard';
 import { ipAllowList } from './middlewares/ipAllowList';
+import { rateGlobal } from './middlewares/rateGlobal';
+import { requestId } from './middlewares/requestId';
+import { requestLogger } from './middlewares/requestLogger';
+import { cacheControl } from './middlewares/cacheControl';
 
 if (dbAvailable) {
   prisma
@@ -86,6 +90,13 @@ if (process.env.SENTRY_DSN) {
 }
 
 const app = express();
+app.set('etag', 'strong');
+try {
+  const compression = require('compression');
+  app.use(compression());
+} catch (e) {
+  logger.warn('compression module not available');
+}
 if (env.trustProxy) {
   app.set('trust proxy', 1);
 }
@@ -97,6 +108,9 @@ app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebh
 app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
 
 app.use(express.json());
+app.use(requestId);
+app.use(requestLogger);
+app.use(cacheControl);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(
   helmet.contentSecurityPolicy({
@@ -152,6 +166,7 @@ app.get('/ready', (_req, res) => {
 
 app.use(maintenanceGuard);
 
+app.use('/api', rateGlobal);
 app.use('/api', dbGuard);
 app.use('/api/mfa', mfaRouter);
 app.use('/api/auth', authRoutes);

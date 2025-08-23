@@ -100,8 +100,32 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       return next({ status: 403, message: 'Account disabled' });
     }
 
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      const remaining = user.lockedUntil.getTime() - Date.now();
+      return res.status(423).json({
+        success: false,
+        error: {
+          code: 'ACCOUNT_LOCKED',
+          message: `Account locked. Try again in ${Math.ceil(remaining / 60000)} minutes`,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
+
     const valid = await verifyPassword(password, user.password);
     if (!valid) {
+      const updated = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginCount: { increment: 1 },
+          ...(user.failedLoginCount + 1 >= env.authMaxFailedLogins
+            ? { lockedUntil: new Date(Date.now() + env.authLockoutMinutes * 60000) }
+            : {}),
+        },
+      });
+      if (updated.failedLoginCount >= env.authMaxFailedLogins && updated.lockedUntil) {
+        await logAction({ userId: user.id, action: 'AUTH_LOCKOUT', resource: 'user', ip: req.ip });
+      }
       return next({ status: 401, message: 'Invalid credentials' });
     }
 
@@ -128,6 +152,15 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     }
 
     const { accessToken, refreshToken, jti } = signTokens(user.id, user.role);
+    if (user.failedLoginCount > 0 || user.lockedUntil) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { failedLoginCount: 0, lockedUntil: null },
+      });
+      if (user.lockedUntil) {
+        await logAction({ userId: user.id, action: 'AUTH_UNLOCK', resource: 'user', ip: req.ip });
+      }
+    }
     await prisma.refreshToken.create({
       data: {
         userId: user.id,

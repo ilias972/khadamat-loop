@@ -35,4 +35,11 @@ export const env = {
   smsMaxRetries: parseInt(process.env.SMS_MAX_RETRIES || '3', 10),
   smsRetryBackoffMs: parseInt(process.env.SMS_RETRY_BACKOFF_MS || '60000', 10),
   cacheTtlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || '600', 10),
+  rateGlobalWindowMin: parseInt(process.env.RATE_GLOBAL_WINDOW_MIN || '1', 10),
+  rateGlobalMax: parseInt(process.env.RATE_GLOBAL_MAX || '120', 10),
+  authMaxFailedLogins: parseInt(process.env.AUTH_MAX_FAILED_LOGINS || '7', 10),
+  authLockoutMinutes: parseInt(process.env.AUTH_LOCKOUT_MINUTES || '30', 10),
+  metricsEnabled: process.env.METRICS_ENABLED === 'true',
+  metricsToken: process.env.METRICS_TOKEN || '',
+  i18nDefaultLang: process.env.I18N_DEFAULT_LANG || 'fr',
 };

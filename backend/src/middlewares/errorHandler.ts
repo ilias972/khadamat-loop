@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '../lib/prisma';
 import { ZodError } from 'zod';
+import { logger } from '../config/logger';
 
-export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
+export function errorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ZodError) {
     return res.status(400).json({
       success: false,
@@ -34,6 +35,7 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     }
   }
 
+  logger.error(message, { id: req.id, status, stack: err?.stack });
   res.status(status).json({
     success: false,
     error: {
