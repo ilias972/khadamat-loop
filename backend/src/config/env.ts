@@ -52,6 +52,8 @@ export const env = {
   cacheTtlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || '120', 10),
   cacheMemMaxKeys: parseInt(process.env.CACHE_MEM_MAX_KEYS || '5000', 10),
   cacheMemSweepSec: parseInt(process.env.CACHE_MEM_SWEEP_SEC || '60', 10),
+  cacheTtlSuggest: parseInt(process.env.CACHE_TTL_SUGGEST || '60', 10),
+  cacheTtlSearch: parseInt(process.env.CACHE_TTL_SEARCH || '60', 10),
   cacheDisable: process.env.CACHE_DISABLE === 'true',
   cacheNamespace: process.env.CACHE_NAMESPACE || 'khadamat:v1',
   rateGlobalWindowMin: parseInt(process.env.RATE_GLOBAL_WINDOW_MIN || '1', 10),
