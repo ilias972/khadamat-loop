@@ -21,7 +21,11 @@
     "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "tsx scripts/seed.ts"
+    "prisma:seed": "tsx scripts/seed.ts",
+    "db:backup": "node scripts/db/backup.cjs",
+    "db:backup:cleanup": "node scripts/db/cleanup.cjs",
+    "ci:check": "node scripts/ci/check.cjs || exit 1",
+    "audit:ci": "node scripts/ci/audit.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

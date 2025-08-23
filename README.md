@@ -193,7 +193,12 @@ npm run smoke:all
 
 Chaque script est tolérant aux environnements vides : un `SKIPPED` n'est pas bloquant.
 
-## 🔒 Supply-chain & audit des dépendances
+## 🛠 Mode dégradé local
+
+Pour développer sans services externes, activer les variables `MOCK_EMAIL`, `MOCK_SMS`, `MOCK_REDIS` et `MOCK_STRIPE` dans `.env`.
+Les envois simulés sont écrits dans le dossier `.outbox/` et les scénarios Stripe des smoke-tests seront `SKIPPED` si aucune clé n'est fournie.
+
+## 🔒 Security audit
 
 La commande `npm run audit:ci` tente d'exécuter `npm audit` et affiche un résumé des vulnérabilités. En environnement sans réseau, l'audit est ignoré proprement.
 

@@ -112,6 +112,16 @@ setupMetrics(app);
 
 app.use(express.json());
 app.use(requestId);
+app.use((req, res, next) => {
+  const orig = res.json.bind(res);
+  res.json = (body: any) => {
+    if (body && body.success === false && body.error && !body.error.requestId) {
+      body.error.requestId = req.id;
+    }
+    return orig(body);
+  };
+  next();
+});
 app.use(requestLogger);
 app.use(cacheControl);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));

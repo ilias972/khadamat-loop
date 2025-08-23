@@ -12,3 +12,5 @@ vite.config.ts.*
 
 *.test.db
 test.db
+backups
+.outbox

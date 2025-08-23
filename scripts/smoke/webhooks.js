@@ -1,9 +1,10 @@
 const base = process.env.BACKEND_BASE_URL || 'http://localhost:3000';
 const secret = process.env.STRIPE_WEBHOOK_SECRET;
+const mock = process.env.MOCK_STRIPE === 'true';
 
 (async () => {
   if (!secret) {
-    console.log('SMOKE:webhooks SKIPPED (no secret)');
+    console.log(`SMOKE:webhooks SKIPPED (${mock ? 'mock' : 'no secret'})`);
     return;
   }
   let Stripe;

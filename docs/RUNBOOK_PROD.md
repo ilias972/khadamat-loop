@@ -10,13 +10,16 @@
 - Procédure de rotation: mettre à jour le secret dans l'outil distant puis dans l'environnement, redéployer.
 
 ## Sauvegarde / Restauration
-- Sauvegarde quotidienne via `BACKUP_CRON_SCHEDULE` vers `BACKUP_DIR`.
-- Pour restaurer: stopper l'application, restaurer le dump puis relancer avec `prisma migrate deploy`.
+- Sauvegarde recommandée : quotidienne via `BACKUP_CRON_SCHEDULE` vers `BACKUP_DIR`.
+- Dump manuel : `npm run db:backup`.
+- Restauration :
+  - **SQLite** : `cp <dump>.db ./dev.db && npx prisma migrate deploy`.
+  - **Postgres** : `psql $PG_URL < <dump>.sql && npx prisma migrate deploy`.
 
 ### Plan & test de restauration
-- Générer un dump manuel : `npm run db:backup`
-- Purger les anciens dumps : `npm run db:backup:cleanup`
-- Tester la restauration sur une base isolée avant déploiement.
+- Générer un dump manuel : `npm run db:backup`.
+- Purger les anciens dumps : `npm run db:backup:cleanup`.
+- Tester la restauration sur une base isolée puis lancer `npm run smoke:all` avant mise en prod.
 
 ## Rollback applicatif
 - Conserver au moins un déploiement précédent.

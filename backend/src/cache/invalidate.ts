@@ -4,7 +4,10 @@ import { logger } from '../config/logger';
 async function delPattern(pattern: string) {
   if (redis) {
     const keys = await redis.keys(pattern);
-    if (keys.length) await redis.del(keys);
+    if (keys.length) {
+      await redis.del(keys);
+      logger.info('CACHE_INVALIDATED', { pattern, count: keys.length });
+    }
   } else {
     logger.info('CACHE_INVALIDATION_FALLBACK', { pattern });
   }
