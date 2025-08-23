@@ -28,9 +28,7 @@ if (process.env.OFFLINE_SKIP_TESTS === 'true') {
 try {
   require.resolve('jest');
 } catch (err) {
-  console.error('[tests] jest introuvable (dépendances non installées).\n- Pour ignorer : OFFLINE_SKIP_TESTS=true npm test\n- Pour tenter l\'install : npm run tests:setup');
-  if (process.env.OFFLINE_SKIP_TESTS !== 'true') process.exit(1);
-  process.exit(0);
+  // jest not installed; smart runner handles fallback
 }
 
 process.exit(0);

@@ -4,7 +4,7 @@ const required = ['BACKEND_BASE_URL'];
 const missing = required.filter((k) => !process.env[k]);
 if (missing.length) {
   console.log('CI_CHECK SKIPPED missing ' + missing.join(','));
-  console.log('CI_GATE_RESULT: SKIPPED_PARTIAL');
+  console.log(`CI_GATE_RESULT: SKIPPED_PARTIAL (missing ${missing.join(',')})`);
   process.exit(0);
 }
 
