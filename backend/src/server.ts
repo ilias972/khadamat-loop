@@ -18,6 +18,7 @@ import notificationsRouter from './routes/notifications';
 import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import adminDisclosure from './routes/adminDisclosure';
+import cacheSmokeRouter from './routes/admin/cacheSmoke';
 import statsRouter from './routes/stats';
 import searchRoutes from './routes/search';
 import mfaRouter from './routes/mfa';
@@ -89,6 +90,7 @@ hardenForTests()
   });
 
 const app = express();
+const adminIpAllowList = ipAllowList();
 if (Sentry) {
   app.use(Sentry.Handlers.requestHandler());
 }
@@ -212,7 +214,10 @@ app.use('/api/pii', piiRoutes);
 app.use('/api/pii', piiPrivacyRoutes);
 app.use('/api/sms', smsRouter);
 app.use('/api/admin', adminDisclosure);
-app.use('/api/admin', ipAllowList(), authenticate, requireRole('admin'), requireMfa, adminRouter);
+if (process.env.SMOKE_ROUTES_ENABLE === 'true') {
+  app.use('/api/admin', adminIpAllowList, requireMfa, cacheSmokeRouter);
+}
+app.use('/api/admin', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);
 
