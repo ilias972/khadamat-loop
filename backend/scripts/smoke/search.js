@@ -1,3 +1,5 @@
+require('./_health-gate');
+
 async function run() {
   try {
     const searchRes = await fetch('http://localhost:3000/api/services/search?service=test&city=test&radiusKm=10');

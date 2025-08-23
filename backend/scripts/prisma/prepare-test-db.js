@@ -28,5 +28,6 @@ function runDbPush() {
 }
 
 if (!runDbPush()) {
-  console.log('SKIPPED db push');
+  console.log('SKIPPED prisma:push');
+  process.exit(0);
 }

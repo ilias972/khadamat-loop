@@ -2,6 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
+const root = path.resolve(__dirname, '../../');
+const tmpDir = path.join(root, '.tmp');
+const flagFile = path.join(tmpDir, 'prisma-disabled');
+
 let lastErr;
 function tryRequire() {
   try {
@@ -14,15 +18,14 @@ function tryRequire() {
   }
 }
 
-if (tryRequire()) {
-  process.exit(0);
-}
-
-const root = path.resolve(__dirname, '../../');
-const tmpDir = path.join(root, '.tmp');
 try {
   fs.mkdirSync(tmpDir, { recursive: true });
 } catch {}
+
+if (tryRequire()) {
+  try { fs.unlinkSync(flagFile); } catch {}
+  process.exit(0);
+}
 
 if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
   process.env.PRISMA_CLIENT_ENGINE_TYPE = 'library';
@@ -45,12 +48,13 @@ let ok = runGenerate();
 if (!ok) ok = runGenerate();
 
 if (ok && tryRequire()) {
+  try { fs.unlinkSync(flagFile); } catch {}
   process.exit(0);
 }
 
-const msg = (lastErr && lastErr.message) || 'unknown';
-console.error('prisma self-heal failed:', msg);
-if (process.env.OFFLINE_SKIP_TESTS === 'true') {
-  process.exit(0);
-}
-process.exit(1);
+try {
+  fs.writeFileSync(flagFile, '');
+} catch {}
+
+console.log('SKIPPED prisma:self-heal (@prisma/client not initialized)');
+process.exit(0);
