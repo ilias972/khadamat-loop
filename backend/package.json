@@ -25,7 +25,8 @@
     "db:seed:sql": "node scripts/db-seed-sql.js",
     "test:prepare": "node scripts/test-db-prepare.js",
     "pretest": "node scripts/pretest-guard.js",
-    "test": "node -e \"if(process.env.OFFLINE_SKIP_TESTS==='true') process.exit(0); process.env.NODE_ENV='test'; require('child_process').spawn('npx', ['jest','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
+    "test": "node scripts/test/smart-runner.js",
+    "test:smart": "node scripts/test/smart-runner.js",
     "test:ci": "node -e \"process.env.NODE_ENV='test'; process.env.OFFLINE_SKIP_TESTS='false'; require('child_process').spawn('npx', ['jest','--ci','--runInBand'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
     "test:watch": "jest --watch",
     "e2e:clubpro:curl": "node scripts/print-e2e-curls.js",
@@ -77,7 +78,9 @@
     "db:backup": "node scripts/db/backup.js",
     "db:backup:cleanup": "node scripts/db/cleanup.js",
     "audit:ci": "node scripts/audit-ci.js",
-    "ci:check": "node scripts/ci/check.js"
+    "ci:check": "node scripts/ci/check.js",
+    "ci:check:local": "node scripts/env/load.js backend/.env.online.local -- npm run ci:check",
+    "ci:check:staging": "node scripts/env/load.js backend/.env.online.staging -- npm run ci:check"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
