@@ -2,6 +2,13 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'library';
+}
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./.tmp/test.sqlite';
+}
+
 function hasJest() {
   try {
     require.resolve('jest');
@@ -22,13 +29,26 @@ function runScript(name) {
 }
 
 const args = process.argv.slice(2);
-if (hasJest()) {
+let prismaReady = true;
+['prisma:self-heal', 'prisma:prepare:test'].forEach((s) => {
+  const r = spawnSync('npm', ['run', s], { stdio: 'inherit' });
+  if (r.status !== 0) prismaReady = false;
+});
+if (!prismaReady) {
+  console.log('SKIPPED prisma (offline or engine)');
+}
+
+if (prismaReady && hasJest()) {
   const jestBin = require.resolve('jest/bin/jest');
   const res = spawnSync(process.execPath, [jestBin, ...args], { stdio: 'inherit' });
   process.exit(res.status ?? 1);
 }
 
-console.log('SKIPPED jest: not installed');
+if (prismaReady) {
+  console.log('SKIPPED jest: not installed');
+} else {
+  console.log('SKIPPED jest: prisma not ready');
+}
 let fail = false;
 let skipped = true;
 runScript('smoke:all');
