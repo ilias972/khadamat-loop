@@ -8,7 +8,7 @@ import cors from "cors";
 import { normalizeString } from "@shared/normalize";
 import { createRateLimit } from "./security/middleware";
 import { SEARCH_RADIUS_KM, SEARCH_RANKING } from "./config";
-import { cacheGet, cacheSet } from "./cache";
+import { cacheGet, cacheSet, getCacheStatus } from "./cache";
 
 // Import des middlewares de sécurité
 import { 
@@ -59,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Health check
   app.get("/health", (_req, res) => {
-    res.json({ ok: true });
+    res.json({ ok: true, cache: getCacheStatus() });
   });
 
   // Routes de sécurité
