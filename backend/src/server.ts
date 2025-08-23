@@ -36,6 +36,7 @@ import { requestId } from './middlewares/requestId';
 import { requestLogger } from './middlewares/requestLogger';
 import { cacheControl } from './middlewares/cacheControl';
 import { setupMetrics, metricsRequestTimer } from './metrics';
+import { getCacheStatus, stopCache } from './utils/cache';
 
 if (dbAvailable) {
   prisma
@@ -164,7 +165,7 @@ setTimeout(() => {
 }, env.healthReadyDelayMs);
 
 app.get('/health', (_req, res) => {
-  res.json({ up: true });
+  res.json({ up: true, cache: getCacheStatus() });
 });
 
 app.get('/ready', (_req, res) => {
@@ -207,9 +208,14 @@ app.use(errorHandler);
 export { app };
 
 if (require.main === module) {
-  app.listen(env.port, () => {
+  const srv = app.listen(env.port, () => {
     logger.info(`Server running on port ${env.port}`);
   });
+  const shutdown = () => {
+    stopCache().finally(() => srv.close(() => process.exit(0)));
+  };
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 process.on('unhandledRejection', (r: any) =>

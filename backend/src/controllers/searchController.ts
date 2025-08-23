@@ -65,7 +65,7 @@ export async function searchServices(req: Request, res: Response, next: NextFunc
       return res.json({ success: true, data: { items: [], page: params.page, total: 0 } });
     }
 
-    const cacheKey = `svc:${serviceId}|${centerLat.toFixed(3)}|${centerLng.toFixed(3)}|${radiusKm}|${params.page}|${params.limit}|${env.searchRanking}`;
+    const cacheKey = `search:services:${serviceId}|${centerLat.toFixed(3)}|${centerLng.toFixed(3)}|${radiusKm}|${params.page}|${params.limit}|${env.searchRanking}`;
     const cached = await cacheGet(cacheKey);
     if (cached) {
       return res.json(JSON.parse(cached));
@@ -104,7 +104,7 @@ export async function searchServices(req: Request, res: Response, next: NextFunc
     const start = (params.page - 1) * params.limit;
     const paged = items.slice(start, start + params.limit);
     const result = { success: true, data: { items: paged, page: params.page, total: items.length } };
-    await cacheSet(cacheKey, JSON.stringify(result), 120);
+    await cacheSet(cacheKey, JSON.stringify(result), 60);
     res.json(result);
   } catch (err) {
     next(err);
@@ -117,7 +117,7 @@ export async function suggestCities(req: Request, res: Response, next: NextFunct
   try {
     const params = suggestSchema.parse(req.query);
     const normQ = normalizeString(params.q);
-    const cacheKey = `city:${normQ}|${params.limit}`;
+    const cacheKey = `suggest:cities:${normQ}|${params.limit}`;
     const cached = await cacheGet(cacheKey);
     if (cached) {
       return res.json(JSON.parse(cached));
@@ -146,7 +146,7 @@ export async function suggestCities(req: Request, res: Response, next: NextFunct
       }));
 
     const result = { success: true, data: { items } };
-    await cacheSet(cacheKey, JSON.stringify(result), 300);
+    await cacheSet(cacheKey, JSON.stringify(result), 120);
     res.json(result);
   } catch (err) {
     next(err);

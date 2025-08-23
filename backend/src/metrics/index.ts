@@ -10,7 +10,7 @@ try {
   logger.warn('METRICS_DISABLED: prom-client not found');
 }
 
-const registry = prom ? new prom.Registry() : null;
+export const registry = prom ? new prom.Registry() : null;
 
 let httpRequestsTotal: any;
 let httpRequestDurationMs: any;
