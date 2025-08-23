@@ -39,6 +39,7 @@ import { requestLogger } from './middlewares/requestLogger';
 import { cacheControl } from './middlewares/cacheControl';
 import { setupMetrics, metricsRequestTimer } from './metrics';
 import { getCacheStatus, stopCache } from './utils/cache';
+import { pingClamAV } from './services/antivirus';
 
 let dbConnected = false;
 
@@ -171,14 +172,17 @@ setTimeout(() => {
   isReady = true;
 }, env.healthReadyDelayMs);
 
-app.get('/health', (_req, res) => {
+app.get('/health', async (_req, res) => {
   const cacheInfo = getCacheStatus();
+  const avEnabled = process.env.UPLOAD_ANTIVIRUS === 'true';
+  const avReachable = avEnabled ? await pingClamAV() : false;
   res.json({
     success: true,
     data: {
       cache: cacheInfo,
       db: { connected: dbConnected },
       redis: { connected: cacheInfo.driver === 'redis' },
+      av: { enabled: avEnabled, reachable: avReachable },
     },
   });
 });
