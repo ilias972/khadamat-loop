@@ -18,7 +18,7 @@ for (const line of content.split(/\r?\n/)) {
   if (eq === -1) continue;
   const key = line.slice(0, eq).trim();
   const value = line.slice(eq + 1).trim();
-  if (process.env[key] === undefined) {
+  if (process.env[key] === undefined || process.env[key] === '') {
     process.env[key] = value;
   }
 }

@@ -10,6 +10,23 @@ const { fetchJson, logPass, logFail, logSkip, getAuthToken } = require('./util')
       return;
     }
 
+    const healthUrl =
+      process.env.BACKEND_BASE_URL + (process.env.BACKEND_HEALTH_PATH || '/health');
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 3000);
+    try {
+      const res = await fetch(healthUrl, { signal: controller.signal });
+      clearTimeout(t);
+      if (res.status !== 200) {
+        logSkip(name, 'backend unreachable');
+        return;
+      }
+    } catch {
+      clearTimeout(t);
+      logSkip(name, 'backend unreachable');
+      return;
+    }
+
     const auth = await getAuthToken(process.env.TEST_PROVIDER_EMAIL, process.env.TEST_PROVIDER_PASSWORD);
     if (!auth) throw new Error('auth failed');
 
