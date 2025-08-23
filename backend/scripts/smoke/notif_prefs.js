@@ -1,7 +1,7 @@
 async function run() {
   const token = process.env.SMOKE_USER_TOKEN;
   if (!token) {
-    console.log('SKIPPED notif_prefs');
+    console.log('SKIPPED notif_prefs: no token');
     return;
   }
   try {
@@ -16,7 +16,8 @@ async function run() {
     });
     console.log('PASS notif_prefs');
   } catch (e) {
-    console.log('FAIL notif_prefs', e.message);
+    console.log(`FAIL notif_prefs: ${e.message}`);
+    process.exit(1);
   }
 }
-run().finally(() => process.exit(0));
+run();

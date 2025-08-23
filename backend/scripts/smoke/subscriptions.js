@@ -1,7 +1,7 @@
 async function run() {
   const token = process.env.SMOKE_PROVIDER_TOKEN;
   if (!token) {
-    console.log('SKIPPED subscriptions');
+    console.log('SKIPPED subscriptions: no token');
     return;
   }
   try {
@@ -16,7 +16,8 @@ async function run() {
     });
     console.log('PASS subscriptions');
   } catch (e) {
-    console.log('FAIL subscriptions', e.message);
+    console.log(`FAIL subscriptions: ${e.message}`);
+    process.exit(1);
   }
 }
-run().finally(() => process.exit(0));
+run();

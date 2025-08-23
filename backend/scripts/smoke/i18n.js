@@ -7,10 +7,12 @@ async function run() {
     if (json?.error?.message && /[\u0600-\u06FF]/.test(json.error.message)) {
       console.log('PASS i18n');
     } else {
-      console.log('FAIL i18n');
+      console.log('FAIL i18n: non-arabic message');
+      process.exit(1);
     }
   } catch (e) {
-    console.log('FAIL i18n', e.message);
+    console.log(`FAIL i18n: ${e.message}`);
+    process.exit(1);
   }
 }
-run().finally(() => process.exit(0));
+run();
