@@ -6,6 +6,7 @@ import { env } from '../config/env';
 import { addMonths } from '../utils/date';
 import { createNotification } from '../services/notifications';
 import { sendSubscriptionSMS } from '../services/smsEvents';
+import { sendSubscriptionEmail } from '../services/emailEvents';
 import { logger } from '../config/logger';
 
 export async function createClubProCheckout(req: Request, res: Response, next: NextFunction) {
@@ -114,6 +115,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
               tx
             );
             await sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
+            await sendSubscriptionEmail(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
           }
         }
       } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {

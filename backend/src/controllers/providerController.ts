@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { invalidateServiceCatalog, invalidateSuggest, invalidateSearchNear } from '../cache/invalidate';
 
 export async function listProviders(req: Request, res: Response, next: NextFunction) {
   try {
@@ -72,6 +73,9 @@ export async function createProvider(req: Request, res: Response, next: NextFunc
         isOnline: req.body.isOnline,
       },
     });
+    await invalidateServiceCatalog();
+    await invalidateSuggest();
+    await invalidateSearchNear();
 
     res.status(201).json({ success: true, data: { provider } });
   } catch (err) {
@@ -101,6 +105,9 @@ export async function updateProvider(req: Request, res: Response, next: NextFunc
         isOnline: req.body.isOnline,
       },
     });
+    await invalidateServiceCatalog();
+    await invalidateSuggest();
+    await invalidateSearchNear();
 
     res.json({ success: true, data: { provider: updated } });
   } catch (err) {

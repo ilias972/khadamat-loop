@@ -1,5 +1,7 @@
 # Runbook de Production
 
+**Vérif pré-déploiement :** `npm run ci:check`
+
 ## URLs & Webhooks
 - API: https://api.example.com
 - Frontend: https://app.example.com
@@ -10,6 +12,11 @@
 ## Sauvegarde / Restauration
 - Sauvegarde quotidienne via `BACKUP_CRON_SCHEDULE` vers `BACKUP_DIR`.
 - Pour restaurer: stopper l'application, restaurer le dump puis relancer avec `prisma migrate deploy`.
+
+### Plan & test de restauration
+- Générer un dump manuel : `npm run db:backup`
+- Purger les anciens dumps : `npm run db:backup:cleanup`
+- Tester la restauration sur une base isolée avant déploiement.
 
 ## Rollback applicatif
 - Conserver au moins un déploiement précédent.

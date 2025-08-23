@@ -1,17 +1,31 @@
 import { createTransport } from 'nodemailer';
+import { env } from '../config/env';
+import { logger } from '../config/logger';
 
-// Basic email sending utility. In production, integrate with real email provider.
-// For this project, emails are logged to the console when sending is disabled.
-const transport = createTransport({
-  jsonTransport: true
-});
+let transport: any = null;
 
-export async function sendEmail(to: string, subject: string, text: string) {
-  if (process.env.EMAIL_DISABLED_FOR_DEMO === 'true') {
-    console.log(`Email disabled for demo. Would send to ${to}: ${subject}`);
+if (env.emailEnabled && env.smtpHost && env.smtpUser && env.smtpPass) {
+  transport = createTransport({
+    host: env.smtpHost,
+    port: env.smtpPort,
+    secure: env.smtpSecure,
+    auth: { user: env.smtpUser, pass: env.smtpPass },
+  });
+} else {
+  logger.info('EMAIL_DISABLED');
+}
+
+export async function sendEmail(to: string, subject: string, body: string, html = false) {
+  if (!transport) {
+    logger.info('EMAIL_DISABLED');
     return;
   }
-  await transport.sendMail({ to, subject, text });
+  await transport.sendMail({
+    to,
+    subject,
+    from: env.smtpFrom,
+    [html ? 'html' : 'text']: body,
+  });
 }
 
 export default { sendEmail };

@@ -65,7 +65,7 @@ export async function listProviderReviews(req: Request, res: Response, next: Nex
     const size = Math.min(parseInt((req.query.size as string) || '10', 10), 50);
     const skip = (page - 1) * size;
 
-    const where = { booking: { providerId } };
+    const where = { booking: { providerId }, deletedAt: null };
 
     const [items, total] = await Promise.all([
       prisma.review.findMany({

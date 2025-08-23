@@ -45,6 +45,7 @@ model User {
   kycVault      KycVault?
   legalHold     LegalHold?
   mfaSecret      MfaSecret?
+  moderationActions ModerationAction[]
 }
 
 model Subscription {
@@ -177,6 +178,7 @@ model Message {
   fileUrl    String?
   fileType   String?
   fileSize   Int?
+  isHidden   Boolean   @default(false)
   createdAt  DateTime  @default(now())
 
   booking    Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
@@ -196,6 +198,7 @@ model Review {
   userId     Int
   rating     Int
   comment    String?
+  deletedAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -204,6 +207,17 @@ model Review {
 
   @@unique([bookingId, userId], map: "uniq_review_booking_user")
   @@index([userId])
+}
+
+model ModerationAction {
+  id         Int      @id @default(autoincrement())
+  adminId    Int
+  targetType String
+  targetId   Int
+  action     String
+  reason     String?
+  createdAt  DateTime @default(now())
+  admin      User     @relation(fields: [adminId], references: [id])
 }
 
 model Favorite {

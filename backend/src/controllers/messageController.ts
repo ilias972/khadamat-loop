@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { notifyUser } from '../utils/notify';
+import { sendMessageEmail } from '../services/emailEvents';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
 import { logAction } from '../middlewares/audit';
@@ -14,6 +15,7 @@ export async function getConversations(req: Request, res: Response, next: NextFu
     const messages = await prisma.message.findMany({
       where: {
         OR: [{ senderId: userId }, { receiverId: userId }],
+        isHidden: false,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -58,6 +60,7 @@ export async function getConversation(req: Request, res: Response, next: NextFun
         { senderId: userId, receiverId: otherId },
         { senderId: otherId, receiverId: userId },
       ],
+      isHidden: false,
     };
     if (beforeId) where.id = { lt: beforeId };
     if (bookingId) where.bookingId = bookingId;
@@ -187,6 +190,7 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     const message = await prisma.message.create({ data });
 
     notifyUser(receiverId, 'MESSAGE_RECEIVED', 'Nouveau message', '...');
+    sendMessageEmail(receiverId).catch(() => {});
 
     const response: any = { message };
     if (message.fileUrl) {
@@ -223,7 +227,7 @@ export async function markAsRead(req: Request, res: Response, next: NextFunction
 export async function getUnreadCount(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = parseInt(req.user?.id || '', 10);
-    const unreadTotal = await prisma.message.count({ where: { receiverId: userId, isRead: false } });
+    const unreadTotal = await prisma.message.count({ where: { receiverId: userId, isRead: false, isHidden: false } });
     res.json({ success: true, data: { unreadTotal } });
   } catch (err) {
     next(err);
