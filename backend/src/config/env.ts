@@ -4,8 +4,9 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL || '',
   jwtSecret: process.env.JWT_SECRET || '',
   stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '',
-  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
-  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY_LIVE || process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret:
+    process.env.STRIPE_WEBHOOK_SECRET_LIVE || process.env.STRIPE_WEBHOOK_SECRET || '',
   stripePriceId: process.env.STRIPE_PRICE_ID,
   currency: process.env.CURRENCY || 'mad',
   logLevel: process.env.LOG_LEVEL || 'info',
@@ -25,11 +26,18 @@ export const env = {
   piiExportRatePerDay: parseInt(process.env.PII_EXPORT_RATE_PER_DAY || '3', 10),
   prismaEnginesMirror: process.env.PRISMA_ENGINES_MIRROR || 'https://binaries.prisma.sh/all',
   prismaEnginesChecksumIgnore: process.env.PRISMA_ENGINES_CHECKSUM_IGNORE === 'true',
-  stripeIdentityWebhookSecret: process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
+  stripeIdentityWebhookSecret:
+    process.env.STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE ||
+    process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
   adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || '',
   trustProxy: process.env.TRUST_PROXY === 'true',
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   cookieSameSite: (process.env.COOKIE_SAMESITE || 'lax') as 'lax' | 'strict' | 'none',
+  cookieDomain: process.env.COOKIE_DOMAIN || '',
+  corsOrigins: (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v),
   smsQuietStart: process.env.SMS_QUIET_START || '21:00',
   smsQuietEnd: process.env.SMS_QUIET_END || '08:00',
   smsMaxRetries: parseInt(process.env.SMS_MAX_RETRIES || '3', 10),
@@ -70,3 +78,58 @@ export const env = {
   dbDialect: process.env.DB_DIALECT || 'sqlite',
   pgUrl: process.env.PG_URL || '',
 };
+
+export function validateEnv() {
+  if (process.env.NODE_ENV !== 'production') return;
+  const missing: string[] = [];
+
+  if (process.env.FORCE_ONLINE !== 'true') missing.push('FORCE_ONLINE');
+  if (process.env.OFFLINE_MODE !== 'false') missing.push('OFFLINE_MODE');
+  if (process.env.PRODUCTION_OFFLINE_ALLOWED !== 'false')
+    missing.push('PRODUCTION_OFFLINE_ALLOWED');
+
+  const check = (key: string, valid = true) => {
+    if (!process.env[key] || !valid) missing.push(key);
+  };
+
+  check('JWT_SECRET');
+  check('FRONTEND_URL', process.env.FRONTEND_URL !== '*');
+  const origins = env.corsOrigins;
+  if (!origins.length || origins.some((o) => o === '*' || o === ''))
+    missing.push('CORS_ORIGINS');
+  check('COOKIE_DOMAIN');
+
+  check('STRIPE_SECRET_KEY_LIVE', !!env.stripeSecretKey);
+  check('STRIPE_WEBHOOK_SECRET_LIVE', !!env.stripeWebhookSecret);
+  check('STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE', !!env.stripeIdentityWebhookSecret);
+  check('METRICS_TOKEN');
+
+  if (env.emailEnabled) {
+    ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS'].forEach((k) =>
+      check(k)
+    );
+  }
+  if (env.dbDialect === 'postgres') {
+    check('DATABASE_URL');
+  }
+  if (!env.mockRedis) {
+    check('REDIS_URL');
+  }
+  if (env.mockEmail) missing.push('MOCK_EMAIL');
+  if (env.mockSms) missing.push('MOCK_SMS');
+  if (env.mockRedis) missing.push('MOCK_REDIS');
+  if (env.mockStripe) missing.push('MOCK_STRIPE');
+  if (process.env.DEMO_ENABLE === 'true') missing.push('DEMO_ENABLE');
+  if (!env.cookieSecure || !['lax', 'strict'].includes(env.cookieSameSite)) {
+    missing.push('COOKIE_SECURE/SAMESITE');
+  }
+
+  if (missing.length) {
+    console.error('Missing env vars: ' + missing.join(', '));
+    process.exit(1);
+  }
+}
+
+if (process.env.NODE_ENV === 'production') {
+  validateEnv();
+}

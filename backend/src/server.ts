@@ -38,10 +38,13 @@ import { cacheControl } from './middlewares/cacheControl';
 import { setupMetrics, metricsRequestTimer } from './metrics';
 import { getCacheStatus, stopCache } from './utils/cache';
 
+let dbConnected = false;
+
 if (dbAvailable) {
   prisma
     .$connect()
     .then(() => {
+      dbConnected = true;
       logger.info('DB connected');
     })
     .catch((err: any) => {
@@ -109,6 +112,11 @@ if (process.env.NODE_ENV !== 'test' && dbAvailable) {
 app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
 app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
 
+logger.info('WEBHOOKS_READY', {
+  stripeCheckout: !!env.stripeWebhookSecret,
+  stripeIdentity: !!env.stripeIdentityWebhookSecret,
+});
+
 setupMetrics(app);
 
 app.use(express.json());
@@ -133,7 +141,7 @@ app.use(
       scriptSrc: ["'self'", 'https://js.stripe.com'],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'", env.frontendUrl, 'https://api.stripe.com'],
+      connectSrc: ["'self'", ...env.corsOrigins, 'https://api.stripe.com'],
       frameSrc: ["'self'", 'https://js.stripe.com'],
       upgradeInsecureRequests: [],
     },
@@ -146,7 +154,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 app.use(
   cors({
-    origin: env.frontendUrl,
+    origin: env.corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: false,
   })
@@ -165,7 +173,15 @@ setTimeout(() => {
 }, env.healthReadyDelayMs);
 
 app.get('/health', (_req, res) => {
-  res.json({ up: true, cache: getCacheStatus() });
+  const cacheInfo = getCacheStatus();
+  res.json({
+    success: true,
+    data: {
+      cache: cacheInfo,
+      db: { connected: dbConnected },
+      redis: { connected: cacheInfo.driver === 'redis' },
+    },
+  });
 });
 
 app.get('/ready', (_req, res) => {
@@ -208,6 +224,21 @@ app.use(errorHandler);
 export { app };
 
 if (require.main === module) {
+  const cacheInfo = getCacheStatus();
+  logger.info('GO_LIVE_CHECKLIST', {
+    'env.forceOnline': env.forceOnline,
+    mocks: env.mockEmail || env.mockSms || env.mockRedis || env.mockStripe,
+    demo: process.env.DEMO_ENABLE === 'true',
+    'jwt.secret.set': !!env.jwtSecret,
+    'cors.restricted': env.corsOrigins.length > 0 && !env.corsOrigins.includes('*'),
+    'cookies.secure': env.cookieSecure && ['lax', 'strict'].includes(env.cookieSameSite),
+    'db.migrated': process.env.DB_MIGRATED === 'true',
+    'redis.driver': cacheInfo.driver,
+    'webhooks.checkout.signed': !!env.stripeWebhookSecret,
+    'webhooks.kyc.signed': !!env.stripeIdentityWebhookSecret,
+    'metrics.enabled': env.metricsEnabled,
+    'backups.enabled': env.backupEnabled,
+  });
   const srv = app.listen(env.port, () => {
     logger.info(`Server running on port ${env.port}`);
   });

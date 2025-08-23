@@ -86,3 +86,29 @@ export async function listAuditLogs(req: Request, res: Response, next: NextFunct
     next(err);
   }
 }
+
+export async function getWebhookStatus(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const stripe = await prisma.webhookEvent.findFirst({
+      where: { provider: 'stripe' },
+      orderBy: { processedAt: 'desc' },
+    });
+    const kyc = await prisma.webhookEvent.findFirst({
+      where: { provider: 'kyc' },
+      orderBy: { processedAt: 'desc' },
+    });
+    res.json({
+      success: true,
+      data: {
+        stripeCheckout: stripe
+          ? { id: stripe.eventId, type: stripe.type, timestamp: stripe.processedAt }
+          : null,
+        stripeIdentity: kyc
+          ? { id: kyc.eventId, type: kyc.type, timestamp: kyc.processedAt }
+          : null,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}

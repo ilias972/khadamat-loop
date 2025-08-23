@@ -10,15 +10,16 @@
 - Procédure de rotation: mettre à jour le secret dans l'outil distant puis dans l'environnement, redéployer.
 
 ## Sauvegarde / Restauration
-- Sauvegarde recommandée : quotidienne via `BACKUP_CRON_SCHEDULE` vers `BACKUP_DIR`.
-- Dump manuel : `npm run db:backup`.
+- Sauvegarde quotidienne conseillée via cron/PM2 : `npm run db:backup` puis `npm run db:backup:cleanup` selon `BACKUP_RETENTION_DAYS`.
+- Dump manuel : `npm run db:backup` puis `sha256sum <dump> > <dump>.sha256`.
 - Restauration :
-  - **SQLite** : `cp <dump>.db ./dev.db && npx prisma migrate deploy`.
-  - **Postgres** : `psql $PG_URL < <dump>.sql && npx prisma migrate deploy`.
+  - **SQLite** : `sha256sum -c <dump>.sha256` puis `cp <dump>.db ./dev.db && npx prisma migrate deploy`.
+  - **Postgres** : `sha256sum -c <dump>.sha256` puis `psql $PG_URL < <dump>.sql && npx prisma migrate deploy`.
 
 ### Plan & test de restauration
-- Générer un dump manuel : `npm run db:backup`.
+- Générer un dump manuel : `npm run db:backup` puis `sha256sum <dump> > <dump>.sha256`.
 - Purger les anciens dumps : `npm run db:backup:cleanup`.
+- Vérifier l'intégrité : `sha256sum -c <dump>.sha256` avant restauration.
 - Tester la restauration sur une base isolée puis lancer `npm run smoke:all` avant mise en prod.
 
 ## Rollback applicatif
