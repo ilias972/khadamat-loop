@@ -46,6 +46,11 @@
     "smoke:i18n": "node scripts/smoke/run.js scripts/smoke/i18n.js",
     "smoke:cache": "node scripts/smoke/run.js scripts/smoke/cache.smoke.ts",
     "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:metrics && npm run smoke:prefs && npm run smoke:subs && npm run smoke:i18n && npm run smoke:cache",
+    "online:payments": "node scripts/online/payments.check.js",
+    "online:kyc": "node scripts/online/kyc.check.js",
+    "online:all": "npm run online:payments && npm run online:kyc",
+    "online:all:local": "node scripts/env/load.js backend/.env.online.local -- npm run online:all",
+    "online:all:staging": "node scripts/env/load.js backend/.env.online.staging -- npm run online:all",
     "e2e:optionB": "bash scripts/e2e-optionB.sh",
     "prisma:version": "npx prisma --version",
     "prisma:generate": "npx prisma generate",
@@ -72,7 +77,7 @@
     "db:backup": "node scripts/db/backup.js",
     "db:backup:cleanup": "node scripts/db/cleanup.js",
     "audit:ci": "node scripts/audit-ci.js",
-    "ci:check": "node scripts/ci-check.js"
+    "ci:check": "node scripts/ci/check.js"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
