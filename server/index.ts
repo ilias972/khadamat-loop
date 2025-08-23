@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { bootstrapCache } from "./cache";
 
 const app = express();
 
@@ -41,6 +42,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  const cacheInfo = await bootstrapCache();
+  if (cacheInfo.kind === 'redis') {
+    log('Redis connected');
+  } else {
+    log(`Using in-memory cache (${cacheInfo.reason})`);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
