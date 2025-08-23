@@ -25,7 +25,8 @@
     "db:backup": "node scripts/db/backup.cjs",
     "db:backup:cleanup": "node scripts/db/cleanup.cjs",
     "ci:check": "node scripts/ci/check.cjs || exit 1",
-    "audit:ci": "node scripts/ci/audit.cjs"
+    "audit:ci": "node scripts/ci/audit.cjs",
+    "ops:verify": "node scripts/ops/verify.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
