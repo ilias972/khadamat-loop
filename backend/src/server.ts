@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
+import { Sentry } from './config/sentry';
 import authRoutes from './routes/auth';
 import subscriptionRoutes from './routes/subscriptions';
 import paymentRoutes from './routes/payments';
@@ -87,14 +88,10 @@ hardenForTests()
     if (dbAvailable) prisma.$disconnect();
   });
 
-if (process.env.SENTRY_DSN) {
-  (async () => {
-    const Sentry = await import('@sentry/node');
-    Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
-  })();
-}
-
 const app = express();
+if (Sentry) {
+  app.use(Sentry.Handlers.requestHandler());
+}
 app.set('etag', 'strong');
 try {
   const compression = require('compression');
@@ -219,6 +216,9 @@ app.use('/api/admin', ipAllowList(), authenticate, requireRole('admin'), require
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);
 
+if (Sentry) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 app.use(errorHandler);
 
 export { app };

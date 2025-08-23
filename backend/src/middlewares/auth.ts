@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Sentry } from '../config/sentry';
 
 export type UserRole = 'client' | 'provider' | 'admin';
 
@@ -31,6 +32,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
     const decoded = jwt.verify(token, secret) as JwtPayload;
     req.user = { id: decoded.id, role: decoded.role, mfa: decoded.mfa };
+    if (Sentry) {
+      Sentry.getCurrentHub().configureScope((scope: any) => {
+        scope.setUser({ id: decoded.id });
+      });
+    }
     next();
   } catch {
     return res.status(401).json({

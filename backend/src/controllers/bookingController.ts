@@ -5,6 +5,8 @@ import { notifyUser } from '../utils/notify';
 import { createSystemMessage } from '../utils/messages';
 import { sendBookingSMS } from '../services/smsEvents';
 import { sendBookingEmail } from '../services/emailEvents';
+import { dispatchNotification } from '../services/dispatchNotification';
+import { bookingsCreatedTotal } from '../metrics';
 
 const STATUS = {
   PENDING: 'PENDING',
@@ -57,6 +59,7 @@ export async function createBooking(req: Request, res: Response, next: NextFunct
     sendBookingSMS(providerId, 'BOOKING_REQUEST', booking.id).catch((err) => console.error(err));
     sendBookingEmail(providerId, 'BOOKING_REQUEST', booking.id).catch(() => {});
 
+    bookingsCreatedTotal?.inc();
     res.status(201).json({ success: true, data: { booking } });
   } catch (err) {
     next(err);
@@ -95,8 +98,11 @@ export async function confirmBooking(req: Request, res: Response, next: NextFunc
         { bookingId: b.id },
         tx
       );
-      await sendBookingSMS(b.clientId, 'BOOKING_CONFIRMED', b.id, tx);
-      await sendBookingEmail(b.clientId, 'BOOKING_CONFIRMED', b.id, tx);
+      await dispatchNotification({
+        event: 'booking.confirmed',
+        userId: b.clientId,
+        ctx: { day: b.scheduledDay, bookingId: b.id },
+      });
 
       return b;
     });

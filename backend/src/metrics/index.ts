@@ -14,6 +14,9 @@ export const registry = prom ? new prom.Registry() : null;
 
 let httpRequestsTotal: any;
 let httpRequestDurationMs: any;
+let bookingsCreatedTotal: any;
+let messagesSentTotal: any;
+let webhooksProcessedTotal: any;
 
 if (prom && env.metricsEnabled) {
   prom.collectDefaultMetrics({ register: registry });
@@ -28,6 +31,22 @@ if (prom && env.metricsEnabled) {
     help: 'Duration of HTTP requests in ms',
     labelNames: ['method', 'route', 'status'],
     buckets: env.metricsBucketsMs,
+    registers: [registry],
+  });
+  bookingsCreatedTotal = new prom.Counter({
+    name: 'bookings_created_total',
+    help: 'Total bookings created',
+    registers: [registry],
+  });
+  messagesSentTotal = new prom.Counter({
+    name: 'messages_sent_total',
+    help: 'Total messages sent',
+    registers: [registry],
+  });
+  webhooksProcessedTotal = new prom.Counter({
+    name: 'webhooks_processed_total',
+    help: 'Webhooks processed',
+    labelNames: ['provider', 'outcome'],
     registers: [registry],
   });
 }
@@ -60,4 +79,10 @@ export function setupMetrics(app: any) {
   });
 }
 
-export { httpRequestsTotal, httpRequestDurationMs };
+export {
+  httpRequestsTotal,
+  httpRequestDurationMs,
+  bookingsCreatedTotal,
+  messagesSentTotal,
+  webhooksProcessedTotal,
+};

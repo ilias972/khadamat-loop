@@ -6,6 +6,7 @@ import { logAction } from '../middlewares/audit';
 import { stripe } from '../config/stripe';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
+import { webhooksProcessedTotal } from '../metrics';
 
 function parseEvent(req: any) {
   const body = req.body;
@@ -55,6 +56,7 @@ export const kycWebhook = async (req: Request, res: Response) => {
       await prisma.webhookEvent.create({ data: { provider: 'kyc', eventId: event.id, type, status: 'processing' } });
     } catch {
       logger.warn('kyc webhook duplicate', { eventId: event.id });
+      webhooksProcessedTotal?.inc({ provider: 'kyc', outcome: 'replayed' });
       return res.json({ received: true });
     }
 
@@ -92,6 +94,7 @@ export const kycWebhook = async (req: Request, res: Response) => {
         where: { provider_eventId: { provider: 'kyc', eventId: event.id } },
         data: { status: 'processed', processedAt: new Date() },
       });
+      webhooksProcessedTotal?.inc({ provider: 'kyc', outcome: 'ok' });
       return res.json({ received: true });
     }
 
@@ -104,6 +107,7 @@ export const kycWebhook = async (req: Request, res: Response) => {
         where: { provider_eventId: { provider: 'kyc', eventId: event.id } },
         data: { status: 'processed', processedAt: new Date() },
       });
+      webhooksProcessedTotal?.inc({ provider: 'kyc', outcome: 'ok' });
       return res.json({ received: true });
     }
 
@@ -117,6 +121,7 @@ export const kycWebhook = async (req: Request, res: Response) => {
       where: { provider_eventId: { provider: 'kyc', eventId: (e as any)?.id || '' } },
       data: { status: 'failed', processedAt: new Date() },
     }).catch(() => {});
+    webhooksProcessedTotal?.inc({ provider: 'kyc', outcome: 'fail' });
     return res.status(400).json({ success: false, error: { code: 'WEBHOOK_ERROR', message: 'webhook_error', timestamp: new Date().toISOString() } });
   }
 };
