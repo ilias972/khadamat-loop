@@ -104,7 +104,7 @@ export async function searchServices(req: Request, res: Response, next: NextFunc
     const start = (params.page - 1) * params.limit;
     const paged = items.slice(start, start + params.limit);
     const result = { success: true, data: { items: paged, page: params.page, total: items.length } };
-    await cacheSet(cacheKey, JSON.stringify(result), 60);
+    await cacheSet(cacheKey, JSON.stringify(result), env.cacheTtlSearch);
     res.json(result);
   } catch (err) {
     next(err);
@@ -146,7 +146,7 @@ export async function suggestCities(req: Request, res: Response, next: NextFunct
       }));
 
     const result = { success: true, data: { items } };
-    await cacheSet(cacheKey, JSON.stringify(result), 120);
+    await cacheSet(cacheKey, JSON.stringify(result), env.cacheTtlSuggest);
     res.json(result);
   } catch (err) {
     next(err);
