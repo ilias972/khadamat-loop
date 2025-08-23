@@ -85,6 +85,13 @@ export const env = {
   mockSms: process.env.MOCK_SMS === 'true',
   mockRedis: process.env.MOCK_REDIS === 'true',
   mockStripe: process.env.MOCK_STRIPE === 'true',
+  dlqEnable: process.env.DLQ_ENABLE === 'true',
+  dlqMaxAttempts: parseInt(process.env.DLQ_MAX_ATTEMPTS || '7', 10),
+  dlqBaseDelaySeconds: parseInt(process.env.DLQ_BASE_DELAY_SECONDS || '60', 10),
+  dlqBackoffMultiplier: parseInt(process.env.DLQ_BACKOFF_MULTIPLIER || '5', 10),
+  dlqPollIntervalMs: parseInt(process.env.DLQ_POLL_INTERVAL_MS || '60000', 10),
+  dlqBatchSize: parseInt(process.env.DLQ_BATCH_SIZE || '25', 10),
+  alertsRulesPath: process.env.ALERTS_RULES_PATH || '',
   dbDialect: process.env.DB_DIALECT || 'sqlite',
   pgUrl: process.env.PG_URL || '',
 };

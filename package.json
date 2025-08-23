@@ -18,10 +18,14 @@
     "smoke:webhooks": "node scripts/smoke/webhooks.js",
     "smoke:search": "node scripts/smoke/search.js",
     "smoke:pii": "node scripts/smoke/pii.js",
-    "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii",
+    "smoke:dlq": "node scripts/smoke/dlq.smoke.cjs",
+    "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:dlq",
     "online:payments": "node scripts/online/payments.check.js",
     "online:kyc": "node scripts/online/kyc.check.js",
     "online:all": "npm run online:payments && npm run online:kyc",
+    "online:payments:staging": "node backend/scripts/env/load.js backend/.env.online.staging -- npm run online:payments",
+    "online:kyc:staging": "node backend/scripts/env/load.js backend/.env.online.staging -- npm run online:kyc",
+    "online:all:staging": "node backend/scripts/env/load.js backend/.env.online.staging -- npm run online:all",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx scripts/seed.ts",
@@ -29,7 +33,8 @@
     "db:backup:cleanup": "node scripts/db/cleanup.cjs",
     "ci:check": "node scripts/ci/check.cjs || exit 1",
     "audit:ci": "node scripts/ci/audit.cjs",
-    "ops:verify": "node scripts/ops/verify.js"
+    "ops:verify": "node scripts/ops/verify.js",
+    "postdeploy:staging:online": "npm run online:all:staging"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -2,6 +2,8 @@ import { prisma } from '../lib/prisma';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
 import { getOrCreateNotificationPrefs } from './notificationPrefs';
+import { enqueueSmsDLQ } from './dlq';
+import { smsDispatchTotal } from '../metrics';
 
 const ENABLED = (process.env.SMS_ENABLED ?? 'false').toLowerCase() === 'true';
 const PROVIDER = (process.env.SMS_PROVIDER ?? 'twilio').toLowerCase();
@@ -117,6 +119,7 @@ export async function sendSMS({
         where: { userId, bookingId: bookingId ?? null, type },
         data: { status: res.status, providerMessageId: res.providerMessageId },
       });
+      smsDispatchTotal?.inc({ outcome: 'ok' });
     } catch (err: any) {
       if (attempt + 1 < MAX_RETRIES) {
         logger.warn('sms send retry', { attempt: attempt + 1, error: String(err?.message || err) });
@@ -128,7 +131,9 @@ export async function sendSMS({
           where: { userId, bookingId: bookingId ?? null, type },
           data: { status: 'FAILED', errorMessage: String(err?.message || err) },
         });
+        smsDispatchTotal?.inc({ outcome: 'fail' });
         logger.error('sms send failed', { error: String(err?.message || err) });
+        await enqueueSmsDLQ(to, body, { userId, type, bookingId }, String(err?.message || err));
       }
     }
   };

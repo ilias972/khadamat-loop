@@ -1,0 +1,31 @@
+groups:
+  - name: api-alerts
+    rules:
+      - alert: APIHighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_ms_bucket[5m])) by (le, route)) > 750
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High p95 latency on {{ $labels.route }}
+      - alert: APIErrorsRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High 5xx rate
+      - alert: WebhookDLQBacklog
+        expr: dlq_webhooks_backlog > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Webhook DLQ backlog high
+      - alert: SmsDLQBacklog
+        expr: dlq_sms_backlog > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: SMS DLQ backlog high
