@@ -54,6 +54,7 @@
     "ops:spawn": "node scripts/ops/spawn-backend.js",
     "ops:kill": "node scripts/ops/kill-backend.js",
     "ops:csp-cors": "node scripts/ops/csp-cors.check.js",
+    "ops:av-selftest": "node scripts/ops/av-selftest.cjs",
 
     "online:payments": "node scripts/online/payments.check.js",
     "online:kyc": "node scripts/online/kyc.check.js",

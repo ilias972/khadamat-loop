@@ -5,10 +5,14 @@ import { dispatchNotification } from '../services/dispatchNotification';
 import { messagesSentTotal } from '../metrics';
 import { assertParticipant } from '../utils/ownership';
 import path from 'node:path';
+import fs from 'node:fs/promises';
 import { randomUUID } from 'crypto';
 import { UPLOAD_DIR } from '../utils/upload';
 import { normalizeUpload, persistNormalizedUpload } from '../upload/fileAdapter';
 import { logAction } from '../middlewares/audit';
+import { scanUpload, quarantineUpload } from '../services/antivirus';
+import crypto from 'node:crypto';
+import { logger } from '../config/logger';
 
 export async function getConversations(req: Request, res: Response, next: NextFunction) {
   try {
@@ -167,6 +171,38 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
           ua: req.headers['user-agent'],
         });
         return next({ status: 429, message: 'Storage quota exceeded' });
+      }
+    }
+
+    if (up) {
+      if (process.env.UPLOAD_ANTIVIRUS === 'true') {
+        const verdict = await scanUpload(up);
+        if (verdict === 'error') {
+          return res.status(503).json({ success: false, error: { code: 'AV_UNAVAILABLE' } });
+        }
+        if (verdict === 'infected') {
+          const quarantineDir = process.env.AV_QUARANTINE_DIR || './.quarantine';
+          const qPath = path.join(quarantineDir, `${Date.now()}-${randomUUID()}`);
+          let hash = '';
+          if (up.buffer) {
+            hash = crypto.createHash('sha256').update(up.buffer).digest('hex');
+          } else if (up.tempPath) {
+            const fileData = await fs.readFile(up.tempPath);
+            hash = crypto.createHash('sha256').update(fileData).digest('hex');
+          }
+          await quarantineUpload(up, qPath);
+          await logAction({
+            userId: senderId,
+            action: 'AV_DETECTED',
+            resource: 'message',
+            newValues: { hash, path: qPath.slice(-40), size: up.size },
+            ip: req.ip,
+            ua: req.headers['user-agent'],
+          });
+          return res.status(422).json({ success: false, error: { code: 'INFECTED_FILE' } });
+        }
+      } else {
+        logger.info({ event: 'AV_DISABLED' });
       }
     }
 
