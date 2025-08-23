@@ -1,27 +1,14 @@
-import { redis } from '../config/redis';
-import { logger } from '../config/logger';
-
-async function delPattern(pattern: string) {
-  if (redis) {
-    const keys = await redis.keys(pattern);
-    if (keys.length) {
-      await redis.del(keys);
-      logger.info('CACHE_INVALIDATED', { pattern, count: keys.length });
-    }
-  } else {
-    logger.info('CACHE_INVALIDATION_FALLBACK', { pattern });
-  }
-}
+import { cacheDelPattern } from '../utils/cache';
 
 export async function invalidateServiceCatalog() {
-  await delPattern('services:catalog:*');
+  await cacheDelPattern('services:catalog:*');
 }
 
 export async function invalidateSuggest() {
-  await delPattern('suggest:services:*');
-  await delPattern('suggest:cities:*');
+  await cacheDelPattern('suggest:services:*');
+  await cacheDelPattern('suggest:cities:*');
 }
 
 export async function invalidateSearchNear() {
-  await delPattern('search:services:*');
+  await cacheDelPattern('search:services:*');
 }
