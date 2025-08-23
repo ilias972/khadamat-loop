@@ -2,46 +2,59 @@ import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '../lib/prisma';
 import { ZodError } from 'zod';
 import { logger } from '../config/logger';
+import { env } from '../config/env';
+import { ERROR_MESSAGES } from '../i18n/errors';
 
 export function errorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
+  let status = err?.status || 500;
+  let code = err?.code as string | undefined;
   if (err instanceof ZodError) {
-    return res.status(400).json({
-      success: false,
-      error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Données invalides',
-        details: err.issues?.map((i) => ({ path: i.path, message: i.message })),
-        timestamp: new Date().toISOString(),
-      },
-    });
+    status = 400;
+    code = 'VALIDATION_ERROR';
   }
 
-  let status = err?.status || 500;
-  let message = err?.message || 'Internal Server Error';
+  if (!code) {
+    code =
+      status === 401
+        ? 'UNAUTH'
+        : status === 403
+        ? 'FORBIDDEN'
+        : status === 404
+        ? 'NOT_FOUND'
+        : status === 429
+        ? 'RATE_LIMITED'
+        : 'SERVER_ERROR';
+  }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case 'P2002':
         status = 409;
-        message = 'Unique constraint failed';
+        code = 'SERVER_ERROR';
         break;
       case 'P2025':
         status = 404;
-        message = 'Record not found';
+        code = 'NOT_FOUND';
         break;
       default:
         status = 400;
-        message = 'Database error';
+        code = 'SERVER_ERROR';
     }
   }
+
+  const langHeader = req.headers['accept-language'] || '';
+  const lang = String(langHeader).toLowerCase().startsWith('ar') ? 'ar' : env.i18nDefaultLang;
+  const msgTemplate = ERROR_MESSAGES[code] || ERROR_MESSAGES.SERVER_ERROR;
+  const message = msgTemplate[lang];
 
   logger.error(message, { id: req.id, status, stack: err?.stack });
   res.status(status).json({
     success: false,
     error: {
-      code: status,
+      code,
       message,
       timestamp: new Date().toISOString(),
+      requestId: req.id,
     },
   });
 }
