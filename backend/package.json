@@ -47,7 +47,7 @@
     "smoke:prefs": "node scripts/smoke/run.js scripts/smoke/notif_prefs.js",
     "smoke:subs": "node scripts/smoke/run.js scripts/smoke/subscriptions.js",
     "smoke:i18n": "node scripts/smoke/run.js scripts/smoke/i18n.js",
-    "smoke:cache": "node scripts/smoke/run.js scripts/smoke/cache.smoke.ts",
+    "smoke:cache": "node scripts/smoke/run-with-health.js scripts/smoke/cache.smoke.ts",
     "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:metrics && npm run smoke:prefs && npm run smoke:subs && npm run smoke:i18n && npm run smoke:cache",
     "ops:wait": "node scripts/ops/wait-backend.js",
     "ops:spawn": "node scripts/ops/spawn-backend.js",
@@ -86,7 +86,7 @@
     "db:backup:cleanup": "node scripts/db/cleanup.js",
     "audit:ci": "node scripts/audit-ci.js",
     "ci:check": "node scripts/ci/check.js",
-    "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run ci:check",
+    "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run ci:check && node scripts/env/load.js .env.online.local -- npm run ops:kill",
     "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run ci:check"
   },
   "dependencies": {

@@ -1,3 +1,5 @@
+require('./_health-gate');
+
 async function run() {
   if (process.env.METRICS_ENABLED !== 'true' || !process.env.METRICS_TOKEN) {
     console.log('SKIPPED metrics: metrics disabled');

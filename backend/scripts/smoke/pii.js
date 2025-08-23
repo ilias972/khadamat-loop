@@ -1,3 +1,5 @@
+require('./_health-gate');
+
 const token = process.env.SMOKE_TOKEN || '';
 
 async function run() {

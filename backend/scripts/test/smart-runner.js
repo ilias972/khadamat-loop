@@ -34,7 +34,11 @@ let prismaReady = true;
   const r = spawnSync('npm', ['run', s], { stdio: 'inherit' });
   if (r.status !== 0) prismaReady = false;
 });
-if (!prismaReady) {
+const disabledFlag = path.resolve(__dirname, '../../.tmp/prisma-disabled');
+if (fs.existsSync(disabledFlag)) {
+  prismaReady = false;
+  console.log('SKIPPED prisma (disabled flag)');
+} else if (!prismaReady) {
   console.log('SKIPPED prisma (offline or engine)');
 }
 

@@ -1,3 +1,5 @@
+require('./_health-gate');
+
 async function run() {
   try {
     const res = await fetch('http://localhost:3000/api/notifications', {
