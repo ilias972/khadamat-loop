@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 const {
   GO_LIVE_MAX_DLQ_WEBHOOKS = '5',
   GO_LIVE_MAX_DLQ_SMS = '5',
@@ -26,6 +28,12 @@ async function fetchJson(url, opts = {}) {
 }
 
 (async () => {
+  try {
+    execSync('node ../env/require.prod.cjs', { stdio: 'inherit' });
+  } catch (e) {
+    console.log('NO-GO');
+    process.exit(1);
+  }
   const failures = [];
 
   if (!ADMIN_BEARER_TOKEN) {
@@ -41,7 +49,7 @@ async function fetchJson(url, opts = {}) {
     const cors = process.env.CORS_ORIGINS || '';
     const corsOk = cors && !cors.split(',').some((v) => v.trim() === '*' || v.trim() === '');
     const cookieOk = process.env.COOKIE_SECURE === 'true';
-    const mocksOk = ['MOCK_EMAIL', 'MOCK_SMS', 'MOCK_REDIS', 'MOCK_STRIPE'].every((k) => process.env[k] !== 'true');
+    const mocksOk = ['MOCK_EMAIL', 'MOCK_SMS', 'MOCK_REDIS', 'MOCK_STRIPE', 'EMAIL_MOCK', 'SMS_MOCK'].every((k) => process.env[k] !== 'true');
     if (corsOk && cookieOk && mocksOk) log('env', 'PASS');
     else {
       log('env', 'FAIL', 'insecure CORS/cookie or mocks enabled');
@@ -50,6 +58,13 @@ async function fetchJson(url, opts = {}) {
   } catch (e) {
     log('env', 'FAIL', e.message);
     failures.push('env');
+  }
+
+  if (process.env.DEMO_ENABLE && process.env.DEMO_ENABLE !== 'false') {
+    log('demo_env', 'FAIL', 'DEMO_ENABLE must be false');
+    failures.push('demo_env');
+  } else {
+    log('demo_env', 'PASS');
   }
 
   // Step2: health probe
@@ -96,9 +111,8 @@ async function fetchJson(url, opts = {}) {
       const txt = text || '';
       const has =
         txt.includes('http_requests_total') &&
-        txt.includes('webhooks_processed_total') &&
-        txt.includes('sms_dispatch_total') &&
-        (txt.includes('cache_hits_total') || txt.includes('cache_misses_total'));
+        txt.includes('dlq_webhooks_backlog') &&
+        txt.includes('dlq_sms_backlog');
       if (has) log('metrics', 'PASS');
       else {
         log('metrics', 'FAIL', 'missing counters');
@@ -146,6 +160,8 @@ async function fetchJson(url, opts = {}) {
   }
 
   // Step6: webhooks status
+  console.log('Stripe webhook:', `${OPS_BACKEND_URL}/api/payments/webhook`);
+  console.log('KYC webhook:', `${OPS_BACKEND_URL}/api/kyc/webhook`);
   if (ADMIN_BEARER_TOKEN) {
     const { res: wRes, body: wBody, error: wErr } = await fetchJson(
       `${OPS_BACKEND_URL}/api/admin/webhooks/status?limit=5`,
@@ -163,14 +179,53 @@ async function fetchJson(url, opts = {}) {
         (data.recent || []).find(
           (e) => e.provider === prov && e.outcome === 'ok' && now - new Date(e.processedAt).getTime() < 24 * 3600 * 1000
         );
-      if (recent('stripe') && recent('kyc')) {
+      const rStripe = recent('stripe');
+      const rKyc = recent('kyc');
+      if (rStripe && rKyc) {
         log('webhooks', 'PASS');
       } else {
         log('webhooks', 'WARN', 'no recent ok events');
       }
+      if (rStripe) console.log(`WEBHOOKS_READY stripe ${rStripe.processedAt}`);
+      if (rKyc) console.log(`WEBHOOKS_READY kyc ${rKyc.processedAt}`);
     }
   } else {
     log('webhooks', 'SKIPPED', 'missing ADMIN_BEARER_TOKEN');
+  }
+
+  // Step7: demo users
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const count = await prisma.user.count({ where: { isDemo: true } }).catch(() => null);
+    await prisma.$disconnect();
+    if (count === null) log('demo', 'SKIPPED', 'query failed');
+    else if (count > 0) {
+      log('demo', 'FAIL', `count=${count}`);
+      failures.push('demo');
+    } else {
+      log('demo', 'PASS');
+    }
+  } catch (e) {
+    log('demo', 'SKIPPED', 'prisma missing');
+  }
+
+  // Step8: backup recency
+  try {
+    const dir = process.env.BACKUP_OUTPUT_DIR || process.env.BACKUP_DIR || '/var/backups/khadamat';
+    const files = fs.readdirSync(dir).filter((f) => f.startsWith('backup'));
+    if (!files.length) {
+      log('backup', 'WARN', 'no backups found');
+    } else {
+      const latest = files
+        .map((f) => ({ f, t: fs.statSync(path.join(dir, f)).mtimeMs }))
+        .sort((a, b) => b.t - a.t)[0];
+      const age = Date.now() - latest.t;
+      if (age > 24 * 3600 * 1000) log('backup', 'WARN', 'no recent backup');
+      else log('backup', 'PASS');
+    }
+  } catch (e) {
+    log('backup', 'SKIPPED', e.message);
   }
 
   if (failures.length) {
