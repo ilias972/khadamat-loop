@@ -41,3 +41,8 @@
 ## Post-déploiement
 - Après chaque déploiement en production, le pipeline doit appeler `npm run postdeploy:prod`.
 - Ce script exécute la vérification GO-LIVE et doit faire échouer le pipeline en cas de `NO-GO`.
+
+## Post-déploiement Staging
+1. `npm run tokens:get:staging` (définir `ADMIN_TOTP` ou `ADMIN_RECOVERY_CODE` si nécessaire)
+2. `npm run postdeploy:staging`
+3. `npm run postdeploy:staging:online`

@@ -3,7 +3,10 @@ const { fetchJson, logPass, logFail, logSkip, getAuthToken } = require('./util')
 (async () => {
   const name = 'payments.online';
   try {
-    const required = ['ONLINE_TESTS_ENABLE', 'BACKEND_BASE_URL', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'TEST_PROVIDER_EMAIL', 'TEST_PROVIDER_PASSWORD'];
+    const required = ['ONLINE_TESTS_ENABLE', 'BACKEND_BASE_URL', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET'];
+    if (!process.env.PROVIDER_BEARER_TOKEN) {
+      required.push('TEST_PROVIDER_EMAIL', 'TEST_PROVIDER_PASSWORD');
+    }
     const missing = required.filter((k) => !process.env[k]);
     if (missing.length || process.env.ONLINE_TESTS_ENABLE !== 'true') {
       logSkip(name, 'missing ' + missing.join(','));

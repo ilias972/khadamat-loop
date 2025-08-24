@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 const { execSync } = require('child_process');
-const { GO_LIVE_MAX_DLQ_WEBHOOKS = '5', GO_LIVE_MAX_DLQ_SMS = '5', GO_LIVE_MAX_HEALTH_LATENCY_MS = '800', GO_LIVE_REQUIRE_ALERTS_RULES = 'true', OPS_BACKEND_URL = 'http://localhost:3000', OPS_ADMIN_BEARER, METRICS_TOKEN } = process.env;
+const {
+  GO_LIVE_MAX_DLQ_WEBHOOKS = '5',
+  GO_LIVE_MAX_DLQ_SMS = '5',
+  GO_LIVE_MAX_HEALTH_LATENCY_MS = '800',
+  GO_LIVE_REQUIRE_ALERTS_RULES = 'true',
+  OPS_BACKEND_URL = 'http://localhost:3000',
+  ADMIN_BEARER_TOKEN,
+  METRICS_TOKEN,
+  ONLINE_TESTS_ENABLE,
+} = process.env;
 
 function log(step, status, msg) {
   console.log(`${status} ${step}${msg ? ': ' + msg : ''}`);
@@ -18,6 +27,16 @@ async function fetchJson(url, opts = {}) {
 
 (async () => {
   const failures = [];
+
+  const requireTokens = ONLINE_TESTS_ENABLE === 'true';
+  if (!ADMIN_BEARER_TOKEN) {
+    if (requireTokens) {
+      log('token', 'FAIL', 'missing ADMIN_BEARER_TOKEN');
+      failures.push('token');
+    } else {
+      log('token', 'WARN', 'missing ADMIN_BEARER_TOKEN');
+    }
+  }
 
   // Step1: env hardening
   try {
@@ -93,9 +112,9 @@ async function fetchJson(url, opts = {}) {
   }
 
   // Step4: DLQ stats
-  if (OPS_ADMIN_BEARER) {
+  if (ADMIN_BEARER_TOKEN) {
     const { res: dRes, body: dBody, error: dErr } = await fetchJson(`${OPS_BACKEND_URL}/api/admin/dlq/stats`, {
-      headers: { Authorization: OPS_ADMIN_BEARER },
+      headers: { Authorization: `Bearer ${ADMIN_BEARER_TOKEN}` },
     });
     if (dErr || !dRes || !dRes.ok) {
       log('dlq', 'FAIL', dErr ? dErr.message : `HTTP ${dRes?.status}`);
@@ -112,7 +131,7 @@ async function fetchJson(url, opts = {}) {
       }
     }
   } else {
-    log('dlq', 'SKIPPED', 'missing OPS_ADMIN_BEARER');
+    log('dlq', 'SKIPPED', 'missing ADMIN_BEARER_TOKEN');
   }
 
   // Step5: alerting rules
@@ -129,10 +148,13 @@ async function fetchJson(url, opts = {}) {
   }
 
   // Step6: webhooks status
-  if (OPS_ADMIN_BEARER) {
-    const { res: wRes, body: wBody, error: wErr } = await fetchJson(`${OPS_BACKEND_URL}/api/admin/webhooks/status?limit=5`, {
-      headers: { Authorization: OPS_ADMIN_BEARER },
-    });
+  if (ADMIN_BEARER_TOKEN) {
+    const { res: wRes, body: wBody, error: wErr } = await fetchJson(
+      `${OPS_BACKEND_URL}/api/admin/webhooks/status?limit=5`,
+      {
+        headers: { Authorization: `Bearer ${ADMIN_BEARER_TOKEN}` },
+      },
+    );
     if (wErr || !wRes || !wRes.ok) {
       log('webhooks', 'FAIL', wErr ? wErr.message : `HTTP ${wRes?.status}`);
       failures.push('webhooks');
@@ -150,7 +172,7 @@ async function fetchJson(url, opts = {}) {
       }
     }
   } else {
-    log('webhooks', 'SKIPPED', 'missing OPS_ADMIN_BEARER');
+    log('webhooks', 'SKIPPED', 'missing ADMIN_BEARER_TOKEN');
   }
 
   if (failures.length) {
