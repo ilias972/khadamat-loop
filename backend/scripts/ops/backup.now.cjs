@@ -6,6 +6,10 @@ const { spawnSync, execSync } = require('child_process');
 
 spawnSync('node', [path.join(__dirname, '../db/bootstrap.cjs')], { stdio: 'inherit' });
 
+if (process.env.BACKUP_ENABLE !== 'true') {
+  console.log('SKIPPED backup:disable');
+  process.exit(0);
+}
 const url = process.env.DATABASE_URL;
 if (!url) {
   console.log('SKIPPED no DATABASE_URL');

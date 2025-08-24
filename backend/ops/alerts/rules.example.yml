@@ -1,0 +1,31 @@
+groups:
+  - name: khadamat
+    rules:
+      - alert: High5xxRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: High 5xx rate
+      - alert: AntivirusDown
+        expr: av_reachable == 0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: Antivirus service down
+      - alert: DLQBacklogHigh
+        expr: dlq_webhooks_backlog > GO_LIVE_MAX_DLQ_WEBHOOKS or dlq_sms_backlog > GO_LIVE_MAX_DLQ_SMS
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: DLQ backlog high
+      - alert: HighLatencyP95
+        expr: http_request_duration_ms_p95 > GO_LIVE_MAX_HEALTH_LATENCY_MS
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: Latency p95 too high

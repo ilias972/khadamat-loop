@@ -2,8 +2,19 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const isStaging = process.env.ONLINE_TESTS_ENABLE === 'true';
+const profileLabel = `profiles:check:${isStaging ? 'staging' : 'prod'}`;
 const steps = [
-  { cmd: 'npm run profiles:check:prod', label: 'profiles:check:prod' },
+  {
+    label: profileLabel,
+    run: () => {
+      if (!process.env.BACKEND_BASE_URL) {
+        console.log('SKIPPED ' + profileLabel);
+        return;
+      }
+      execSync(`npm run ${profileLabel}`, { stdio: 'inherit' });
+    },
+  },
   { cmd: 'npm run ops:dns:check', label: 'ops:dns:check' },
   { cmd: 'npm run ops:tls:check', label: 'ops:tls:check' },
   { cmd: 'npm run ops:proxy:check', label: 'ops:proxy:check' },

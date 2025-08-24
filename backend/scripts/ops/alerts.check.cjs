@@ -7,7 +7,7 @@ if (GO_LIVE_REQUIRE_ALERTS_RULES !== 'true') {
   process.exit(0);
 }
 try {
-  const dir = path.resolve(__dirname, '../../../ops/alerts');
+  const dir = path.resolve(__dirname, '../../ops/alerts');
   const has = fs.existsSync(dir) && fs.readdirSync(dir).some((f) => f.endsWith('.yml'));
   if (has) {
     console.log('PASS alerts:rules');
