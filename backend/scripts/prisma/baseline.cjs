@@ -7,38 +7,61 @@ function run(cmd) {
   execSync(cmd, { stdio: 'inherit', shell: true });
 }
 
-try {
-  run('prisma doctor');
-} catch (e) {
-  console.error('prisma doctor failed:', e.message);
-}
+const root = path.resolve(__dirname, '..', '..');
 
-try {
-  run('prisma migrate dev --name baseline');
-  console.log('BASELINE: SKIPPED');
-  process.exit(0);
-} catch (e) {
-  // need baseline
-}
-
-const migDir = path.resolve(__dirname, '../../prisma/migrations/0000_baseline');
-try {
-  fs.mkdirSync(migDir, { recursive: true });
-  run('prisma migrate diff --from-empty --to-schema-datamodel --script > prisma/migrations/0000_baseline/migration.sql');
-  console.log('BASELINE: CREATED');
-} catch (e) {
-  console.error('baseline diff failed:', e.message);
-}
-
-try {
-  run('prisma migrate dev --name baseline');
-  console.log('BASELINE: APPLIED');
-} catch (e) {
-  try {
-    run('prisma db push');
-    console.log('BASELINE: APPLIED');
-  } catch (e2) {
-    console.error('baseline apply failed:', e2.message);
-    process.exit(1);
+function loadEnv() {
+  const candidates = ['.env', '.env.local'];
+  let loaded = false;
+  for (const file of candidates) {
+    const abs = path.join(root, file);
+    if (fs.existsSync(abs)) {
+      const content = fs.readFileSync(abs, 'utf8');
+      for (const line of content.split(/\r?\n/)) {
+        if (!line || line.trim().startsWith('#')) continue;
+        const eq = line.indexOf('=');
+        if (eq === -1) continue;
+        const key = line.slice(0, eq).trim();
+        const value = line.slice(eq + 1).trim();
+        if (process.env[key] === undefined || process.env[key] === '') {
+          process.env[key] = value;
+        }
+      }
+      console.log(`ENV LOADED FROM ${file}`);
+      loaded = true;
+      break;
+    }
   }
+  if (!loaded) console.log('ENV FALLBACK');
+}
+
+loadEnv();
+
+try {
+  run('prisma migrate status || prisma validate');
+} catch (e) {
+  console.error('prisma status failed:', e.message);
+}
+
+const baselineDir = path.join(root, 'prisma', 'migrations', '0000_baseline');
+if (fs.existsSync(baselineDir)) {
+  console.log('BASELINE: SKIPPED');
+} else {
+  try {
+    run('prisma migrate dev --name baseline');
+    console.log('BASELINE: APPLIED');
+  } catch (e) {
+    try {
+      run('prisma db push');
+      console.log('BASELINE: APPLIED');
+    } catch (e2) {
+      console.error('baseline apply failed:', e2.message);
+      process.exit(1);
+    }
+  }
+}
+
+try {
+  run('prisma generate');
+} catch (e) {
+  console.error('prisma generate failed:', e.message);
 }

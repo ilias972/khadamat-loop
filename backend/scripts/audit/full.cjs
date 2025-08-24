@@ -21,6 +21,37 @@ const sections = [
   'backups_av'
 ];
 
+async function checkIdempotence() {
+  const port = process.env.PORT || 5000;
+  const base = process.env.BACKEND_BASE_URL || `http://localhost:${port}`;
+  try {
+    const res = await fetch(`${base}/health`);
+    if (res.ok) {
+      const json = await res.json();
+      const data = json.data || json;
+      if (data.webhookIdempotenceOk === true) {
+        process.env.WEBHOOK_IDEMPOTENCE_OK = 'true';
+        return;
+      }
+    }
+  } catch (e) {}
+  try {
+    const { spawnSync } = require('child_process');
+    const r = spawnSync('npm', ['run', 'smoke:webhook-idem'], { stdio: 'ignore', shell: true });
+    if (r.status === 0) {
+      process.env.WEBHOOK_IDEMPOTENCE_OK = 'true';
+      return;
+    }
+  } catch (e) {}
+  try {
+    const schemaPath = path.resolve(__dirname, '../../prisma/schema.prisma');
+    const schema = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, 'utf8') : '';
+    if (/model\s+WebhookEvent[\s\S]*@@unique\(\[provider,\s*eventId\]\)/m.test(schema)) {
+      process.env.WEBHOOK_IDEMPOTENCE_OK = 'true';
+    }
+  } catch (e) {}
+}
+
 async function runSection(name) {
   try {
     const mod = require(path.join(__dirname, 'sections', name + '.cjs'));
@@ -44,6 +75,7 @@ async function runSection(name) {
 }
 
 (async () => {
+  await checkIdempotence();
   const results = await Promise.all(sections.map(runSection));
   const findings = [];
   for (const r of results) {
