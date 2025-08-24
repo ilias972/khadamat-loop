@@ -3,6 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const isStaging = process.env.ONLINE_TESTS_ENABLE === 'true';
+const allowSkips = process.env.GATE_ALLOW_SKIPS === 'true';
 const profileLabel = `profiles:check:${isStaging ? 'staging' : 'prod'}`;
 const steps = [
   {
@@ -10,9 +11,11 @@ const steps = [
     run: () => {
       if (!process.env.BACKEND_BASE_URL) {
         console.log('SKIPPED ' + profileLabel);
-        return;
+        return true;
       }
-      execSync(`npm run ${profileLabel}`, { stdio: 'inherit' });
+      const output = execSync(`npm run ${profileLabel}`, { encoding: 'utf8' });
+      process.stdout.write(output);
+      return output.includes('SKIPPED');
     },
   },
   { cmd: 'npm run ops:dns:check', label: 'ops:dns:check' },
@@ -28,10 +31,12 @@ const steps = [
         const recent = files.some(f => Date.now() - fs.statSync(path.join(dir, f)).mtimeMs < 24*3600*1000);
         if (recent) {
           console.log('SKIPPED ops:backup:now recent');
-          return;
+          return true;
         }
       } catch (e) {}
-      execSync('npm run ops:backup:now', { stdio: 'inherit' });
+      const output = execSync('npm run ops:backup:now', { encoding: 'utf8' });
+      process.stdout.write(output);
+      return output.includes('SKIPPED');
     }
   },
   { cmd: 'npm run ops:restore:dryrun', label: 'ops:restore:dryrun' },
@@ -40,8 +45,18 @@ const steps = [
 ];
 for (const step of steps) {
   try {
-    if (step.cmd) execSync(step.cmd, { stdio: 'inherit' });
-    else if (step.run) step.run();
+    let skipped = false;
+    if (step.cmd) {
+      const out = execSync(step.cmd, { encoding: 'utf8' });
+      process.stdout.write(out);
+      if (out.includes('SKIPPED')) skipped = true;
+    } else if (step.run) {
+      skipped = step.run() === true;
+    }
+    if (skipped && !allowSkips) {
+      console.log(`NO-GO ${(step.label || step.cmd)} SKIPPED (staging must be fully configured)`);
+      process.exit(1);
+    }
   } catch (e) {
     console.log('NO-GO ' + (step.label || step.cmd));
     process.exit(1);

@@ -1,8 +1,18 @@
 #!/usr/bin/env node
-const { BACKEND_BASE_URL = 'https://api.khadamat.ma', ADMIN_BEARER_TOKEN } = process.env;
-if (!ADMIN_BEARER_TOKEN) {
-  console.log('SKIPPED webhooks');
-  process.exit(0);
+const {
+  BACKEND_BASE_URL = 'https://api.khadamat.ma',
+  ADMIN_BEARER_TOKEN,
+  PROVIDER_BEARER_TOKEN,
+  GATE_ALLOW_SKIPS = 'false',
+} = process.env;
+const allowSkips = GATE_ALLOW_SKIPS === 'true';
+if (!ADMIN_BEARER_TOKEN || !PROVIDER_BEARER_TOKEN) {
+  if (allowSkips) {
+    console.log('SKIPPED webhooks missing tokens');
+    process.exit(0);
+  }
+  console.log('FAIL webhooks: missing tokens: run npm --prefix backend run tokens:get:staging.');
+  process.exit(1);
 }
 (async () => {
   try {
@@ -33,6 +43,11 @@ if (!ADMIN_BEARER_TOKEN) {
     }
     console.log(`PASS webhooks p95=${p95}`);
   } catch (e) {
-    console.log('SKIPPED webhooks:' + e.message);
+    if (allowSkips) {
+      console.log('SKIPPED webhooks:' + e.message);
+    } else {
+      console.log('FAIL webhooks:' + e.message);
+      process.exit(1);
+    }
   }
 })();
