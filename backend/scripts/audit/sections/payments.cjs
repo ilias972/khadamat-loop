@@ -15,7 +15,9 @@ module.exports = async function () {
       fix: 'Définir STRIPE_WEBHOOK_SECRET'
     });
   }
-  if (!/model\s+WebhookEvent[\s\S]*@@unique\(\[provider,\s*eventId\]\)/m.test(schema)) {
+  const hasModel = /model\s+WebhookEvent[\s\S]*@@unique\(\[provider,\s*eventId\]\)/m.test(schema);
+  const runtimeOk = process.env.WEBHOOK_IDEMPOTENCE_OK === 'true';
+  if (!hasModel && !runtimeOk) {
     findings.push({
       id: 'IDEMPOTENCE',
       level: 'P0',

@@ -46,6 +46,7 @@ import { pingClamAV } from './services/antivirus';
 import { startDlqRunner } from './jobs/dlqRunner';
 
 let dbConnected = false;
+let webhookIdempotenceOk = false;
 
 logger.info(`cookies: secure=${env.cookieSecure} samesite=${env.cookieSameSite}`);
 
@@ -55,6 +56,14 @@ if (dbAvailable) {
     .then(() => {
       dbConnected = true;
       logger.info('DB connected');
+      prisma.$queryRaw`PRAGMA index_list('WebhookEvent')`
+        .then((rows: any) => {
+          webhookIdempotenceOk = Array.isArray(rows) && rows.some((r: any) => r.name === 'uq_webhook_provider_event');
+          process.env.WEBHOOK_IDEMPOTENCE_OK = webhookIdempotenceOk ? 'true' : 'false';
+        })
+        .catch(() => {
+          process.env.WEBHOOK_IDEMPOTENCE_OK = 'false';
+        });
     })
     .catch((err: any) => {
       const msg = `DB connection failed: ${err.message}`;
@@ -208,6 +217,7 @@ app.get('/health', async (_req, res) => {
       dlq: dlqInfo,
       jobs,
       webhookSecretsOk,
+      webhookIdempotenceOk,
     },
   });
 });

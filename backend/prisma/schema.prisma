@@ -9,6 +9,7 @@ generator client {
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -398,9 +399,9 @@ model RefreshToken {
 
 model WebhookEvent {
   id          Int      @id @default(autoincrement())
-  provider    String
+  provider    String   // 'stripe' | 'stripe_identity' | ...
   eventId     String
-  status      String   @default("PROCESSED")
+  status      String   @default("RECEIVED") // RECEIVED | PROCESSED | FAILED
   createdAt   DateTime @default(now())
   processedAt DateTime?
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
 import { prisma, dbAvailable } from '../lib/prisma';
-import { paymentsRepo } from '../repositories/paymentsRepo';
+import { Prisma } from '@prisma/client';
 import { stripe } from '../config/stripe';
 import { env } from '../config/env';
 import { addMonths } from '../utils/date';
@@ -82,71 +82,121 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: 'Invalid signature', timestamp: new Date().toISOString() },
     });
   }
-  if (dbAvailable) {
-    const existing = await prisma.webhookEvent.findUnique({
-      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
-    });
-    if (existing) {
-      logger.warn('stripe webhook duplicate', { eventId: event.id });
-      webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'replayed' });
-      return res.json({ received: true });
-    }
-  } else {
+  if (!dbAvailable) {
     logger.warn('SKIP idempotence (db disabled)');
+    try {
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as any;
+        const subscriptionId = session.metadata?.subscriptionId;
+        if (subscriptionId) {
+          const id = parseInt(subscriptionId, 10);
+          const subscription = await prisma.subscription.findUnique({ where: { id } });
+          if (subscription && subscription.status !== 'ACTIVE') {
+            const startDate = new Date();
+            const endDate = addMonths(startDate, 12);
+            const sub = await prisma.subscription.update({
+              where: { id },
+              data: { status: 'ACTIVE', startAt: startDate, endAt: endDate, externalId: session.id },
+            });
+            await prisma.subscription.updateMany({
+              where: { userId: subscription.userId, status: 'PENDING', id: { not: sub.id } },
+              data: { status: 'CANCELED' },
+            });
+            await createNotification(
+              subscription.userId,
+              'SUBSCRIPTION_ACTIVATED',
+              'Abonnement Club Pro activé',
+              'Votre abonnement est maintenant actif.',
+              undefined,
+              prisma
+            );
+            await sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED', prisma);
+            await sendSubscriptionEmail(subscription.userId, 'SUBSCRIPTION_ACTIVATED', prisma);
+          }
+        }
+      } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+        const sub = event.data.object as any;
+        const stripeId = sub.id as string;
+        const autoRenew = !sub.cancel_at_period_end;
+        await prisma.subscription.updateMany({
+          where: { stripeId },
+          data: { autoRenew, status: event.type === 'customer.subscription.deleted' ? 'EXPIRED' : undefined },
+        });
+      }
+      logger.info('stripe webhook processed', { eventId: event.id });
+      webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'ok' });
+    } catch (err: any) {
+      logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
+      webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'fail' });
+      await enqueueWebhookDLQ('stripe', rawPayload || event, String(err.message)).catch(() => {});
+    }
+    return res.json({ received: true });
   }
 
   try {
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as any;
-      const subscriptionId = session.metadata?.subscriptionId;
-      if (subscriptionId) {
-        const id = parseInt(subscriptionId, 10);
-        const subscription = await prisma.subscription.findUnique({ where: { id } });
-        if (subscription && subscription.status !== 'ACTIVE') {
-          const startDate = new Date();
-          const endDate = addMonths(startDate, 12);
-          await paymentsRepo.markSubscriptionActiveAtomic(
-            subscription.userId,
-            session.id,
-            { subscriptionId: id, startDate, endDate },
-            async (tx) => {
-              await createNotification(
-                subscription.userId,
-                'SUBSCRIPTION_ACTIVATED',
-                'Abonnement Club Pro activé',
-                'Votre abonnement est maintenant actif.',
-                undefined,
-                tx
-              );
-              await sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
-              await sendSubscriptionEmail(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
-            }
-          );
-        }
-      }
-    } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
-      const sub = event.data.object as any;
-      const stripeId = sub.id as string;
-      const autoRenew = !sub.cancel_at_period_end;
-      await prisma.subscription.updateMany({ where: { stripeId }, data: { autoRenew, status: event.type === 'customer.subscription.deleted' ? 'EXPIRED' : undefined } });
-    }
+    await prisma.$transaction(async (tx) => {
+      await tx.webhookEvent.create({ data: { provider: 'stripe', eventId: event.id, status: 'RECEIVED' } });
 
-    if (dbAvailable) {
-      await prisma.webhookEvent.create({
-        data: { provider: 'stripe', eventId: event.id, status: 'PROCESSED', processedAt: new Date() },
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as any;
+        const subscriptionId = session.metadata?.subscriptionId;
+        if (subscriptionId) {
+          const id = parseInt(subscriptionId, 10);
+          const subscription = await tx.subscription.findUnique({ where: { id } });
+          if (subscription && subscription.status !== 'ACTIVE') {
+            const startDate = new Date();
+            const endDate = addMonths(startDate, 12);
+            const sub = await tx.subscription.update({
+              where: { id },
+              data: { status: 'ACTIVE', startAt: startDate, endAt: endDate, externalId: session.id },
+            });
+            await tx.subscription.updateMany({
+              where: { userId: subscription.userId, status: 'PENDING', id: { not: sub.id } },
+              data: { status: 'CANCELED' },
+            });
+            await createNotification(
+              subscription.userId,
+              'SUBSCRIPTION_ACTIVATED',
+              'Abonnement Club Pro activé',
+              'Votre abonnement est maintenant actif.',
+              undefined,
+              tx
+            );
+            await sendSubscriptionSMS(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
+            await sendSubscriptionEmail(subscription.userId, 'SUBSCRIPTION_ACTIVATED', tx);
+          }
+        }
+      } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+        const sub = event.data.object as any;
+        const stripeId = sub.id as string;
+        const autoRenew = !sub.cancel_at_period_end;
+        await tx.subscription.updateMany({
+          where: { stripeId },
+          data: { autoRenew, status: event.type === 'customer.subscription.deleted' ? 'EXPIRED' : undefined },
+        });
+      }
+
+      await tx.webhookEvent.update({
+        where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
+        data: { status: 'PROCESSED', processedAt: new Date() },
       });
-    }
+    });
     logger.info('stripe webhook processed', { eventId: event.id });
     webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'ok' });
     return res.json({ received: true });
   } catch (err: any) {
-    if (dbAvailable) {
-      await prisma.webhookEvent
-        .create({
-          data: { provider: 'stripe', eventId: event.id, status: 'FAILED', processedAt: new Date() },
-        })
-        .catch(() => {});
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      logger.warn('stripe webhook duplicate', { eventId: event.id });
+      webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'replayed' });
+      return res.json({ received: true });
     }
+    await prisma.webhookEvent
+      .upsert({
+        where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
+        create: { provider: 'stripe', eventId: event.id, status: 'FAILED', processedAt: new Date() },
+        update: { status: 'FAILED', processedAt: new Date() },
+      })
+      .catch(() => {});
     logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
     webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'fail' });
     await enqueueWebhookDLQ('stripe', rawPayload || event, String(err.message)).catch(() => {});
