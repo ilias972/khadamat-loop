@@ -48,6 +48,10 @@ if (missing.length) {
   console.log('FAIL missing: ' + missing.join(','));
   process.exit(1);
 }
+if (!process.env.ADMIN_IP_ALLOWLIST || !process.env.ADMIN_IP_ALLOWLIST.trim()) {
+  console.log('FAIL admin:ip-allowlist');
+  process.exit(1);
+}
 if (process.env.TRUST_PROXY !== 'true') {
   console.log('FAIL trust:proxy');
   process.exit(1);
@@ -61,7 +65,7 @@ if (process.env.COOKIE_SECURE !== 'true') {
   process.exit(1);
 }
 const hsts = parseInt(process.env.HSTS_MAX_AGE, 10);
-if (!Number.isInteger(hsts) || hsts <= 0) {
+if (!Number.isInteger(hsts) || hsts < 31536000) {
   console.log('FAIL hsts:max-age');
   process.exit(1);
 }
