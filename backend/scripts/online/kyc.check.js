@@ -1,12 +1,9 @@
-const { fetchJson, logPass, logFail, logSkip, getAuthToken } = require('./util');
+const { fetchJson, logPass, logFail, logSkip, getProviderAuth } = require('./util');
 
 (async () => {
   const name = 'kyc.online';
   try {
-    const required = ['ONLINE_TESTS_ENABLE', 'BACKEND_BASE_URL', 'STRIPE_IDENTITY_WEBHOOK_SECRET'];
-    if (!process.env.PROVIDER_BEARER_TOKEN) {
-      required.push('TEST_PROVIDER_EMAIL', 'TEST_PROVIDER_PASSWORD');
-    }
+    const required = ['ONLINE_TESTS_ENABLE', 'BACKEND_BASE_URL', 'STRIPE_IDENTITY_WEBHOOK_SECRET', 'PROVIDER_BEARER_TOKEN'];
     const missing = required.filter((k) => !process.env[k]);
     if (missing.length || process.env.ONLINE_TESTS_ENABLE !== 'true') {
       logSkip(name, 'missing ' + missing.join(','));
@@ -30,8 +27,11 @@ const { fetchJson, logPass, logFail, logSkip, getAuthToken } = require('./util')
       return;
     }
 
-    const auth = await getAuthToken(process.env.TEST_PROVIDER_EMAIL, process.env.TEST_PROVIDER_PASSWORD);
-    if (!auth) throw new Error('auth failed');
+    const auth = getProviderAuth();
+    if (!auth) {
+      logSkip(name, 'missing PROVIDER_BEARER_TOKEN');
+      return;
+    }
 
     let Stripe;
     try {

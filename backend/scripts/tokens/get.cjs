@@ -3,6 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 const base = process.env.BACKEND_BASE_URL;
+if (!base) {
+  console.log('SKIPPED: env file not loaded.');
+  process.exit(0);
+}
+
 const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
 const providerEmail = process.env.TEST_PROVIDER_EMAIL;
@@ -27,36 +32,36 @@ async function postJson(url, body, token) {
 }
 
 async function getProviderToken() {
-  if (!base || !providerEmail || !providerPassword) {
-    return { token: null, reason: 'missing env' };
+  if (!providerEmail || !providerPassword) {
+    return { status: 'SKIPPED', reason: 'missing env' };
   }
   const { res, json, error } = await postJson(`${base}/api/auth/login`, {
     email: providerEmail,
     password: providerPassword,
   });
   if (error || !res || !res.ok || !json?.data?.accessToken) {
-    return { token: null, reason: 'login failed' };
+    return { status: 'FAIL', reason: 'login failed' };
   }
-  return { token: json.data.accessToken };
+  return { status: 'PASS', token: json.data.accessToken };
 }
 
 async function getAdminToken() {
-  if (!base || !adminEmail || !adminPassword) {
-    return { token: null, reason: 'missing env' };
+  if (!adminEmail || !adminPassword) {
+    return { status: 'SKIPPED', reason: 'missing env' };
   }
   const { res, json, error } = await postJson(`${base}/api/auth/login`, {
     email: adminEmail,
     password: adminPassword,
   });
   if (error || !res || !res.ok || !json) {
-    return { token: null, reason: 'login failed' };
+    return { status: 'FAIL', reason: 'login failed' };
   }
   if (json?.data?.mfaRequired) {
     const pending = json.data.pendingToken;
     const totp = process.env.ADMIN_TOTP;
     const recovery = process.env.ADMIN_RECOVERY_CODE;
     if (!totp && !recovery) {
-      return { token: null, reason: 'missing mfa' };
+      return { status: 'SKIPPED', reason: 'MFA code missing' };
     }
     const body = totp ? { code: totp } : { recoveryCode: recovery };
     const { res: vRes, json: vJson, error: vErr } = await postJson(
@@ -65,14 +70,14 @@ async function getAdminToken() {
       pending ? `Bearer ${pending}` : undefined,
     );
     if (vErr || !vRes || !vRes.ok || !vJson?.data?.accessToken) {
-      return { token: null, reason: 'mfa failed' };
+      return { status: 'FAIL', reason: 'mfa failed' };
     }
-    return { token: vJson.data.accessToken };
+    return { status: 'PASS', token: vJson.data.accessToken };
   }
   if (json?.data?.accessToken) {
-    return { token: json.data.accessToken };
+    return { status: 'PASS', token: json.data.accessToken };
   }
-  return { token: null, reason: 'login failed' };
+  return { status: 'FAIL', reason: 'login failed' };
 }
 
 (async () => {
@@ -86,6 +91,6 @@ async function getAdminToken() {
       fs.writeFileSync(outFile, lines.join('\n') + '\n');
     } catch {}
   }
-  console.log(admin.token ? 'PASS token:admin' : `SKIPPED token:admin${admin.reason ? ' ' + admin.reason : ''}`);
-  console.log(provider.token ? 'PASS token:provider' : `SKIPPED token:provider${provider.reason ? ' ' + provider.reason : ''}`);
+  console.log(`${provider.status} token:provider${provider.reason ? ' ' + provider.reason : ''}`);
+  console.log(`${admin.status} token:admin${admin.reason ? ' ' + admin.reason : ''}`);
 })();

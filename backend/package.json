@@ -50,22 +50,19 @@
     "smoke:cache": "node scripts/smoke/cache.invalidate.smoke.cjs",
     "smoke:upload": "node scripts/smoke/upload.normalize.smoke.cjs",
     "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:metrics && npm run smoke:prefs && npm run smoke:subs && npm run smoke:i18n && npm run smoke:cache || true",
-  "ops:wait": "node scripts/ops/wait-backend.js",
-  "ops:verify": "node ../scripts/ops/verify.js",
-  "ops:spawn": "node scripts/ops/spawn-backend.js",
-  "ops:kill": "node scripts/ops/kill-backend.js",
+    "ops:wait": "node scripts/ops/wait-backend.js",
+    "ops:verify": "node ../scripts/ops/verify.js",
+    "ops:spawn": "node scripts/ops/spawn-backend.js",
+    "ops:kill": "node scripts/ops/kill-backend.js",
     "ops:csp-cors": "node scripts/ops/csp-cors.check.js",
     "ops:av-selftest": "node scripts/ops/av-selftest.cjs",
     "ops:go-live": "node scripts/ops/go-live.cjs",
-
     "online:payments": "node scripts/online/payments.check.js",
     "online:kyc": "node scripts/online/kyc.check.js",
     "online:all": "npm run online:payments && npm run online:kyc",
     "online:all:local": "node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run online:all && node scripts/env/load.js .env.online.local -- npm run ops:kill",
-
     "tokens:get:staging": "node scripts/env/load.js backend/.env.online.staging -- node scripts/tokens/get.cjs",
     "tokens:show:staging": "node -e \"console.log(process.env.ADMIN_BEARER_TOKEN, process.env.PROVIDER_BEARER_TOKEN)\"",
-
     "online:payments:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:payments",
     "online:kyc:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:kyc",
     "online:all:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:all",
@@ -91,7 +88,7 @@
     "setup:windows": "npm run registry:public && npm ci || npm install",
     "setup:mac": "npm run registry:public && npm ci || npm install",
     "doctor": "npm run registry:show && node scripts/check-prisma.js",
-    "tests:setup": "npm run registry:auto && (npm ci || npm install) && npm run test:prepare || (echo \"[tests] install bloquée → exécutez OFFLINE_SKIP_TESTS=true npm test\" && exit 0)",
+    "tests:setup": "npm run registry:auto && (npm ci || npm install) && npm run test:prepare || (echo \"[tests] install bloqu\u00e9e \u2192 ex\u00e9cutez OFFLINE_SKIP_TESTS=true npm test\" && exit 0)",
     "tests:online": "node -e \"process.env.OFFLINE_SKIP_TESTS='false'; process.env.FORCE_ONLINE='true'; require('child_process').spawn('npm', ['run','test'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
     "compose:up": "docker compose up --build",
     "compose:down": "docker compose down -v",
@@ -102,7 +99,10 @@
     "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run ci:check && node scripts/env/load.js .env.online.local -- npm run ops:kill",
     "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run ci:check",
     "ci:predeploy": "npm run audit:ci && npm run ops:go-live",
-    "audit:schedule": "node scripts/ci/audit-schedule.cjs"
+    "audit:schedule": "node scripts/ci/audit-schedule.cjs",
+    "profiles:init:staging": "node -e \"const fs=require('fs');const p='backend/.env.online.staging';if(fs.existsSync(p)){console.log('SKIPPED: '+p+' exists');process.exit(0)}fs.copyFileSync('backend/.env.online.staging.example',p);console.log('CREATED '+p)\"",
+    "profiles:check:staging": "node scripts/env/load.js backend/.env.online.staging -- node scripts/env/require.cjs backend/.env.online.staging",
+    "tokens:get:staging:all": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- node scripts/tokens/get.cjs"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",

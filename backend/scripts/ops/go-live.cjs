@@ -28,14 +28,12 @@ async function fetchJson(url, opts = {}) {
 (async () => {
   const failures = [];
 
-  const requireTokens = ONLINE_TESTS_ENABLE === 'true';
   if (!ADMIN_BEARER_TOKEN) {
-    if (requireTokens) {
-      log('token', 'FAIL', 'missing ADMIN_BEARER_TOKEN');
-      failures.push('token');
-    } else {
-      log('token', 'WARN', 'missing ADMIN_BEARER_TOKEN');
+    if (ONLINE_TESTS_ENABLE === 'true') {
+      console.log('NO-GO: missing ADMIN_BEARER_TOKEN for admin endpoints.');
+      process.exit(1);
     }
+    log('token', 'WARN', 'missing ADMIN_BEARER_TOKEN');
   }
 
   // Step1: env hardening
