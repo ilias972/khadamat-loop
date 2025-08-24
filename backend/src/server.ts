@@ -47,6 +47,8 @@ import { startDlqRunner } from './jobs/dlqRunner';
 
 let dbConnected = false;
 
+logger.info(`cookies: secure=${env.cookieSecure} samesite=${env.cookieSameSite}`);
+
 if (dbAvailable) {
   prisma
     .$connect()
@@ -195,6 +197,7 @@ app.get('/health', async (_req, res) => {
     dlqInfo.smsBacklog = await prisma.smsDLQ.count().catch(() => 0);
   }
   const jobs = getJobsStatus();
+  const webhookSecretsOk = !!env.stripeWebhookSecret && !!env.stripeIdentityWebhookSecret;
   res.json({
     success: true,
     data: {
@@ -204,6 +207,7 @@ app.get('/health', async (_req, res) => {
       av: { enabled: avEnabled, reachable: avReachable },
       dlq: dlqInfo,
       jobs,
+      webhookSecretsOk,
     },
   });
 });

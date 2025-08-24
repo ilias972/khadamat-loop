@@ -158,7 +158,7 @@ export function validateEnv() {
   if (env.mockRedis) missing.push('MOCK_REDIS');
   if (env.mockStripe) missing.push('MOCK_STRIPE');
   if (process.env.DEMO_ENABLE === 'true') missing.push('DEMO_ENABLE');
-  if (!env.cookieSecure || !['lax', 'strict'].includes(env.cookieSameSite)) {
+  if (!env.cookieSecure || env.cookieSameSite !== 'strict') {
     missing.push('COOKIE_SECURE/SAMESITE');
   }
 

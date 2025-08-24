@@ -137,6 +137,8 @@
     "audit:full": "node scripts/env/load.js ./.env -- node scripts/audit/full.cjs",
     "audit:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- node scripts/audit/full.cjs --online",
     "remediate": "node scripts/remediate/run.cjs",
+    "profiles:dev:ensure": "node scripts/env/load.js ./.env -- node -e \"console.log('ENV OK')\"",
+    "webhooks:check:secrets": "node scripts/env/load.js ./.env -- node -e \"console.log('stripe:', !!process.env.STRIPE_WEBHOOK_SECRET, 'identity:', !!process.env.STRIPE_IDENTITY_WEBHOOK_SECRET)\"",
     "remediate:p0": "node scripts/remediate/run.cjs --level=P0",
     "remediate:p1": "node scripts/remediate/run.cjs --level=P1 --quick",
     "verify:postfix": "npm run audit:full && node scripts/audit/print-last.cjs"

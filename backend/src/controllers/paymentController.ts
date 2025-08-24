@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
-import { prisma } from '../lib/prisma';
+import { prisma, dbAvailable } from '../lib/prisma';
 import { paymentsRepo } from '../repositories/paymentsRepo';
 import { stripe } from '../config/stripe';
 import { env } from '../config/env';
@@ -82,15 +82,17 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: 'Invalid signature', timestamp: new Date().toISOString() },
     });
   }
-
-  try {
-    await prisma.webhookEvent.create({
-      data: { provider: 'stripe', eventId: event.id, type: event.type, status: 'processing' },
+  if (dbAvailable) {
+    const existing = await prisma.webhookEvent.findUnique({
+      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
     });
-  } catch {
-    logger.warn('stripe webhook duplicate', { eventId: event.id });
-    webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'replayed' });
-    return res.json({ received: true });
+    if (existing) {
+      logger.warn('stripe webhook duplicate', { eventId: event.id });
+      webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'replayed' });
+      return res.json({ received: true });
+    }
+  } else {
+    logger.warn('SKIP idempotence (db disabled)');
   }
 
   try {
@@ -129,18 +131,22 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       await prisma.subscription.updateMany({ where: { stripeId }, data: { autoRenew, status: event.type === 'customer.subscription.deleted' ? 'EXPIRED' : undefined } });
     }
 
-    await prisma.webhookEvent.update({
-      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
-      data: { status: 'processed', processedAt: new Date() },
-    });
+    if (dbAvailable) {
+      await prisma.webhookEvent.create({
+        data: { provider: 'stripe', eventId: event.id, status: 'PROCESSED', processedAt: new Date() },
+      });
+    }
     logger.info('stripe webhook processed', { eventId: event.id });
     webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'ok' });
     return res.json({ received: true });
   } catch (err: any) {
-    await prisma.webhookEvent.update({
-      where: { provider_eventId: { provider: 'stripe', eventId: event.id } },
-      data: { status: 'failed', processedAt: new Date() },
-    }).catch(() => {});
+    if (dbAvailable) {
+      await prisma.webhookEvent
+        .create({
+          data: { provider: 'stripe', eventId: event.id, status: 'FAILED', processedAt: new Date() },
+        })
+        .catch(() => {});
+    }
     logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
     webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'fail' });
     await enqueueWebhookDLQ('stripe', rawPayload || event, String(err.message)).catch(() => {});
