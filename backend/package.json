@@ -119,7 +119,7 @@
     "compose:down": "docker compose down -v",
     "db:backup": "node scripts/db/backup.js",
     "db:backup:cleanup": "node scripts/db/cleanup.js",
-    "audit:ci": "node scripts/audit-ci.js",
+    "audit:ci": "node scripts/env/load.js ./.env -- node scripts/audit/full.cjs --ci",
     "ci:check": "node scripts/ci/check.js",
     "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run ci:check && node scripts/env/load.js .env.online.local -- npm run ops:kill",
     "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run ci:check",
@@ -132,7 +132,10 @@
     "prisma:selfheal": "node scripts/prisma/selfheal.cjs",
     "env:prod": "node scripts/env/load.js backend/.env.production",
     "env:local": "node scripts/env/load.js backend/.env",
-    "db:bootstrap": "node scripts/env/load.js backend/.env.production -- node scripts/db/bootstrap.cjs --allow-bootstrap"
+    "db:bootstrap": "node scripts/env/load.js backend/.env.production -- node scripts/db/bootstrap.cjs --allow-bootstrap",
+    "audit:ci:legacy": "node scripts/audit-ci.js",
+    "audit:full": "node scripts/env/load.js ./.env -- node scripts/audit/full.cjs",
+    "audit:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- node scripts/audit/full.cjs --online"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",

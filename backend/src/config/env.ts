@@ -36,8 +36,9 @@ export const env = {
   stripeIdentityWebhookSecret:
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE ||
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
-  adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || '',
-  trustProxy: process.env.TRUST_PROXY === 'true',
+  adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || "",
+  trustProxy: process.env.TRUST_PROXY === "true",
+  hstsMaxAge: parseInt(process.env.HSTS_MAX_AGE || "0",10),
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   cookieSameSite: (process.env.COOKIE_SAMESITE || 'lax') as 'lax' | 'strict' | 'none',
   cookieDomain: process.env.COOKIE_DOMAIN || '',
@@ -108,7 +109,14 @@ export const env = {
 };
 
 export function validateEnv() {
-  if (process.env.NODE_ENV !== 'production') return;
+  const envType = process.env.NODE_ENV;
+  const prodLike = envType === 'production' || envType === 'staging';
+  if (!prodLike) {
+    if (env.hstsMaxAge && env.hstsMaxAge < 31536000) {
+      console.warn('WARN HSTS_MAX_AGE too low');
+    }
+    return;
+  }
   const missing: string[] = [];
 
   if (process.env.FORCE_ONLINE !== 'true') missing.push('FORCE_ONLINE');
@@ -131,6 +139,8 @@ export function validateEnv() {
   check('STRIPE_WEBHOOK_SECRET_LIVE', !!env.stripeWebhookSecret);
   check('STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE', !!env.stripeIdentityWebhookSecret);
   check('METRICS_TOKEN');
+  if (!env.trustProxy) missing.push('TRUST_PROXY');
+  if (!env.hstsMaxAge || env.hstsMaxAge < 31536000) missing.push('HSTS_MAX_AGE');
 
   if (env.emailEnabled) {
     ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS'].forEach((k) =>
@@ -158,6 +168,6 @@ export function validateEnv() {
   }
 }
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
   validateEnv();
 }
