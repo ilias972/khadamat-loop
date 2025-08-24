@@ -400,13 +400,12 @@ model WebhookEvent {
   id          Int      @id @default(autoincrement())
   provider    String
   eventId     String
-  type        String?
-  status      String?
+  status      String   @default("PROCESSED")
   createdAt   DateTime @default(now())
   processedAt DateTime?
 
-  @@unique([provider, eventId], map: "uniq_provider_event")
-  @@index([createdAt])
+  @@unique([provider, eventId], map: "uq_webhook_provider_event")
+  @@index([createdAt], map: "idx_webhook_created")
 }
 
 model WebhookDLQ {

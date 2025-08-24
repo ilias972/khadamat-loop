@@ -13,7 +13,7 @@ import { env } from '../config/env';
 type Role = 'CLIENT' | 'PROVIDER' | 'ADMIN';
 
 const refreshExpireMs = 7 * 24 * 60 * 60 * 1000;
-const secureCookie = env.cookieSecure && process.env.NODE_ENV === 'production';
+const secureCookie = env.cookieSecure;
 const sameSite = env.cookieSameSite;
 
 function signTokens(userId: number, role: string, mfa?: boolean) {
