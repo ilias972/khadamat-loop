@@ -56,7 +56,6 @@
     "ops:kill": "node scripts/ops/kill-backend.js",
     "ops:csp-cors": "node scripts/ops/csp-cors.check.js",
     "ops:av-selftest": "node scripts/ops/av-selftest.cjs",
-    "ops:proxy:check": "node scripts/env/load.js backend/.env.production -- node scripts/ops/proxy.check.cjs",
     "ops:dns:check": "node scripts/ops/dns.check.cjs",
     "ops:tls:check": "node scripts/ops/tls.check.cjs",
     "ops:proxy:check": "node scripts/env/load.js ./.env.online.staging -- node scripts/ops/proxy.check.cjs",

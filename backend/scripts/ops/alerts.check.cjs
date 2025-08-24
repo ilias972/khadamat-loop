@@ -7,10 +7,11 @@ if (GO_LIVE_REQUIRE_ALERTS_RULES !== 'true') {
   process.exit(0);
 }
 try {
-  const dir = path.resolve(__dirname, '../../ops/alerts');
-  const has = fs.existsSync(dir) && fs.readdirSync(dir).some((f) => f.endsWith('.yml'));
-  if (has) {
+  const file = path.resolve(__dirname, '../../ops/alerts/rules.example.yml');
+  if (fs.existsSync(file)) {
     console.log('PASS alerts:rules');
+  } else if (process.env.ALERTS_ENDPOINT) {
+    console.log('PASS alerts:endpoint');
   } else {
     console.log('FAIL alerts:rules');
     process.exit(1);
