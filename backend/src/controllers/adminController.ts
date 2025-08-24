@@ -102,23 +102,33 @@ export async function getWebhookStatus(req: Request, res: Response, next: NextFu
       where: { provider: 'kyc' },
       orderBy: { processedAt: 'desc' },
     });
+    const mapEvent = (e: any) => {
+      if (!e) return null;
+      const latency = e.processedAt && e.createdAt ? e.processedAt.getTime() - e.createdAt.getTime() : null;
+      return {
+        provider: e.provider,
+        id: e.eventId,
+        type: e.type,
+        createdAt: e.createdAt,
+        outcome: e.status ?? null,
+        latencyMs: latency,
+        retryCount: (e.retryCount ?? 0) as number,
+      };
+    };
     let recent: any[] = [];
     if (limit > 0) {
-      recent = await prisma.webhookEvent.findMany({
+      const events = await prisma.webhookEvent.findMany({
         orderBy: { processedAt: 'desc' },
         take: limit,
-        select: { provider: true, eventId: true, type: true, processedAt: true, outcome: true },
+        select: { provider: true, eventId: true, type: true, createdAt: true, processedAt: true, status: true },
       });
+      recent = events.map(mapEvent);
     }
     res.json({
       success: true,
       data: {
-        stripeCheckout: stripe
-          ? { id: stripe.eventId, type: stripe.type, timestamp: stripe.processedAt }
-          : null,
-        stripeIdentity: kyc
-          ? { id: kyc.eventId, type: kyc.type, timestamp: kyc.processedAt }
-          : null,
+        stripeCheckout: mapEvent(stripe),
+        stripeIdentity: mapEvent(kyc),
         recent,
       },
     });
