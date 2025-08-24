@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { bookingsRepo } from '../repositories/bookingsRepo';
 import { isValidDay, isFutureOrTodayDay } from '../utils/day';
 import { notifyUser } from '../utils/notify';
 import { createSystemMessage } from '../utils/messages';
@@ -20,24 +21,24 @@ const STATUS = {
 export async function createBooking(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = parseInt(req.user?.id || '', 10);
-    if (!userId) return next({ status: 401, message: 'Unauthorized' });
+    if (!userId) return next({ status: 401, code: 'UNAUTH' });
 
     const { serviceId, title, description, scheduledDay, price } = req.body;
 
     if (!isValidDay(scheduledDay) || !isFutureOrTodayDay(scheduledDay)) {
-      return next({ status: 400, message: 'Invalid scheduledDay' });
+      return next({ status: 400, code: 'VALIDATION_ERROR' });
     }
 
     const service = await prisma.service.findUnique({
       where: { id: serviceId },
       include: { provider: true },
     });
-    if (!service) return next({ status: 404, message: 'Service not found' });
+    if (!service) return next({ status: 404, code: 'NOT_FOUND' });
 
     const providerId = service.provider.userId;
 
-    const booking = await prisma.booking.create({
-      data: {
+    const booking = await bookingsRepo.createBookingAtomic(
+      {
         clientId: userId,
         providerId,
         serviceId,
@@ -46,18 +47,25 @@ export async function createBooking(req: Request, res: Response, next: NextFunct
         scheduledDay,
         price: price ?? service.basePrice,
       },
-    });
-
-    await createSystemMessage({
-      bookingId: booking.id,
-      senderId: userId,
-      receiverId: providerId,
-      content: 'Réservation créée — en attente de votre confirmation.',
-    });
-
-    notifyUser(providerId, 'BOOKING_REQUEST', 'Nouvelle réservation', `Un client a demandé une prestation le ${booking.scheduledDay}`, { bookingId: booking.id });
-    sendBookingSMS(providerId, 'BOOKING_REQUEST', booking.id).catch((err) => console.error(err));
-    sendBookingEmail(providerId, 'BOOKING_REQUEST', booking.id).catch(() => {});
+      async (tx, b) => {
+        await createSystemMessage({
+          bookingId: b.id,
+          senderId: userId,
+          receiverId: providerId,
+          content: 'Réservation créée — en attente de votre confirmation.',
+        }, tx);
+        await notifyUser(
+          providerId,
+          'BOOKING_REQUEST',
+          'Nouvelle réservation',
+          `Un client a demandé une prestation le ${b.scheduledDay}`,
+          { bookingId: b.id },
+          tx
+        );
+        await sendBookingSMS(providerId, 'BOOKING_REQUEST', b.id, tx).catch(() => {});
+        await sendBookingEmail(providerId, 'BOOKING_REQUEST', b.id, tx).catch(() => {});
+      }
+    );
 
     bookingsCreatedTotal?.inc();
     res.status(201).json({ success: true, data: { booking } });
@@ -71,41 +79,39 @@ export async function confirmBooking(req: Request, res: Response, next: NextFunc
     const id = parseInt(req.params.id, 10);
     const userId = parseInt(req.user?.id || '', 10);
     const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) return next({ status: 404, message: 'Booking not found' });
-    if (booking.providerId !== userId) return next({ status: 403, message: 'Forbidden' });
-    if (booking.status !== STATUS.PENDING) return next({ status: 409, message: 'Invalid status' });
+    if (!booking) return next({ status: 404, code: 'NOT_FOUND' });
+    if (booking.providerId !== userId) return next({ status: 403, code: 'FORBIDDEN' });
+    if (booking.status !== STATUS.PENDING) return next({ status: 409, code: 'CONFLICT' });
 
-    const updated = await prisma.$transaction(async (tx) => {
-      const b = await tx.booking.update({
-        where: { id },
-        data: { status: STATUS.CONFIRMED, proposedDay: null },
-      });
-
-      await createSystemMessage(
-        {
-          bookingId: b.id,
-          senderId: userId,
-          receiverId: b.clientId,
-          content: 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
-        },
-        tx
-      );
-      await notifyUser(
-        b.clientId,
-        'BOOKING_CONFIRMED',
-        'Réservation acceptée',
-        'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
-        { bookingId: b.id },
-        tx
-      );
-      await dispatchNotification({
-        event: 'booking.confirmed',
-        userId: b.clientId,
-        ctx: { day: b.scheduledDay, bookingId: b.id },
-      });
-
-      return b;
-    });
+    const updated = await bookingsRepo.transitionBookingAtomic(
+      id,
+      STATUS.CONFIRMED,
+      { proposedDay: null },
+      async (tx, b) => {
+        await createSystemMessage(
+          {
+            bookingId: b.id,
+            senderId: userId,
+            receiverId: b.clientId,
+            content: 'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
+          },
+          tx
+        );
+        await notifyUser(
+          b.clientId,
+          'BOOKING_CONFIRMED',
+          'Réservation acceptée',
+          'Réservation acceptée. Fixez l\u2019horaire dans ce chat.',
+          { bookingId: b.id },
+          tx
+        );
+        await dispatchNotification({
+          event: 'booking.confirmed',
+          userId: b.clientId,
+          ctx: { day: b.scheduledDay, bookingId: b.id },
+        });
+      }
+    );
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {
@@ -120,43 +126,41 @@ export async function proposeDay(req: Request, res: Response, next: NextFunction
     const userId = parseInt(req.user?.id || '', 10);
 
     if (!isValidDay(proposedDay) || !isFutureOrTodayDay(proposedDay)) {
-      return next({ status: 400, message: 'Invalid proposedDay' });
+      return next({ status: 400, code: 'VALIDATION_ERROR' });
     }
 
     const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) return next({ status: 404, message: 'Booking not found' });
-    if (booking.providerId !== userId) return next({ status: 403, message: 'Forbidden' });
+    if (!booking) return next({ status: 404, code: 'NOT_FOUND' });
+    if (booking.providerId !== userId) return next({ status: 403, code: 'FORBIDDEN' });
     if (booking.status !== STATUS.PENDING && booking.status !== STATUS.CONFIRMED) {
-      return next({ status: 409, message: 'Invalid status' });
+      return next({ status: 409, code: 'CONFLICT' });
     }
 
-    const updated = await prisma.$transaction(async (tx) => {
-      const b = await tx.booking.update({
-        where: { id },
-        data: { status: STATUS.RESCHEDULE_PROPOSED, proposedDay },
-      });
-
-      await createSystemMessage(
-        {
-          bookingId: b.id,
-          senderId: userId,
-          receiverId: b.clientId,
-          content: `Nouveau jour propos\u00e9 : ${proposedDay}.`,
-        },
-        tx
-      );
-      await notifyUser(
-        b.clientId,
-        'BOOKING_RESCHEDULE_PROPOSED',
-        'Proposition de nouveau jour',
-        `Nouveau jour proposé: ${proposedDay}.`,
-        { bookingId: b.id },
-        tx
-      );
-      await sendBookingSMS(b.clientId, 'BOOKING_RESCHEDULE_PROPOSED', b.id, tx);
-
-      return b;
-    });
+    const updated = await bookingsRepo.transitionBookingAtomic(
+      id,
+      STATUS.RESCHEDULE_PROPOSED,
+      { proposedDay },
+      async (tx, b) => {
+        await createSystemMessage(
+          {
+            bookingId: b.id,
+            senderId: userId,
+            receiverId: b.clientId,
+            content: `Nouveau jour propos\u00e9 : ${proposedDay}.`,
+          },
+          tx
+        );
+        await notifyUser(
+          b.clientId,
+          'BOOKING_RESCHEDULE_PROPOSED',
+          'Proposition de nouveau jour',
+          `Nouveau jour proposé: ${proposedDay}.`,
+          { bookingId: b.id },
+          tx
+        );
+        await sendBookingSMS(b.clientId, 'BOOKING_RESCHEDULE_PROPOSED', b.id, tx);
+      }
+    );
 
     res.json({ success: true, data: { booking: updated } });
   } catch (err) {

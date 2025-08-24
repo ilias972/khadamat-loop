@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
+import { providerSearchDurationMs } from '../metrics';
 import { env } from '../config/env';
 import { cacheGet, cacheSet } from '../utils/cache';
 import { normalizeString } from '../../shared/normalize';
@@ -74,6 +75,10 @@ export async function searchServices(req: Request, res: Response, next: NextFunc
     const latDelta = radiusKm / 111;
     const lngDelta = radiusKm / (111 * Math.cos((centerLat * Math.PI) / 180));
 
+    let timerEnd: any;
+    if (providerSearchDurationMs) {
+      timerEnd = providerSearchDurationMs.startTimer();
+    }
     const candidates = await prisma.provider.findMany({
       where: {
         lat: { not: null, gte: centerLat - latDelta, lte: centerLat + latDelta },
@@ -82,6 +87,7 @@ export async function searchServices(req: Request, res: Response, next: NextFunc
         user: { isDisabled: false },
       },
     });
+    timerEnd?.();
 
     const items = candidates
       .map((p) => ({
