@@ -1,24 +1,67 @@
 #!/usr/bin/env node
 const { execSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 function run(cmd) {
   execSync(cmd, { stdio: 'inherit', shell: true });
 }
 
-try {
-  run('prisma migrate dev --name add_webhookevent_idempotence');
-} catch (e) {
-  try {
-    fs.mkdirSync('prisma/migrations/0001_webhookevent', { recursive: true });
-    run('prisma migrate diff --from-schema-datamodel --to-schema-datamodel --script > prisma/migrations/0001_webhookevent/migration.sql');
-  } catch (e2) {
-    console.error('webhookevent diff failed:', e2.message);
+const root = path.resolve(__dirname, '..', '..');
+
+function loadEnv() {
+  const candidates = ['.env', '.env.local'];
+  let loaded = false;
+  for (const file of candidates) {
+    const abs = path.join(root, file);
+    if (fs.existsSync(abs)) {
+      const content = fs.readFileSync(abs, 'utf8');
+      for (const line of content.split(/\r?\n/)) {
+        if (!line || line.trim().startsWith('#')) continue;
+        const eq = line.indexOf('=');
+        if (eq === -1) continue;
+        const key = line.slice(0, eq).trim();
+        const value = line.slice(eq + 1).trim();
+        if (process.env[key] === undefined || process.env[key] === '') {
+          process.env[key] = value;
+        }
+      }
+      console.log(`ENV LOADED FROM ${file}`);
+      loaded = true;
+      break;
+    }
   }
+  if (!loaded) console.log('ENV FALLBACK');
+}
+
+loadEnv();
+
+try {
+  run('prisma migrate status || prisma validate');
+} catch (e) {
+  console.error('prisma status failed:', e.message);
+}
+
+const migrationsDir = path.join(root, 'prisma', 'migrations');
+let hasMigration = false;
+if (fs.existsSync(migrationsDir)) {
+  hasMigration = fs.readdirSync(migrationsDir).some((f) => f.includes('webhookevent'));
+}
+
+if (hasMigration) {
+  console.log('WEBHOOKEVENT: SKIPPED');
+} else {
   try {
-    run('prisma migrate dev --name webhookevent');
-  } catch (e3) {
-    run('prisma db push');
+    run('prisma migrate dev --name add_webhookevent_idempotence');
+    console.log('WEBHOOKEVENT: APPLIED');
+  } catch (e) {
+    try {
+      run('prisma db push');
+      console.log('WEBHOOKEVENT: APPLIED');
+    } catch (e2) {
+      console.error('webhookevent apply failed:', e2.message);
+      process.exit(1);
+    }
   }
 }
 
