@@ -14,19 +14,6 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
     code = 'VALIDATION_ERROR';
   }
 
-  if (!code) {
-    code =
-      status === 401
-        ? 'UNAUTH'
-        : status === 403
-        ? 'FORBIDDEN'
-        : status === 404
-        ? 'NOT_FOUND'
-        : status === 429
-        ? 'RATE_LIMITED'
-        : 'SERVER_ERROR';
-  }
-
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case 'P2002':
@@ -43,10 +30,8 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
     }
   }
 
-  const langHeader = req.headers['accept-language'] || '';
-  const lang = String(langHeader).toLowerCase().startsWith('ar') ? 'ar' : env.i18nDefaultLang;
-  const msgTemplate = ERROR_MESSAGES[code] || ERROR_MESSAGES.SERVER_ERROR;
-  const message = msgTemplate[lang];
+  code = code || 'SERVER_ERROR';
+  const message = err.message || (ERROR_MESSAGES[code] || ERROR_MESSAGES.SERVER_ERROR)[env.i18nDefaultLang];
 
   logger.error(message, { id: req.id, status, stack: err?.stack });
   if (Sentry) {

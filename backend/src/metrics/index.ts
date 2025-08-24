@@ -21,6 +21,9 @@ let smsDispatchTotal: any;
 let dlqWebhooksBacklog: any;
 let dlqSmsBacklog: any;
 let jobsHeartbeatTotal: any;
+let repoOpTotal: any;
+let repoOpDurationMs: any;
+let providerSearchDurationMs: any;
 
 if (prom && env.metricsEnabled) {
   prom.collectDefaultMetrics({ register: registry });
@@ -57,6 +60,25 @@ if (prom && env.metricsEnabled) {
     name: 'sms_dispatch_total',
     help: 'SMS dispatch count',
     labelNames: ['outcome'],
+    registers: [registry],
+  });
+  repoOpTotal = new prom.Counter({
+    name: 'repo_operation_total',
+    help: 'Repository method calls',
+    labelNames: ['repo', 'method'],
+    registers: [registry],
+  });
+  repoOpDurationMs = new prom.Histogram({
+    name: 'repo_operation_duration_ms',
+    help: 'Duration of repository methods in ms',
+    labelNames: ['repo', 'method'],
+    buckets: env.metricsBucketsMs,
+    registers: [registry],
+  });
+  providerSearchDurationMs = new prom.Histogram({
+    name: 'provider_search_duration_ms',
+    help: 'Duration of provider search queries in ms',
+    buckets: env.metricsBucketsMs,
     registers: [registry],
   });
   dlqWebhooksBacklog = new prom.Gauge({
@@ -115,4 +137,7 @@ export {
   dlqWebhooksBacklog,
   dlqSmsBacklog,
   jobsHeartbeatTotal,
+  repoOpTotal,
+  repoOpDurationMs,
+  providerSearchDurationMs,
 };

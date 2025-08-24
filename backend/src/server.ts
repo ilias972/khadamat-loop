@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
+import { localizeError } from './middlewares/localizeError';
 import { Sentry } from './config/sentry';
 import authRoutes from './routes/auth';
 import subscriptionRoutes from './routes/subscriptions';
@@ -248,6 +249,7 @@ app.use('/api', searchRoutes);
 if (Sentry) {
   app.use(Sentry.Handlers.errorHandler());
 }
+app.use(localizeError);
 app.use(errorHandler);
 
 export { app };
