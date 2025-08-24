@@ -17,6 +17,9 @@ let httpRequestDurationMs: any;
 let bookingsCreatedTotal: any;
 let messagesSentTotal: any;
 let webhooksProcessedTotal: any;
+let smsDispatchTotal: any;
+let dlqWebhooksBacklog: any;
+let dlqSmsBacklog: any;
 
 if (prom && env.metricsEnabled) {
   prom.collectDefaultMetrics({ register: registry });
@@ -47,6 +50,22 @@ if (prom && env.metricsEnabled) {
     name: 'webhooks_processed_total',
     help: 'Webhooks processed',
     labelNames: ['provider', 'outcome'],
+    registers: [registry],
+  });
+  smsDispatchTotal = new prom.Counter({
+    name: 'sms_dispatch_total',
+    help: 'SMS dispatch count',
+    labelNames: ['outcome'],
+    registers: [registry],
+  });
+  dlqWebhooksBacklog = new prom.Gauge({
+    name: 'dlq_webhooks_backlog',
+    help: 'Webhook DLQ backlog size',
+    registers: [registry],
+  });
+  dlqSmsBacklog = new prom.Gauge({
+    name: 'dlq_sms_backlog',
+    help: 'SMS DLQ backlog size',
     registers: [registry],
   });
 }
@@ -85,4 +104,7 @@ export {
   bookingsCreatedTotal,
   messagesSentTotal,
   webhooksProcessedTotal,
+  smsDispatchTotal,
+  dlqWebhooksBacklog,
+  dlqSmsBacklog,
 };

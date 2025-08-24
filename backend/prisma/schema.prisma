@@ -409,3 +409,30 @@ model WebhookEvent {
   @@index([createdAt])
 }
 
+model WebhookDLQ {
+  id         Int      @id @default(autoincrement())
+  provider   String
+  payload    String
+  reason     String?
+  attempts   Int      @default(0)
+  nextRunAt  DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([provider, nextRunAt], map: "idx_dlq_webhook_provider_next")
+}
+
+model SmsDLQ {
+  id         Int      @id @default(autoincrement())
+  to         String
+  body       String
+  meta       String?
+  reason     String?
+  attempts   Int      @default(0)
+  nextRunAt  DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([nextRunAt], map: "idx_dlq_sms_next")
+}
+

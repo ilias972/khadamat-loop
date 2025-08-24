@@ -7,6 +7,7 @@ import { stripe } from '../config/stripe';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
 import { webhooksProcessedTotal } from '../metrics';
+import { enqueueWebhookDLQ } from '../services/dlq';
 
 function parseEvent(req: any) {
   const body = req.body;
@@ -122,6 +123,7 @@ export const kycWebhook = async (req: Request, res: Response) => {
       data: { status: 'failed', processedAt: new Date() },
     }).catch(() => {});
     webhooksProcessedTotal?.inc({ provider: 'kyc', outcome: 'fail' });
-    return res.status(400).json({ success: false, error: { code: 'WEBHOOK_ERROR', message: 'webhook_error', timestamp: new Date().toISOString() } });
+    await enqueueWebhookDLQ('kyc', parseEvent(req), String(e?.message || e)).catch(() => {});
+    return res.json({ received: true });
   }
 };

@@ -19,6 +19,7 @@ import smsRouter from './routes/sms';
 import adminRouter from './routes/admin';
 import adminDisclosure from './routes/adminDisclosure';
 import cacheSmokeRouter from './routes/admin/cacheSmoke';
+import adminDlqRouter from './routes/admin/dlq';
 import statsRouter from './routes/stats';
 import searchRoutes from './routes/search';
 import mfaRouter from './routes/mfa';
@@ -40,6 +41,7 @@ import { cacheControl } from './middlewares/cacheControl';
 import { setupMetrics, metricsRequestTimer } from './metrics';
 import { getCacheStatus, stopCache } from './utils/cache';
 import { pingClamAV } from './services/antivirus';
+import { startDlqRunner } from './jobs/dlqRunner';
 
 let dbConnected = false;
 
@@ -108,6 +110,9 @@ if (env.trustProxy) {
 
 if (process.env.NODE_ENV !== 'test' && dbAvailable) {
   import('./jobs/scheduler').then((m) => m.startSchedulers());
+  if (!process.env.WORKER_ROLE || process.env.WORKER_ROLE === 'jobs') {
+    startDlqRunner();
+  }
 }
 app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
 app.post('/api/kyc/webhook', express.raw({ type: '*/*' }), kycWebhook);
@@ -176,6 +181,11 @@ app.get('/health', async (_req, res) => {
   const cacheInfo = getCacheStatus();
   const avEnabled = process.env.UPLOAD_ANTIVIRUS === 'true';
   const avReachable = avEnabled ? await pingClamAV() : false;
+  const dlqInfo = { enabled: env.dlqEnable, webhooksBacklog: 0, smsBacklog: 0 };
+  if (env.dlqEnable && dbAvailable) {
+    dlqInfo.webhooksBacklog = await prisma.webhookDLQ.count().catch(() => 0);
+    dlqInfo.smsBacklog = await prisma.smsDLQ.count().catch(() => 0);
+  }
   res.json({
     success: true,
     data: {
@@ -183,6 +193,7 @@ app.get('/health', async (_req, res) => {
       db: { connected: dbConnected },
       redis: { connected: cacheInfo.driver === 'redis' },
       av: { enabled: avEnabled, reachable: avReachable },
+      dlq: dlqInfo,
     },
   });
 });
@@ -221,6 +232,7 @@ app.use('/api/admin', adminDisclosure);
 if (process.env.SMOKE_ROUTES_ENABLE === 'true') {
   app.use('/api/admin', adminIpAllowList, requireMfa, cacheSmokeRouter);
 }
+app.use('/api/admin/dlq', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminDlqRouter);
 app.use('/api/admin', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);

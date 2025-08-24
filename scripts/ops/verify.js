@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { OPS_BACKEND_URL, METRICS_TOKEN, OPS_ADMIN_BEARER } = process.env;
+const { OPS_BACKEND_URL, METRICS_TOKEN, OPS_ADMIN_BEARER, ALERTS_RULES_PATH } = process.env;
 
 (async () => {
   try {
@@ -20,6 +20,17 @@ const { OPS_BACKEND_URL, METRICS_TOKEN, OPS_ADMIN_BEARER } = process.env;
       throw new Error('/health missing cache.driver');
     }
     console.log('health: OK');
+    if (health?.av) {
+      console.log('av enabled:', health.av.enabled, 'reachable:', health.av.reachable);
+    }
+    if (health?.dlq) {
+      if (health.dlq.enabled) {
+        console.log('dlq webhooks backlog:', health.dlq.webhooksBacklog);
+        console.log('dlq sms backlog:', health.dlq.smsBacklog);
+      } else {
+        console.log('dlq: disabled');
+      }
+    }
 
     if (METRICS_TOKEN) {
       const metricsRes = await fetch(`${OPS_BACKEND_URL}/metrics`, {
@@ -72,6 +83,15 @@ const { OPS_BACKEND_URL, METRICS_TOKEN, OPS_ADMIN_BEARER } = process.env;
       console.log('webhooks kyc last:', ts(hooks.kyc));
     } else {
       console.log('webhooks: SKIPPED (missing OPS_ADMIN_BEARER)');
+    }
+    if (ALERTS_RULES_PATH) {
+      try {
+        require('child_process').execSync('node scripts/ops/alerts.validate.cjs', { stdio: 'inherit' });
+      } catch (e) {
+        throw new Error('alerts.validate failed');
+      }
+    } else {
+      console.log('alerts.validate: SKIPPED');
     }
 
     console.log('PASS ops:verify');

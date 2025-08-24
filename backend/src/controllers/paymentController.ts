@@ -9,6 +9,7 @@ import { sendSubscriptionSMS } from '../services/smsEvents';
 import { sendSubscriptionEmail } from '../services/emailEvents';
 import { logger } from '../config/logger';
 import { webhooksProcessedTotal } from '../metrics';
+import { enqueueWebhookDLQ } from '../services/dlq';
 
 export async function createClubProCheckout(req: Request, res: Response, next: NextFunction) {
   try {
@@ -69,7 +70,9 @@ export async function createClubProCheckout(req: Request, res: Response, next: N
 export async function handleStripeWebhook(req: Request, res: Response) {
   const sig = req.headers['stripe-signature'];
   let event: any;
+  let rawPayload: any;
   try {
+    rawPayload = JSON.parse(req.body.toString('utf8'));
     event = stripe.webhooks.constructEvent(req.body, sig as string, env.stripeWebhookSecret);
   } catch (err: any) {
     logger.error('stripe webhook signature invalid', { error: err.message });
@@ -142,9 +145,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     }).catch(() => {});
     logger.error('stripe webhook processing error', { eventId: event.id, error: err.message });
     webhooksProcessedTotal?.inc({ provider: 'stripe', outcome: 'fail' });
-    return res.status(500).json({
-      success: false,
-      error: { code: 'WEBHOOK_PROCESSING_ERROR', message: 'Processing failed', timestamp: new Date().toISOString() },
-    });
+    await enqueueWebhookDLQ('stripe', rawPayload || event, String(err.message)).catch(() => {});
+    return res.json({ received: true });
   }
 }
