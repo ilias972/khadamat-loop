@@ -95,8 +95,10 @@
     "audit:ci": "node scripts/audit-ci.js",
     "ci:check": "node scripts/ci/check.js",
     "ci:check:local": "node scripts/env/init-online-local.js && node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run ci:check && node scripts/env/load.js .env.online.local -- npm run ops:kill",
-  "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run ci:check"
-},
+    "ci:check:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run ci:check",
+    "ci:predeploy": "npm run audit:ci && npm run ops:go-live",
+    "audit:schedule": "node scripts/ci/audit-schedule.cjs"
+  },
   "dependencies": {
     "@prisma/client": "5.16.1",
     "bcryptjs": "^3.0.2",
