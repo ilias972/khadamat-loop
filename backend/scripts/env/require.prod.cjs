@@ -48,6 +48,23 @@ if (missing.length) {
   console.log('FAIL missing: ' + missing.join(','));
   process.exit(1);
 }
+if (process.env.TRUST_PROXY !== 'true') {
+  console.log('FAIL trust:proxy');
+  process.exit(1);
+}
+if (process.env.COOKIE_SAMESITE !== 'strict') {
+  console.log('FAIL cookie:samesite');
+  process.exit(1);
+}
+if (process.env.COOKIE_SECURE !== 'true') {
+  console.log('FAIL cookie:secure');
+  process.exit(1);
+}
+const hsts = parseInt(process.env.HSTS_MAX_AGE, 10);
+if (!Number.isInteger(hsts) || hsts <= 0) {
+  console.log('FAIL hsts:max-age');
+  process.exit(1);
+}
 if (process.env.MFA_ENFORCE !== 'admin') {
   console.log('FAIL mfa:enforce');
   process.exit(1);

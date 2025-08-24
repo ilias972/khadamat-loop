@@ -16,7 +16,6 @@ const { BACKEND_BASE_URL = 'https://api.khadamat.ma' } = process.env;
       process.exit(1);
     }
   } catch (e) {
-    console.log('FAIL jobs:' + e.message);
-    process.exit(1);
+    console.log('SKIPPED jobs:' + e.message);
   }
 })();

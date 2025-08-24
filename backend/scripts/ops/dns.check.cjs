@@ -15,7 +15,17 @@ async function check(host, label) {
     console.log(`SKIPPED dns:${label} ${e.code || e.message}`);
   }
 }
+
+const base = process.env.BACKEND_BASE_URL || 'https://api.khadamat.ma';
+let host;
+try {
+  host = new URL(base).hostname;
+} catch {
+  host = 'api.khadamat.ma';
+}
+const root = host.startsWith('api.') ? host.slice(4) : host;
+
 (async () => {
-  await check('api.khadamat.ma', 'api');
-  await check('www.khadamat.ma', 'www');
+  await check(`api.${root}`, 'api');
+  await check(`www.${root}`, 'www');
 })();
