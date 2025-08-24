@@ -41,6 +41,7 @@
     "vault:check": "ts-node scripts/check-vault.ts",
     "kyc:retention:run": "ts-node scripts/run-kyc-retention.ts",
     "smoke:webhooks": "node scripts/smoke/run.js scripts/smoke/webhooks.js",
+    "smoke:webhook-idem": "node scripts/smoke/webhook-idem.cjs",
     "smoke:search": "node scripts/smoke/run.js scripts/smoke/search.js",
     "smoke:pii": "node scripts/smoke/run.js scripts/smoke/pii.js",
     "smoke:metrics": "node scripts/smoke/run.js scripts/smoke/metrics.js",
@@ -97,10 +98,10 @@
     "e2e:optionB": "bash scripts/e2e-optionB.sh",
     "prisma:version": "npx prisma --version",
     "prisma:generate": "npx prisma generate",
-    "prisma:doctor": "node -e \"const {execSync}=require('child_process');try{execSync('npx prisma -v',{stdio:'inherit'});}catch(e){console.error('prisma doctor failed:',e.message);process.exit(1)}\"",
-    "prisma:gen": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev --name init_khadamat_db",
-    "prisma:push": "npx prisma db push",
+    "prisma:doctor": "prisma doctor",
+    "prisma:gen": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name sync",
+    "prisma:push": "prisma db push",
     "registry:diag": "node -e \"const {execSync}=require('child_process');try{console.log('npm get registry=',execSync('npm get registry').toString().trim());console.log('@prisma:registry=',execSync('npm config get @prisma:registry').toString().trim());execSync('npm view @prisma/engines version',{stdio:'inherit'});}catch(e){console.error('diag error:',e.message)}\"",
     "registry:prisma:mirror": "npm config set @prisma:registry https://registry.npmmirror.com/",
     "registry:show": "node tools/registry/show-registry.js",
@@ -141,7 +142,9 @@
     "webhooks:check:secrets": "node scripts/env/load.js ./.env -- node -e \"console.log('stripe:', !!process.env.STRIPE_WEBHOOK_SECRET, 'identity:', !!process.env.STRIPE_IDENTITY_WEBHOOK_SECRET)\"",
     "remediate:p0": "node scripts/remediate/run.cjs --level=P0",
     "remediate:p1": "node scripts/remediate/run.cjs --level=P1 --quick",
-    "verify:postfix": "npm run audit:full && node scripts/audit/print-last.cjs"
+    "verify:postfix": "npm run audit:full && node scripts/audit/print-last.cjs",
+    "prisma:baseline": "node scripts/prisma/baseline.cjs",
+    "prisma:webhookevent": "node scripts/prisma/webhookevent.cjs"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
