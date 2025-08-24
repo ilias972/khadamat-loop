@@ -38,7 +38,7 @@ if (url.startsWith('file:') || url.startsWith('sqlite:')) {
 
 const check = spawnSync('pg_dump', ['--version'], { stdio: 'ignore' });
 if (check.status !== 0) {
-  console.log('SKIPPED pg_dump missing');
+  console.log('SKIPPED pg_dump missing - see docs/backup.md');
   process.exit(0);
 }
 const dest = path.join(dir, `backup.pg.${Date.now()}.sql`);

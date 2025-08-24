@@ -24,6 +24,12 @@ const required = [
   'JWT_SECRET',
   'FRONTEND_URL',
   'BACKEND_BASE_URL',
+  'TRUST_PROXY',
+  'REFRESH_TOKEN_COOKIE_DOMAIN',
+  'COOKIE_SAMESITE',
+  'COOKIE_SECURE',
+  'HSTS_MAX_AGE',
+  'MFA_ENFORCE',
   'ADMIN_IP_ALLOWLIST',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
@@ -40,6 +46,10 @@ const required = [
 const missing = required.filter((k) => !process.env[k]);
 if (missing.length) {
   console.log('FAIL missing: ' + missing.join(','));
+  process.exit(1);
+}
+if (process.env.MFA_ENFORCE !== 'admin') {
+  console.log('FAIL mfa:enforce');
   process.exit(1);
 }
 console.log('PASS env:prod');
