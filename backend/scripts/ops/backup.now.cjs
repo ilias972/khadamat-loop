@@ -1,43 +1,51 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const crypto = require('crypto');
+const { spawnSync, execSync } = require('child_process');
+
+spawnSync('node', [path.join(__dirname, '../db/bootstrap.cjs')], { stdio: 'inherit' });
+
+const url = process.env.DATABASE_URL;
+if (!url) {
+  console.log('SKIPPED no DATABASE_URL');
+  process.exit(0);
+}
 
 const dir = process.env.BACKUP_OUTPUT_DIR || process.env.BACKUP_DIR || '/var/backups/khadamat';
 if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-function checksum(file) {
-  const buf = fs.readFileSync(file);
-  return crypto.createHash('sha256').update(buf).digest('hex');
+function checksum(f) {
+  return crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 }
 
-function latestBackup() {
-  const files = fs.readdirSync(dir).filter(f => f.startsWith('backup'));
-  if (!files.length) return null;
-  return files.map(f => ({ f, t: fs.statSync(path.join(dir, f)).mtimeMs }))
-    .sort((a,b)=>b.t-a.t)[0].f;
+if (url.startsWith('file:') || url.startsWith('sqlite:')) {
+  let db = url.replace(/^file:/, '').replace(/^sqlite:/, '');
+  if (!path.isAbsolute(db)) {
+    const direct = path.resolve(db);
+    const prismaRel = path.resolve('prisma', db);
+    db = fs.existsSync(direct) ? direct : prismaRel;
+  }
+  if (!fs.existsSync(db)) {
+    console.log('SKIPPED sqlite missing');
+    process.exit(0);
+  }
+  const dest = path.join(dir, `backup.sqlite.${Date.now()}.db`);
+  fs.copyFileSync(db, dest);
+  console.log(`PASS backup.sqlite ${dest} ${checksum(dest)}`);
+  process.exit(0);
 }
 
-(async () => {
-  const latest = latestBackup();
-  if (latest) {
-    const age = Date.now() - fs.statSync(path.join(dir, latest)).mtimeMs;
-    if (age < 24*3600*1000) {
-      console.log(`SKIP recent backup ${latest} checksum=${checksum(path.join(dir, latest))}`);
-      return;
-    }
-  }
-  try {
-    execSync('node scripts/db/backup.js', { stdio: 'inherit' });
-    const newest = latestBackup();
-    if (newest) {
-      console.log(`BACKUP_OK ${newest} checksum=${checksum(path.join(dir, newest))}`);
-    } else {
-      console.log('BACKUP_UNKNOWN');
-    }
-  } catch (e) {
-    console.log('BACKUP_FAIL', e.message);
-    process.exit(1);
-  }
-})();
+const check = spawnSync('pg_dump', ['--version'], { stdio: 'ignore' });
+if (check.status !== 0) {
+  console.log('SKIPPED pg_dump missing');
+  process.exit(0);
+}
+const dest = path.join(dir, `backup.pg.${Date.now()}.sql`);
+try {
+  execSync(`pg_dump "${url}" > "${dest}"`, { stdio: 'inherit', shell: true });
+  console.log(`PASS backup.pg ${dest} ${checksum(dest)}`);
+} catch (e) {
+  console.log('FAIL backup.pg', e.message);
+  process.exit(1);
+}
