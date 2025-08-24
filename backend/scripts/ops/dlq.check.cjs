@@ -4,10 +4,16 @@ const {
   ADMIN_BEARER_TOKEN,
   GO_LIVE_MAX_DLQ_WEBHOOKS = '5',
   GO_LIVE_MAX_DLQ_SMS = '5',
+  GATE_ALLOW_SKIPS = 'false',
 } = process.env;
+const allowSkips = GATE_ALLOW_SKIPS === 'true';
 if (!ADMIN_BEARER_TOKEN) {
-  console.log('SKIPPED dlq');
-  process.exit(0);
+  if (allowSkips) {
+    console.log('SKIPPED dlq missing tokens');
+    process.exit(0);
+  }
+  console.log('FAIL dlq: missing tokens: run npm --prefix backend run tokens:get:staging.');
+  process.exit(1);
 }
 (async () => {
   try {
@@ -25,6 +31,11 @@ if (!ADMIN_BEARER_TOKEN) {
     }
     console.log(`PASS dlq:backlog w=${w} s=${s}`);
   } catch (e) {
-    console.log('SKIPPED dlq:' + e.message);
+    if (allowSkips) {
+      console.log('SKIPPED dlq:' + e.message);
+    } else {
+      console.log('FAIL dlq:' + e.message);
+      process.exit(1);
+    }
   }
 })();
