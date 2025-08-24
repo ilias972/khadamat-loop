@@ -30,6 +30,18 @@ function runScript(name) {
 
 const args = process.argv.slice(2);
 let prismaReady = true;
+
+let spawned = false;
+if (process.env.TEST_SPAWN === '1') {
+  const s = spawnSync('node', ['scripts/ops/spawn.cjs', '--wait', '/health', '--timeout', '30000'], {
+    stdio: 'inherit',
+    shell: process.platform === 'win32'
+  });
+  if (s.status !== 0) {
+    process.exit(s.status || 1);
+  }
+  spawned = true;
+}
 ['prisma:self-heal', 'prisma:prepare:test'].forEach((s) => {
   const r = spawnSync('npm', ['run', s], { stdio: 'inherit' });
   if (r.status !== 0) prismaReady = false;
@@ -45,6 +57,9 @@ if (fs.existsSync(disabledFlag)) {
 if (prismaReady && hasJest()) {
   const jestBin = require.resolve('jest/bin/jest');
   const res = spawnSync(process.execPath, [jestBin, ...args], { stdio: 'inherit' });
+  if (spawned) {
+    spawnSync('node', ['scripts/ops/kill.cjs'], { stdio: 'inherit', shell: process.platform === 'win32' });
+  }
   process.exit(res.status ?? 1);
 }
 
@@ -69,6 +84,12 @@ if (!fail && process.env.ONLINE_TESTS_ENABLE === 'true' && process.env.BACKEND_B
   if (!online.failed && online.skipped === false) skipped = false;
 }
 console.log(`ONLINE_RESULT: ${onlineResult}`);
+if (process.env.BACKEND_BASE_URL && skipped) {
+  fail = true;
+}
 const finalResult = fail ? 'FAIL' : skipped ? 'SKIPPED_PARTIAL' : 'PASS';
 console.log(`TEST_SMART_RESULT: ${finalResult}`);
+if (spawned) {
+  spawnSync('node', ['scripts/ops/kill.cjs'], { stdio: 'inherit', shell: process.platform === 'win32' });
+}
 process.exit(fail ? 1 : 0);
