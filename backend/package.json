@@ -135,7 +135,11 @@
     "db:bootstrap": "node scripts/env/load.js backend/.env.production -- node scripts/db/bootstrap.cjs --allow-bootstrap",
     "audit:ci:legacy": "node scripts/audit-ci.js",
     "audit:full": "node scripts/env/load.js ./.env -- node scripts/audit/full.cjs",
-    "audit:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- node scripts/audit/full.cjs --online"
+    "audit:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- node scripts/audit/full.cjs --online",
+    "remediate": "node scripts/remediate/run.cjs",
+    "remediate:p0": "node scripts/remediate/run.cjs --level=P0",
+    "remediate:p1": "node scripts/remediate/run.cjs --level=P1 --quick",
+    "verify:postfix": "npm run audit:full && node scripts/audit/print-last.cjs"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",
