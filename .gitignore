@@ -17,3 +17,4 @@ backups
 # Online test environment files
 backend/.env.online.*
 !backend/.env.online.*.example
+backend/.env.tokens.*

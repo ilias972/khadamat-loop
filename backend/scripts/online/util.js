@@ -25,6 +25,17 @@ function logSkip(name, reason) {
 }
 
 async function getAuthToken(email, password) {
+  const envToken = process.env.PROVIDER_BEARER_TOKEN;
+  if (envToken) {
+    let payload = {};
+    try {
+      const part = envToken.split('.')[1];
+      const pad = part.padEnd(part.length + (4 - (part.length % 4)) % 4, '=').replace(/-/g, '+').replace(/_/g, '/');
+      payload = JSON.parse(Buffer.from(pad, 'base64').toString('utf8'));
+    } catch {}
+    return { token: envToken, user: { id: payload.id } };
+  }
+  if (!email || !password) return null;
   let login = await fetchJson('POST', '/api/auth/login', { email, password });
   if (!login.success) {
     await fetchJson('POST', '/api/auth/register', { email, password, role: 'PROVIDER' });

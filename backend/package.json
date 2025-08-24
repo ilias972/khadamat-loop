@@ -61,11 +61,16 @@
     "online:payments": "node scripts/online/payments.check.js",
     "online:kyc": "node scripts/online/kyc.check.js",
     "online:all": "npm run online:payments && npm run online:kyc",
-
     "online:all:local": "node scripts/env/load.js .env.online.local -- npm run ops:spawn && node scripts/env/load.js .env.online.local -- npm run ops:wait && node scripts/env/load.js .env.online.local -- npm run online:all && node scripts/env/load.js .env.online.local -- npm run ops:kill",
-    "online:all:staging": "node scripts/env/load.js .env.online.staging -- npm run ops:wait && node scripts/env/load.js .env.online.staging -- npm run online:all",
-    "postdeploy:staging": "npm run ops:wait && npm run ops:verify && npm run smoke:all",
-    "postdeploy:staging:online": "npm run ops:wait && npm run online:all:staging",
+
+    "tokens:get:staging": "node scripts/env/load.js backend/.env.online.staging -- node scripts/tokens/get.cjs",
+    "tokens:show:staging": "node -e \"console.log(process.env.ADMIN_BEARER_TOKEN, process.env.PROVIDER_BEARER_TOKEN)\"",
+
+    "online:payments:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:payments",
+    "online:kyc:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:kyc",
+    "online:all:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:all",
+    "postdeploy:staging": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run ops:wait && npm run ops:verify && npm run smoke:all",
+    "postdeploy:staging:online": "node scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run ops:wait && npm run online:all",
     "postdeploy:prod": "npm run ops:wait && npm run ops:go-live",
     "e2e:optionB": "bash scripts/e2e-optionB.sh",
     "prisma:version": "npx prisma --version",
