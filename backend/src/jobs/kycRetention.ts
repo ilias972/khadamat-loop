@@ -8,27 +8,30 @@ export async function runKycRetentionJob() {
   const cutMeta = new Date(Date.now() - metaDays * 24 * 3600 * 1000);
   const cutRaw = new Date(Date.now() - rawDays * 24 * 3600 * 1000);
 
-  await prisma.verification.updateMany({
+  const meta = await prisma.verification.updateMany({
     where: { verifiedAt: { lt: cutMeta } },
     data: { data: null }
   });
 
   const holds = new Set(
-    (await prisma.legalHold.findMany({ where: { until: { gt: new Date() } } })).map(h => h.userId)
+    (await prisma.legalHold.findMany({ where: { until: { gt: new Date() } } })).map((h) => h.userId)
   );
 
   const oldVaults = await prisma.kycVault.findMany({ where: { updatedAt: { lt: cutRaw } } });
+  let kycPurged = 0;
   for (const v of oldVaults) {
     if (holds.has(v.userId)) continue;
     await prisma.kycVault.update({
       where: { userId: v.userId },
       data: { encDoc: null, encDocTag: null, encDocNonce: null }
     });
+    kycPurged++;
   }
 
   const piiCut = new Date(Date.now() - env.piiRetentionDays * 24 * 3600 * 1000);
-  const purged = await prisma.userPII.deleteMany({
+  const pii = await prisma.userPII.deleteMany({
     where: { updatedAt: { lt: piiCut }, user: { legalHold: null } }
   });
-  logger.info('PII retention purge', { count: purged.count });
+  logger.info('PII retention purge', { count: pii.count });
+  return { meta: meta.count, kyc: kycPurged, pii: pii.count };
 }
