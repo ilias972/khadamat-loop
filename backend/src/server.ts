@@ -21,6 +21,7 @@ import adminRouter from './routes/admin';
 import adminDisclosure from './routes/adminDisclosure';
 import cacheSmokeRouter from './routes/admin/cacheSmoke';
 import adminDlqRouter from './routes/admin/dlq';
+import adminAuditRouter from './routes/adminAudit';
 import statsRouter from './routes/stats';
 import searchRoutes from './routes/search';
 import mfaRouter from './routes/mfa';
@@ -242,6 +243,7 @@ if (process.env.SMOKE_ROUTES_ENABLE === 'true') {
   app.use('/api/admin', adminIpAllowList, requireMfa, cacheSmokeRouter);
 }
 app.use('/api/admin/dlq', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminDlqRouter);
+app.use('/api/admin/audit', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminAuditRouter);
 app.use('/api/admin', adminIpAllowList, authenticate, requireRole('admin'), requireMfa, adminRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);
