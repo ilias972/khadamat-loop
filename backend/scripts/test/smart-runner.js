@@ -23,9 +23,9 @@ function runScript(name) {
   const res = spawnSync('npm', ['run', name], { encoding: 'utf-8' });
   const out = (res.stdout || '') + (res.stderr || '');
   process.stdout.write(out);
-  if (/SKIPPED/.test(out)) skipped = true;
-  if (res.status !== 0 || /FAIL/.test(out)) fail = true;
-  return res.status;
+  const skipped = /SKIPPED/.test(out);
+  const failed = res.status !== 0 || /FAIL/.test(out);
+  return { failed, skipped };
 }
 
 const args = process.argv.slice(2);
@@ -55,10 +55,20 @@ if (prismaReady) {
 }
 let fail = false;
 let skipped = true;
-runScript('smoke:all');
+const smoke = runScript('smoke:all');
+if (smoke.failed) fail = true;
+if (!smoke.failed && smoke.skipped === false) skipped = false;
+const smokeResult = smoke.failed ? 'FAIL' : smoke.skipped ? 'SKIPPED' : 'PASS';
+console.log(`SMOKE_RESULT: ${smokeResult}`);
+
+let onlineResult = 'SKIPPED';
 if (!fail && process.env.ONLINE_TESTS_ENABLE === 'true' && process.env.BACKEND_BASE_URL) {
-  runScript('online:all');
+  const online = runScript('online:all');
+  onlineResult = online.failed ? 'FAIL' : online.skipped ? 'SKIPPED' : 'PASS';
+  if (online.failed) fail = true;
+  if (!online.failed && online.skipped === false) skipped = false;
 }
+console.log(`ONLINE_RESULT: ${onlineResult}`);
 const finalResult = fail ? 'FAIL' : skipped ? 'SKIPPED_PARTIAL' : 'PASS';
 console.log(`TEST_SMART_RESULT: ${finalResult}`);
 process.exit(fail ? 1 : 0);

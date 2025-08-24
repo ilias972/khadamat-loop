@@ -20,6 +20,7 @@ let webhooksProcessedTotal: any;
 let smsDispatchTotal: any;
 let dlqWebhooksBacklog: any;
 let dlqSmsBacklog: any;
+let jobsHeartbeatTotal: any;
 
 if (prom && env.metricsEnabled) {
   prom.collectDefaultMetrics({ register: registry });
@@ -68,6 +69,12 @@ if (prom && env.metricsEnabled) {
     help: 'SMS DLQ backlog size',
     registers: [registry],
   });
+  jobsHeartbeatTotal = new prom.Counter({
+    name: 'jobs_heartbeat_total',
+    help: 'Scheduler heartbeats',
+    labelNames: ['job'],
+    registers: [registry],
+  });
 }
 
 export const metricsRequestTimer = (
@@ -107,4 +114,5 @@ export {
   smsDispatchTotal,
   dlqWebhooksBacklog,
   dlqSmsBacklog,
+  jobsHeartbeatTotal,
 };

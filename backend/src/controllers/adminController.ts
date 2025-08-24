@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma, prisma } from '../lib/prisma';
 import { logAction } from '../middlewares/audit';
+import { getCacheStatus } from '../utils/cache';
+import { pingClamAV } from '../services/antivirus';
+import { env } from '../config/env';
+import { getJobsStatus } from '../jobs/scheduler';
 
 export async function deleteReview(req: Request, res: Response, next: NextFunction) {
   try {
@@ -87,8 +91,9 @@ export async function listAuditLogs(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function getWebhookStatus(_req: Request, res: Response, next: NextFunction) {
+export async function getWebhookStatus(req: Request, res: Response, next: NextFunction) {
   try {
+    const limit = Math.min(parseInt((req.query.limit as string) || '1', 10), 50);
     const stripe = await prisma.webhookEvent.findFirst({
       where: { provider: 'stripe' },
       orderBy: { processedAt: 'desc' },
@@ -97,6 +102,14 @@ export async function getWebhookStatus(_req: Request, res: Response, next: NextF
       where: { provider: 'kyc' },
       orderBy: { processedAt: 'desc' },
     });
+    let recent: any[] = [];
+    if (limit > 0) {
+      recent = await prisma.webhookEvent.findMany({
+        orderBy: { processedAt: 'desc' },
+        take: limit,
+        select: { provider: true, eventId: true, type: true, processedAt: true, outcome: true },
+      });
+    }
     res.json({
       success: true,
       data: {
@@ -106,7 +119,41 @@ export async function getWebhookStatus(_req: Request, res: Response, next: NextF
         stripeIdentity: kyc
           ? { id: kyc.eventId, type: kyc.type, timestamp: kyc.processedAt }
           : null,
+        recent,
       },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getSnapshot(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const cacheInfo = getCacheStatus();
+    const avEnabled = process.env.UPLOAD_ANTIVIRUS === 'true';
+    const avReachable = avEnabled ? await pingClamAV() : false;
+    const dbConnected = await prisma.$queryRaw`SELECT 1`.then(() => true).catch(() => false);
+    const [webhooksBacklog, smsBacklog] = await Promise.all([
+      prisma.webhookDLQ.count(),
+      prisma.smsDLQ.count(),
+    ]).catch(() => [0, 0]);
+    const dlqStats = { webhooksBacklog, smsBacklog };
+    const latestWebhooks = await prisma.webhookEvent.findMany({
+      orderBy: { processedAt: 'desc' },
+      take: 5,
+      select: { provider: true, eventId: true, type: true, processedAt: true, outcome: true },
+    });
+    const health = {
+      cache: cacheInfo,
+      db: { connected: dbConnected },
+      redis: { connected: cacheInfo.driver === 'redis' },
+      av: { enabled: avEnabled, reachable: avReachable },
+      dlq: { enabled: env.dlqEnable, ...dlqStats },
+      jobs: getJobsStatus(),
+    };
+    res.json({
+      success: true,
+      data: { health, dlqStats, latestWebhooks, metricsSampleTs: new Date().toISOString() },
     });
   } catch (err) {
     next(err);

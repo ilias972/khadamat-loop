@@ -37,3 +37,7 @@
 3. Confirmer la configuration des webhooks Stripe et KYC.
 4. Purger/initialiser les caches si nécessaire.
 5. Vérifier les pages légales et les paramètres de maintenance.
+
+## Post-déploiement
+- Après chaque déploiement en production, le pipeline doit appeler `npm run postdeploy:prod`.
+- Ce script exécute la vérification GO-LIVE et doit faire échouer le pipeline en cas de `NO-GO`.

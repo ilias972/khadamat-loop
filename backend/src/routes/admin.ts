@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { deleteReview, disableUser, listAuditLogs, getWebhookStatus } from '../controllers/adminController';
+import { deleteReview, disableUser, listAuditLogs, getWebhookStatus, getSnapshot } from '../controllers/adminController';
 import { listReviews, deleteReviewAdmin, restoreReviewAdmin, listMessages, hideMessage } from '../controllers/moderationController';
 
 const router = Router();
@@ -13,5 +13,6 @@ router.post('/messages/:id/hide', hideMessage);
 router.put('/users/:id/disable', disableUser);
 router.get('/audit', listAuditLogs);
 router.get('/webhooks/status', getWebhookStatus);
+router.get('/snapshot', getSnapshot);
 
 export default router;

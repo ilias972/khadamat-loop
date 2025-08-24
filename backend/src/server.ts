@@ -108,10 +108,16 @@ if (env.trustProxy) {
   app.set('trust proxy', 1);
 }
 
+let getJobsStatus = () => ({ enabled: env.jobsEnable, lastRun: { retention: null, backup: null, heartbeat: null } });
 if (process.env.NODE_ENV !== 'test' && dbAvailable) {
-  import('./jobs/scheduler').then((m) => m.startSchedulers());
-  if (!process.env.WORKER_ROLE || process.env.WORKER_ROLE === 'jobs') {
-    startDlqRunner();
+  if (env.jobsEnable) {
+    import('./jobs/scheduler').then((m) => {
+      getJobsStatus = m.getJobsStatus;
+      if (!process.env.WORKER_ROLE || process.env.WORKER_ROLE === 'jobs') {
+        m.startSchedulers();
+        startDlqRunner();
+      }
+    });
   }
 }
 app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
@@ -181,11 +187,12 @@ app.get('/health', async (_req, res) => {
   const cacheInfo = getCacheStatus();
   const avEnabled = process.env.UPLOAD_ANTIVIRUS === 'true';
   const avReachable = avEnabled ? await pingClamAV() : false;
-  const dlqInfo = { enabled: env.dlqEnable, webhooksBacklog: 0, smsBacklog: 0 };
+  const dlqInfo = { enabled: env.dlqEnable, webhooksBacklog: 0, smsBacklog: 0 } as any;
   if (env.dlqEnable && dbAvailable) {
     dlqInfo.webhooksBacklog = await prisma.webhookDLQ.count().catch(() => 0);
     dlqInfo.smsBacklog = await prisma.smsDLQ.count().catch(() => 0);
   }
+  const jobs = getJobsStatus();
   res.json({
     success: true,
     data: {
@@ -194,6 +201,7 @@ app.get('/health', async (_req, res) => {
       redis: { connected: cacheInfo.driver === 'redis' },
       av: { enabled: avEnabled, reachable: avReachable },
       dlq: dlqInfo,
+      jobs,
     },
   });
 });
