@@ -8,21 +8,21 @@ export function ipAllowList() {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  const cidrs = list
-    .map((entry) => {
-      try {
-        return ipaddr.parseCIDR(entry);
-      } catch {
-        return null;
-      }
-    })
-    .filter((v): v is [ipaddr.IPv4 | ipaddr.IPv6, number] => v !== null);
+    const cidrs = list
+      .map((entry) => {
+        try {
+          return ipaddr.parseCIDR(entry);
+        } catch {
+          return null;
+        }
+      })
+      .filter((v): v is [ipaddr.IPv4 | ipaddr.IPv6, number] => v !== null);
 
   return (req: Request, res: Response, next: NextFunction) => {
     if (cidrs.length === 0) return next();
-    try {
-      const addr = ipaddr.parse(req.ip || '');
-      const allowed = cidrs.some(([net, prefix]) => addr.match(net, prefix));
+      try {
+        const addr = ipaddr.parse(req.ip || '') as any;
+        const allowed = cidrs.some((range) => addr.match(range));
       if (allowed) return next();
     } catch {}
     logger.warn('ADMIN_IP_BLOCKED', { ip: req.ip });

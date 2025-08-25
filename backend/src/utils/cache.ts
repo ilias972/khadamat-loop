@@ -3,7 +3,7 @@
  * Bump CACHE_NAMESPACE (e.g. khadamat:v2) on incompatible releases.
  */
 
-import { createClient, type RedisClientType } from 'redis';
+import { createClient } from 'redis';
 import crypto from 'crypto';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
@@ -60,7 +60,7 @@ if (prom && env.metricsEnabled) {
 }
 
 // redis client with backoff
-let client: RedisClientType | null = null;
+let client: any = null;
 let useRedis = false;
 let lastFailAt: string | undefined;
 let lastRestoreAt: string | undefined;

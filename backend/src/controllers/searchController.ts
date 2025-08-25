@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma';
 import { providerSearchDurationMs } from '../metrics';
 import { env } from '../config/env';
 import { cacheGet, cacheSet } from '../utils/cache';
-import { normalizeString } from '../../shared/normalize';
+import { normalizeText } from '../shared/normalize';
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // km
@@ -122,7 +122,7 @@ const suggestSchema = z.object({ q: z.string().min(1).max(50), limit: z.coerce.n
 export async function suggestCities(req: Request, res: Response, next: NextFunction) {
   try {
     const params = suggestSchema.parse(req.query);
-    const normQ = normalizeString(params.q);
+    const normQ = normalizeText(params.q);
     const cacheKey = `suggest:cities:${normQ}|${params.limit}`;
     const cached = await cacheGet(cacheKey);
     if (cached) {
@@ -132,7 +132,7 @@ export async function suggestCities(req: Request, res: Response, next: NextFunct
     const cities = await prisma.city.findMany({ select: { id: true, slug: true, name: true, lat: true, lng: true } });
     const items = cities
       .map((c) => {
-        const nameNorm = normalizeString(c.name);
+        const nameNorm = normalizeText(c.name);
         let score = 3;
         if (nameNorm.startsWith(normQ)) score = 0;
         else if (nameNorm.includes(' ' + normQ)) score = 1;

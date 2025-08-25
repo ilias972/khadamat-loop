@@ -4,7 +4,7 @@ const path = require('path');
 
 if (!process.env.__HEALTH_LOCAL) {
   const loader = path.resolve(__dirname, '../env/load.js');
-  const args = [loader, '.env', '--', process.execPath, __filename];
+  const args = [loader, '.env', '.env.local', '--', process.execPath, __filename];
   const child = spawn(process.execPath, args, {
     stdio: 'inherit',
     env: { ...process.env, __HEALTH_LOCAL: '1' },

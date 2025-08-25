@@ -10,9 +10,13 @@ function run(cmd) {
 const root = path.resolve(__dirname, '..', '..');
 
 function loadEnv() {
-  const candidates = ['.env', '.env.local'];
+  const candidates = ['.env', '.env.local', '.env.local.example'];
   let loaded = false;
   for (const file of candidates) {
+    if (file === '.env.local.example' && fs.existsSync(path.join(root, '.env.local'))) {
+      console.log(`SKIPPED ${file}`);
+      continue;
+    }
     const abs = path.join(root, file);
     if (fs.existsSync(abs)) {
       const content = fs.readFileSync(abs, 'utf8');
@@ -28,7 +32,8 @@ function loadEnv() {
       }
       console.log(`ENV LOADED FROM ${file}`);
       loaded = true;
-      break;
+    } else {
+      console.log(`FALLBACK ${file}`);
     }
   }
   if (!loaded) console.log('ENV FALLBACK');
