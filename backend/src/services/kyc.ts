@@ -1,12 +1,12 @@
 let stripe: any = null;
-try {
-  if (process.env.KYC_PROVIDER === 'stripe' && process.env.STRIPE_SECRET_KEY) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const Stripe = require('stripe');
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
-  }
-} catch {
-  stripe = null;
+if (process.env.KYC_PROVIDER === 'stripe' && process.env.STRIPE_SECRET_KEY) {
+  import('stripe')
+    .then(({ default: Stripe }) => {
+      stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2024-06-20' });
+    })
+    .catch(() => {
+      stripe = null;
+    });
 }
 
 export async function createKycSessionFor(userId: number) {

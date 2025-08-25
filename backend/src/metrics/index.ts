@@ -3,14 +3,7 @@ import { logger } from '../config/logger';
 import type { Request, Response, NextFunction } from 'express';
 
 let prom: any = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  prom = require('prom-client');
-} catch (e) {
-  logger.warn('METRICS_DISABLED: prom-client not found');
-}
-
-export const registry = prom ? new prom.Registry() : null;
+export let registry: any = null;
 
 let httpRequestsTotal: any;
 let httpRequestDurationMs: any;
@@ -25,79 +18,89 @@ let repoOpTotal: any;
 let repoOpDurationMs: any;
 let providerSearchDurationMs: any;
 
-if (prom && env.metricsEnabled) {
-  prom.collectDefaultMetrics({ register: registry });
-  httpRequestsTotal = new prom.Counter({
-    name: 'http_requests_total',
-    help: 'Total HTTP requests',
-    labelNames: ['method', 'route', 'status'],
-    registers: [registry],
+export const metricsReady = import('prom-client')
+  .then((m) => {
+    prom = (m as any).default || m;
+    if (env.metricsEnabled) {
+      registry = new prom.Registry();
+      prom.collectDefaultMetrics({ register: registry });
+      httpRequestsTotal = new prom.Counter({
+        name: 'http_requests_total',
+        help: 'Total HTTP requests',
+        labelNames: ['method', 'route', 'status'],
+        registers: [registry],
+      });
+      httpRequestDurationMs = new prom.Histogram({
+        name: 'http_request_duration_ms',
+        help: 'Duration of HTTP requests in ms',
+        labelNames: ['method', 'route', 'status'],
+        buckets: env.metricsBucketsMs,
+        registers: [registry],
+      });
+      bookingsCreatedTotal = new prom.Counter({
+        name: 'bookings_created_total',
+        help: 'Total bookings created',
+        registers: [registry],
+      });
+      messagesSentTotal = new prom.Counter({
+        name: 'messages_sent_total',
+        help: 'Total messages sent',
+        registers: [registry],
+      });
+      webhooksProcessedTotal = new prom.Counter({
+        name: 'webhooks_processed_total',
+        help: 'Webhooks processed',
+        labelNames: ['provider', 'outcome'],
+        registers: [registry],
+      });
+      smsDispatchTotal = new prom.Counter({
+        name: 'sms_dispatch_total',
+        help: 'SMS dispatch count',
+        labelNames: ['outcome'],
+        registers: [registry],
+      });
+      repoOpTotal = new prom.Counter({
+        name: 'repo_operation_total',
+        help: 'Repository method calls',
+        labelNames: ['repo', 'method'],
+        registers: [registry],
+      });
+      repoOpDurationMs = new prom.Histogram({
+        name: 'repo_operation_duration_ms',
+        help: 'Duration of repository methods in ms',
+        labelNames: ['repo', 'method'],
+        buckets: env.metricsBucketsMs,
+        registers: [registry],
+      });
+      providerSearchDurationMs = new prom.Histogram({
+        name: 'provider_search_duration_ms',
+        help: 'Duration of provider search queries in ms',
+        buckets: env.metricsBucketsMs,
+        registers: [registry],
+      });
+      dlqWebhooksBacklog = new prom.Gauge({
+        name: 'dlq_webhooks_backlog',
+        help: 'Webhook DLQ backlog size',
+        registers: [registry],
+      });
+      dlqSmsBacklog = new prom.Gauge({
+        name: 'dlq_sms_backlog',
+        help: 'SMS DLQ backlog size',
+        registers: [registry],
+      });
+      jobsHeartbeatTotal = new prom.Counter({
+        name: 'jobs_heartbeat_total',
+        help: 'Scheduler heartbeats',
+        labelNames: ['job'],
+        registers: [registry],
+      });
+    } else {
+      logger.warn('METRICS_DISABLED: prom-client not found');
+    }
+  })
+  .catch(() => {
+    logger.warn('METRICS_DISABLED: prom-client not found');
   });
-  httpRequestDurationMs = new prom.Histogram({
-    name: 'http_request_duration_ms',
-    help: 'Duration of HTTP requests in ms',
-    labelNames: ['method', 'route', 'status'],
-    buckets: env.metricsBucketsMs,
-    registers: [registry],
-  });
-  bookingsCreatedTotal = new prom.Counter({
-    name: 'bookings_created_total',
-    help: 'Total bookings created',
-    registers: [registry],
-  });
-  messagesSentTotal = new prom.Counter({
-    name: 'messages_sent_total',
-    help: 'Total messages sent',
-    registers: [registry],
-  });
-  webhooksProcessedTotal = new prom.Counter({
-    name: 'webhooks_processed_total',
-    help: 'Webhooks processed',
-    labelNames: ['provider', 'outcome'],
-    registers: [registry],
-  });
-  smsDispatchTotal = new prom.Counter({
-    name: 'sms_dispatch_total',
-    help: 'SMS dispatch count',
-    labelNames: ['outcome'],
-    registers: [registry],
-  });
-  repoOpTotal = new prom.Counter({
-    name: 'repo_operation_total',
-    help: 'Repository method calls',
-    labelNames: ['repo', 'method'],
-    registers: [registry],
-  });
-  repoOpDurationMs = new prom.Histogram({
-    name: 'repo_operation_duration_ms',
-    help: 'Duration of repository methods in ms',
-    labelNames: ['repo', 'method'],
-    buckets: env.metricsBucketsMs,
-    registers: [registry],
-  });
-  providerSearchDurationMs = new prom.Histogram({
-    name: 'provider_search_duration_ms',
-    help: 'Duration of provider search queries in ms',
-    buckets: env.metricsBucketsMs,
-    registers: [registry],
-  });
-  dlqWebhooksBacklog = new prom.Gauge({
-    name: 'dlq_webhooks_backlog',
-    help: 'Webhook DLQ backlog size',
-    registers: [registry],
-  });
-  dlqSmsBacklog = new prom.Gauge({
-    name: 'dlq_sms_backlog',
-    help: 'SMS DLQ backlog size',
-    registers: [registry],
-  });
-  jobsHeartbeatTotal = new prom.Counter({
-    name: 'jobs_heartbeat_total',
-    help: 'Scheduler heartbeats',
-    labelNames: ['job'],
-    registers: [registry],
-  });
-}
 
 export const metricsRequestTimer = (
   req: Request,

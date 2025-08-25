@@ -1,6 +1,6 @@
 import '../test/env';
 import request from 'supertest';
-import { app } from '../server';
+import { app } from '../app';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utils/password';
 import { generateSecret, generateTotp } from '../utils/totp';

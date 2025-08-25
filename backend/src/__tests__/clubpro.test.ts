@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app } from '../server';
+import { app } from '../app';
 
 describe('clubpro flow', () => {
   it('placeholder', async () => {

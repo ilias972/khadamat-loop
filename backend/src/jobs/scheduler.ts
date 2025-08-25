@@ -8,18 +8,13 @@ import { runKycRetentionJob } from './kycRetention';
 import { runBookingExpiryJob } from './bookingExpiry';
 import { jobsHeartbeatTotal } from '../metrics';
 
-let cron: any = null;
-try {
-  cron = require('node-cron');
-} catch (e) {
-  cron = null;
-}
-
 const lastRun: { retention?: string | null; backup?: string | null; heartbeat?: string | null } = {
   retention: null,
   backup: null,
   heartbeat: null,
 };
+
+let cron: any = null;
 
 function schedule(spec: string, fn: () => void) {
   if (cron) {
@@ -110,7 +105,13 @@ function runHeartbeatJob() {
   lastRun.heartbeat = new Date().toISOString();
 }
 
-export function startSchedulers() {
+export async function startSchedulers() {
+  try {
+    ({ default: cron } = await import('node-cron'));
+  } catch {
+    cron = null;
+  }
+
   if (!env.jobsEnable) {
     logger.info('jobs_scheduler_disabled');
     return;

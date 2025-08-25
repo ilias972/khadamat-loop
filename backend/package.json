@@ -25,6 +25,7 @@
     "db:bootstrap:pg": "node scripts/db-bootstrap-pg.js",
     "db:bootstrap:sqlite": "node scripts/db-bootstrap-sqlite.js",
     "db:seed:sql": "node scripts/db-seed-sql.js",
+    "db:init": "node scripts/db-init.cjs",
     "test:prepare": "node scripts/test-db-prepare.js",
     "pretest": "node scripts/prisma/self-heal.js && node scripts/prisma/prepare-test-db.js",
     "test": "npm run test:smart",
