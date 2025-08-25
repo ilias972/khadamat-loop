@@ -1,11 +1,7 @@
 const fs = require('fs');
 const { spawn } = require('child_process');
 const path = require('path');
-
-if (process.env.START_BACKEND_FOR_TESTS !== 'true') {
-  console.log('SKIPPED spawn: disabled');
-  process.exit(0);
-}
+const fetch = global.fetch;
 
 function findCmd() {
   const mode = process.env.START_BACKEND_CMD || 'auto';
@@ -21,17 +17,35 @@ function findCmd() {
   return null;
 }
 
-const cmd = findCmd();
-if (!cmd) {
-  console.log('SKIPPED spawn: no runner');
-  process.exit(0);
+async function main() {
+  const base = process.env.BACKEND_BASE_URL;
+  if (base) {
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 1000);
+      const res = await fetch(base + (process.env.BACKEND_HEALTH_PATH || '/health'), { signal: controller.signal });
+      clearTimeout(t);
+      if (res.ok) {
+        console.log('SKIPPED spawn-backend: remote running');
+        return;
+      }
+    } catch {}
+  }
+
+  const cmd = findCmd();
+  if (!cmd) {
+    console.log('SKIPPED spawn-backend: no runner');
+    return;
+  }
+
+  const child = spawn(cmd, { stdio: 'inherit', shell: true, detached: true });
+  child.unref();
+
+  const pidDir = path.resolve(__dirname, '../../.tmp');
+  fs.mkdirSync(pidDir, { recursive: true });
+  fs.writeFileSync(path.join(pidDir, 'spawn.pid'), String(child.pid));
+
+  console.log('PASS spawn-backend');
 }
 
-const child = spawn(cmd, { stdio: 'inherit', shell: true, detached: true });
-child.unref();
-
-const pidDir = path.resolve(__dirname, '../../.tmp');
-fs.mkdirSync(pidDir, { recursive: true });
-fs.writeFileSync(path.join(pidDir, 'spawn.pid'), String(child.pid));
-
-console.log('PASS spawn-backend');
+main();

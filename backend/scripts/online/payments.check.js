@@ -69,7 +69,15 @@ const { fetchJson, logPass, logFail, logSkip, getProviderAuth } = require('./uti
       timestamp: Math.floor(Date.now() / 1000),
     });
 
-    await fetch(process.env.BACKEND_BASE_URL + '/api/payments/webhook', {
+    const url = process.env.BACKEND_BASE_URL + '/api/payments/webhook';
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Stripe-Signature': header, 'Content-Type': 'application/json' },
+      body: payload,
+    });
+
+    // reinject same event to verify idempotence
+    await fetch(url, {
       method: 'POST',
       headers: { 'Stripe-Signature': header, 'Content-Type': 'application/json' },
       body: payload,
