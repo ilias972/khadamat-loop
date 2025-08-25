@@ -21,14 +21,14 @@ try {
   limiter = (req: Request, res: Response, next: NextFunction) => {
     const now = Date.now();
     const windowMs = env.rateGlobalWindowMin * 60 * 1000;
-    const key = req.ip;
-    const data = hits.get(key) || { count: 0, ts: now };
+      const key = req.ip || '';
+      const data = hits.get(key) || { count: 0, ts: now };
     if (now - data.ts > windowMs) {
       data.count = 0;
       data.ts = now;
     }
     data.count++;
-    hits.set(key, data);
+      hits.set(key, data);
     if (data.count > env.rateGlobalMax) {
       return res.status(429).json({
         success: false,

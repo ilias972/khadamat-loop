@@ -121,7 +121,7 @@ if (env.trustProxy) {
   app.set('trust proxy', 1);
 }
 
-let getJobsStatus = () => ({ enabled: env.jobsEnable, lastRun: { retention: null, backup: null, heartbeat: null } });
+let getJobsStatus: () => any = () => ({ enabled: env.jobsEnable, lastRun: { retention: null, backup: null, heartbeat: null } });
 if (process.env.NODE_ENV !== 'test' && dbAvailable) {
   if (env.jobsEnable) {
     import('./jobs/scheduler').then((m) => {

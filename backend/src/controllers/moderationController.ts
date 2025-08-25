@@ -26,8 +26,8 @@ export async function deleteReviewAdmin(req: Request, res: Response, next: NextF
     const id = parseInt(req.params.id, 10);
     const reason = (req.body.reason as string) || null;
     await prisma.review.update({ where: { id }, data: { deletedAt: new Date() } });
-    await prisma.moderationAction.create({ data: { adminId: req.user!.id, targetType: 'REVIEW', targetId: id, action: 'DELETE', reason } });
-    await logAction({ userId: req.user!.id, action: 'ADMIN_MODERATION', resource: 'review', resourceId: id, newValues: { action: 'DELETE', reason }, ip: req.ip, ua: req.headers['user-agent'] });
+    await prisma.moderationAction.create({ data: { adminId: Number(req.user!.id), targetType: 'REVIEW', targetId: id, action: 'DELETE', reason } });
+    await logAction({ userId: Number(req.user!.id), action: 'ADMIN_MODERATION', resource: 'review', resourceId: id, newValues: { action: 'DELETE', reason }, ip: req.ip, ua: req.headers['user-agent'] });
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -38,8 +38,8 @@ export async function restoreReviewAdmin(req: Request, res: Response, next: Next
   try {
     const id = parseInt(req.params.id, 10);
     await prisma.review.update({ where: { id }, data: { deletedAt: null } });
-    await prisma.moderationAction.create({ data: { adminId: req.user!.id, targetType: 'REVIEW', targetId: id, action: 'RESTORE' } });
-    await logAction({ userId: req.user!.id, action: 'ADMIN_MODERATION', resource: 'review', resourceId: id, newValues: { action: 'RESTORE' }, ip: req.ip, ua: req.headers['user-agent'] });
+    await prisma.moderationAction.create({ data: { adminId: Number(req.user!.id), targetType: 'REVIEW', targetId: id, action: 'RESTORE' } });
+    await logAction({ userId: Number(req.user!.id), action: 'ADMIN_MODERATION', resource: 'review', resourceId: id, newValues: { action: 'RESTORE' }, ip: req.ip, ua: req.headers['user-agent'] });
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -67,8 +67,8 @@ export async function hideMessage(req: Request, res: Response, next: NextFunctio
     const id = parseInt(req.params.id, 10);
     const reason = (req.body.reason as string) || null;
     await prisma.message.update({ where: { id }, data: { isHidden: true } });
-    await prisma.moderationAction.create({ data: { adminId: req.user!.id, targetType: 'MESSAGE', targetId: id, action: 'HIDE', reason } });
-    await logAction({ userId: req.user!.id, action: 'ADMIN_MODERATION', resource: 'message', resourceId: id, newValues: { action: 'HIDE', reason }, ip: req.ip, ua: req.headers['user-agent'] });
+    await prisma.moderationAction.create({ data: { adminId: Number(req.user!.id), targetType: 'MESSAGE', targetId: id, action: 'HIDE', reason } });
+    await logAction({ userId: Number(req.user!.id), action: 'ADMIN_MODERATION', resource: 'message', resourceId: id, newValues: { action: 'HIDE', reason }, ip: req.ip, ua: req.headers['user-agent'] });
     res.json({ success: true });
   } catch (err) {
     next(err);

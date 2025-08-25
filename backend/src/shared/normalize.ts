@@ -12,6 +12,3 @@ export function normalizeArabic(input: string): string {
 export function normalizeText(input: string): string {
   return normalizeArabic(stripDiacritics(input.toLowerCase().trim()));
 }
-
-// Backward compatibility
-export const normalizeString = normalizeText;

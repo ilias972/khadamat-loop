@@ -25,10 +25,14 @@ module.exports = async function () {
       fix: 'Restreindre CORS_ORIGINS'
     });
   }
-  if (!(process.env.COOKIE_SECURE === 'true' && ['lax', 'strict'].includes(process.env.COOKIE_SAMESITE || ''))) {
+  const cookieOk =
+    process.env.COOKIE_SECURE === 'true' && ['lax', 'strict'].includes(process.env.COOKIE_SAMESITE || '');
+  if (!cookieOk) {
+    const prodLike = ['production', 'staging'].includes(process.env.NODE_ENV || '');
+    const requireSecure = prodLike && process.env.TRUST_PROXY === 'true';
     findings.push({
       id: 'COOKIE_FLAGS',
-      level: 'P0',
+      level: requireSecure ? 'P0' : 'P1',
       title: 'Cookies non sécurisés',
       detail: '',
       evidence: '',

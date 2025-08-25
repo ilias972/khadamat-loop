@@ -22,12 +22,11 @@ for (let i = 0; i < beforeDash.length; i++) {
   }
 }
 
-let loaded = 0;
-for (const f of files) {
-  const abs = path.resolve(f);
+function loadFile(fp) {
+  const abs = path.resolve(fp);
   if (!fs.existsSync(abs)) {
-    console.log(`FALLBACK ${f}`);
-    continue;
+    console.log(`FALLBACK ${fp}`);
+    return false;
   }
   const content = fs.readFileSync(abs, 'utf8');
   for (const line of content.split(/\r?\n/)) {
@@ -40,32 +39,23 @@ for (const f of files) {
       process.env[key] = value;
     }
   }
-  loaded++;
-  console.log(`ENV LOADED FROM ${f}`);
+  console.log(`ENV LOADED FROM ${fp}`);
+  return true;
+}
+
+let loaded = 0;
+for (const f of files) {
+  if (loadFile(f)) loaded++;
 }
 
 if (!loaded) {
   const fallbacks = ['./.env', './.env.local', './.env.local.example'];
   for (const f of fallbacks) {
-    const abs = path.resolve(f);
-    if (fs.existsSync(abs)) {
-      const content = fs.readFileSync(abs, 'utf8');
-      for (const line of content.split(/\r?\n/)) {
-        if (!line || line.trim().startsWith('#')) continue;
-        const eq = line.indexOf('=');
-        if (eq === -1) continue;
-        const key = line.slice(0, eq).trim();
-        const value = line.slice(eq + 1).trim();
-        if (process.env[key] === undefined || process.env[key] === '') {
-          process.env[key] = value;
-        }
-      }
-      loaded++;
-      console.log(`ENV LOADED FROM ${f}`);
-      break;
-    } else {
-      console.log(`FALLBACK ${f}`);
+    if (f === './.env.local.example' && fs.existsSync(path.resolve('./.env.local'))) {
+      console.log(`SKIPPED ${f}`);
+      continue;
     }
+    if (loadFile(f)) loaded++;
   }
   if (!loaded) console.log('NO ENV FILE LOADED');
 }
