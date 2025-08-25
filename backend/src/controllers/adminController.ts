@@ -120,7 +120,15 @@ export async function getWebhookStatus(req: Request, res: Response, next: NextFu
       const events = await prisma.webhookEvent.findMany({
         orderBy: { processedAt: 'desc' },
         take: limit,
-        select: { provider: true, eventId: true, type: true, createdAt: true, processedAt: true, status: true },
+        select: {
+          provider: true,
+          eventId: true,
+          type: true,
+          createdAt: true,
+          processedAt: true,
+          status: true,
+          retryCount: true,
+        },
       });
       recent = events.map(mapEvent);
     }

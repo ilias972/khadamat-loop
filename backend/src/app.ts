@@ -189,24 +189,23 @@ app.get('/health', async (_req, res) => {
   const cacheInfo = getCacheStatus();
   const avEnabled = process.env.UPLOAD_ANTIVIRUS === 'true';
   const avReachable = avEnabled ? await pingClamAV() : false;
-  const dlqInfo = { enabled: env.dlqEnable, webhooksBacklog: 0, smsBacklog: 0 } as any;
+  const dlqInfo = { webhooks: 0, sms: 0 } as any;
   if (env.dlqEnable && dbAvailable) {
-    dlqInfo.webhooksBacklog = await prisma.webhookDLQ.count().catch(() => 0);
-    dlqInfo.smsBacklog = await prisma.smsDLQ.count().catch(() => 0);
+    dlqInfo.webhooks = await prisma.webhookDLQ.count().catch(() => 0);
+    dlqInfo.sms = await prisma.smsDLQ.count().catch(() => 0);
   }
   const jobs = getJobsStatus();
   const webhookSecretsOk = !!env.stripeWebhookSecret && !!env.stripeIdentityWebhookSecret;
   res.json({
     success: true,
     data: {
-      cache: cacheInfo,
-      db: { connected: dbConnected },
-      redis: { connected: cacheInfo.driver === 'redis' },
-      av: { enabled: avEnabled, reachable: avReachable },
-      dlq: dlqInfo,
-      jobs,
-      webhookSecretsOk,
+      db: { ok: dbConnected },
+      cache: { ok: cacheInfo.driver ? true : false, driver: cacheInfo.driver },
       webhookIdempotenceOk,
+      av: { status: avEnabled ? (avReachable ? 'ok' : 'unreachable') : 'disabled' },
+      dlq: { backlog: dlqInfo },
+      scheduler: { lastRuns: jobs.lastRun },
+      webhookSecretsOk,
     },
   });
 });
