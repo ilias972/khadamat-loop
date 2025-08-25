@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = async function () {
   const findings = [];
-  const serverPath = path.resolve(__dirname, '../../../src/server.ts');
+  const serverPath = path.resolve(__dirname, '../../../src/app.ts');
   const content = fs.existsSync(serverPath) ? fs.readFileSync(serverPath, 'utf8') : '';
   if (content.includes("'unsafe-inline")) {
     findings.push({
@@ -30,9 +30,10 @@ module.exports = async function () {
   if (!cookieOk) {
     const prodLike = ['production', 'staging'].includes(process.env.NODE_ENV || '');
     const requireSecure = prodLike && process.env.TRUST_PROXY === 'true';
+    const level = requireSecure ? 'P0' : prodLike ? 'P1' : 'P2';
     findings.push({
       id: 'COOKIE_FLAGS',
-      level: requireSecure ? 'P0' : 'P1',
+      level,
       title: 'Cookies non sécurisés',
       detail: '',
       evidence: '',

@@ -4,6 +4,36 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..', '..');
+
+function loadEnv() {
+  const candidates = ['.env', '.env.local', '.env.local.example'];
+  for (const file of candidates) {
+    if (file === '.env.local.example' && fs.existsSync(path.join(root, '.env.local'))) {
+      console.log(`SKIPPED ${file}`);
+      continue;
+    }
+    const abs = path.join(root, file);
+    if (!fs.existsSync(abs)) {
+      console.log(`FALLBACK ${file}`);
+      continue;
+    }
+    const content = fs.readFileSync(abs, 'utf8');
+    for (const line of content.split(/\r?\n/)) {
+      if (!line || line.trim().startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq === -1) continue;
+      const key = line.slice(0, eq).trim();
+      const value = line.slice(eq + 1).trim();
+      if (process.env[key] === undefined || process.env[key] === '') {
+        process.env[key] = value;
+      }
+    }
+    console.log(`ENV LOADED FROM ${file}`);
+  }
+}
+
+loadEnv();
+
 const env = { ...process.env, NODE_ENV: 'development' };
 
 let tsxPath;

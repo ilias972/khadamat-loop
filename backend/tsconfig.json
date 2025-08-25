@@ -12,11 +12,16 @@
     "resolveJsonModule": true,
     "outDir": "dist",
     "rootDir": "src",
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": [
     "src",
-    "src/shims"
+    "src/shims",
+    "../shared"
   ],
   "exclude": [
     "src/__tests__"

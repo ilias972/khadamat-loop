@@ -1,6 +1,6 @@
 import '../test/env';
 import request from 'supertest';
-import { app } from '../server';
+import { app } from '../app';
 
 describe('favorites flow', () => {
   it('add/check/idempotent/delete', async () => {

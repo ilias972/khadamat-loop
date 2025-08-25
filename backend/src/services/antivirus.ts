@@ -2,6 +2,7 @@ import net from 'node:net';
 import fs from 'node:fs';
 import { logger } from '../config/logger';
 import { NormalizedUpload } from '../upload/fileAdapter';
+import path from 'node:path';
 
 const AV_HOST = process.env.CLAMAV_HOST || 'localhost';
 const AV_PORT = parseInt(process.env.CLAMAV_PORT || '3310', 10);
@@ -79,7 +80,7 @@ export async function scanUpload(up: NormalizedUpload): Promise<ScanVerdict> {
 }
 
 export async function quarantineUpload(up: NormalizedUpload, qPath: string): Promise<void> {
-  await fs.promises.mkdir(require('node:path').dirname(qPath), { recursive: true, mode: 0o700 });
+  await fs.promises.mkdir(path.dirname(qPath), { recursive: true, mode: 0o700 });
   if (up.tempPath) {
     try {
       await fs.promises.rename(up.tempPath, qPath);

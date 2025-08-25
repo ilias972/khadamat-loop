@@ -81,7 +81,7 @@ async function runSection(name) {
   for (const r of results) {
     for (const f of r.findings) findings.push({ section: r.name, ...f });
   }
-  const scoreWeights = { P0: 15, P1: 5, P2: 2 };
+  const scoreWeights = { P0: 15, P1: 3, P2: 1 };
   let score = 100;
   for (const f of findings) {
     score -= scoreWeights[f.level] || 0;

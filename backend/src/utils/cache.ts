@@ -24,40 +24,40 @@ let cacheMissesTotal: any;
 let cacheEvictionsTotal: any;
 let cacheOpDurationMs: any;
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  prom = require('prom-client');
-} catch {
-  /* prom-client optional */
-}
-
-if (prom && env.metricsEnabled) {
-  cacheHitsTotal = new prom.Counter({
-    name: 'cache_hits_total',
-    help: 'Cache hits',
-    labelNames: ['driver', 'bucket'],
-    registers: [registry],
+import('prom-client')
+  .then((m) => {
+    prom = (m as any).default || m;
+    if (env.metricsEnabled) {
+      cacheHitsTotal = new prom.Counter({
+        name: 'cache_hits_total',
+        help: 'Cache hits',
+        labelNames: ['driver', 'bucket'],
+        registers: [registry],
+      });
+      cacheMissesTotal = new prom.Counter({
+        name: 'cache_misses_total',
+        help: 'Cache misses',
+        labelNames: ['driver', 'bucket'],
+        registers: [registry],
+      });
+      cacheEvictionsTotal = new prom.Counter({
+        name: 'cache_evictions_total',
+        help: 'Cache evictions',
+        labelNames: ['driver', 'bucket'],
+        registers: [registry],
+      });
+      cacheOpDurationMs = new prom.Histogram({
+        name: 'cache_op_duration_ms',
+        help: 'Duration of cache operations in ms',
+        labelNames: ['driver', 'bucket', 'op'],
+        buckets: env.metricsBucketsMs,
+        registers: [registry],
+      });
+    }
+  })
+  .catch(() => {
+    /* prom-client optional */
   });
-  cacheMissesTotal = new prom.Counter({
-    name: 'cache_misses_total',
-    help: 'Cache misses',
-    labelNames: ['driver', 'bucket'],
-    registers: [registry],
-  });
-  cacheEvictionsTotal = new prom.Counter({
-    name: 'cache_evictions_total',
-    help: 'Cache evictions',
-    labelNames: ['driver', 'bucket'],
-    registers: [registry],
-  });
-  cacheOpDurationMs = new prom.Histogram({
-    name: 'cache_op_duration_ms',
-    help: 'Duration of cache operations in ms',
-    labelNames: ['driver', 'bucket', 'op'],
-    buckets: env.metricsBucketsMs,
-    registers: [registry],
-  });
-}
 
 // redis client with backoff
 let client: any = null;

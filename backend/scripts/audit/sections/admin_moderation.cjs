@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = async function () {
   const findings = [];
-  const serverPath = path.resolve(__dirname, '../../../src/server.ts');
+  const serverPath = path.resolve(__dirname, '../../../src/app.ts');
   const content = fs.existsSync(serverPath) ? fs.readFileSync(serverPath, 'utf8') : '';
   if (!(content.includes('adminIpAllowList') && content.includes('requireMfa'))) {
     findings.push({
