@@ -60,6 +60,13 @@ if (!loaded) {
   if (!loaded) console.log('NO ENV FILE LOADED');
 }
 
+if (process.env.ONLINE_STRICT === undefined) {
+  process.env.ONLINE_STRICT = 'true';
+}
+if (!process.env.TOKENS_ENV_FILE) {
+  process.env.TOKENS_ENV_FILE = './backend/.env.tokens.staging';
+}
+
 if (cmd.length === 0) process.exit(0);
 const child = spawn(cmd[0], cmd.slice(1), { stdio: 'inherit' });
 child.on('exit', (code) => process.exit(code ?? 0));

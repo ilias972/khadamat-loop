@@ -2,6 +2,24 @@
 const fs = require('fs');
 const path = require('path');
 
+for (const fp of process.argv.slice(2)) {
+  try {
+    const abs = path.resolve(fp);
+    const content = fs.readFileSync(abs, 'utf8');
+    for (const line of content.split(/\r?\n/)) {
+      if (!line || line.trim().startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq === -1) continue;
+      const key = line.slice(0, eq).trim();
+      const value = line.slice(eq + 1).trim();
+      if (process.env[key] === undefined || process.env[key] === '') {
+        process.env[key] = value;
+      }
+    }
+    console.log(`ENV LOADED FROM ${fp}`);
+  } catch {}
+}
+
 const base = process.env.BACKEND_BASE_URL;
 if (!base) {
   console.log('SKIPPED: env file not loaded.');

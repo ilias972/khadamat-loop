@@ -3,10 +3,21 @@ const { fetchJson, logPass, logFail, logSkip, getProviderAuth } = require('./uti
 (async () => {
   const name = 'kyc.online';
   try {
-    const required = ['ONLINE_TESTS_ENABLE', 'BACKEND_BASE_URL', 'STRIPE_IDENTITY_WEBHOOK_SECRET', 'PROVIDER_BEARER_TOKEN'];
+    const strict = process.env.ONLINE_STRICT !== 'false';
+    const required = ['STRIPE_IDENTITY_WEBHOOK_SECRET', 'PROVIDER_BEARER_TOKEN'];
     const missing = required.filter((k) => !process.env[k]);
-    if (missing.length || process.env.ONLINE_TESTS_ENABLE !== 'true') {
-      logSkip(name, 'missing ' + missing.join(','));
+    if (missing.length) {
+      const msg = 'missing: ' + missing.join(', ');
+      if (strict) {
+        logFail(name, msg);
+        process.exitCode = 1;
+      } else {
+        logSkip(name, msg);
+      }
+      return;
+    }
+    if (process.env.ONLINE_TESTS_ENABLE !== 'true') {
+      logSkip(name, 'missing ONLINE_TESTS_ENABLE');
       return;
     }
 
@@ -29,7 +40,8 @@ const { fetchJson, logPass, logFail, logSkip, getProviderAuth } = require('./uti
 
     const auth = getProviderAuth();
     if (!auth) {
-      logSkip(name, 'missing PROVIDER_BEARER_TOKEN');
+      logFail(name, 'invalid PROVIDER_BEARER_TOKEN');
+      process.exitCode = 1;
       return;
     }
 
