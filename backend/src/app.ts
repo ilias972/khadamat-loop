@@ -49,6 +49,14 @@ let dbConnected = false;
 let webhookIdempotenceOk = false;
 
 logger.info(`cookies: secure=${env.cookieSecure} samesite=${env.cookieSameSite}`);
+logger.info('SERVER_PUBLIC', {
+  backend: env.backendBaseUrl,
+  frontend: env.frontendUrl,
+  cors: env.corsOrigins,
+  trustProxy: env.trustProxy,
+});
+const cacheInfoBoot = getCacheStatus();
+logger.info('CACHE_DRIVER', { driver: cacheInfoBoot.driver });
 
 if (dbAvailable) {
   prisma
@@ -162,8 +170,8 @@ app.use(
 );
 app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
 app.use(helmet.xContentTypeOptions());
-if (process.env.NODE_ENV === 'production') {
-  app.use(helmet.hsts());
+if (env.hstsEnabled) {
+  app.use(helmet.hsts({ maxAge: env.hstsMaxAge }));
 }
 app.use(
   cors({

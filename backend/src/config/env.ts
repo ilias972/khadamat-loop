@@ -8,7 +8,9 @@ if (
 export const env = {
   port: parseInt(process.env.PORT || '3000', 10),
   frontendUrl: process.env.FRONTEND_URL || '*',
+  backendBaseUrl: process.env.BACKEND_BASE_URL || '',
   databaseUrl: process.env.DATABASE_URL || '',
+  shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL || '',
   jwtSecret: process.env.JWT_SECRET || '',
   stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '',
   stripeSecretKey: process.env.STRIPE_SECRET_KEY_LIVE || process.env.STRIPE_SECRET_KEY || '',
@@ -38,6 +40,7 @@ export const env = {
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
   adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || "",
   trustProxy: process.env.TRUST_PROXY === "true",
+  hstsEnabled: process.env.HSTS_ENABLED === 'true',
   hstsMaxAge: parseInt(process.env.HSTS_MAX_AGE || "0",10),
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   cookieSameSite: (process.env.COOKIE_SAMESITE || 'lax') as 'lax' | 'strict' | 'none',
@@ -62,6 +65,8 @@ export const env = {
   authMaxFailedLogins: parseInt(process.env.AUTH_MAX_FAILED_LOGINS || '7', 10),
   authLockoutMinutes: parseInt(process.env.AUTH_LOCKOUT_MINUTES || '30', 10),
   metricsEnabled: process.env.METRICS_ENABLED === 'true',
+  onlineStrict: process.env.ONLINE_STRICT === 'true',
+  tokensFilePath: process.env.TOKENS_FILE_PATH || '',
   metricsToken: process.env.METRICS_TOKEN || '',
   metricsBucketsMs: (process.env.METRICS_BUCKETS_MS || '25,50,100,250,500,1000,2000')
     .split(',')
@@ -130,6 +135,8 @@ export function validateEnv() {
 
   check('JWT_SECRET');
   check('FRONTEND_URL', process.env.FRONTEND_URL !== '*');
+  check('BACKEND_BASE_URL');
+  check('DATABASE_URL');
   const origins = env.corsOrigins;
   if (!origins.length || origins.some((o) => o === '*' || o === ''))
     missing.push('CORS_ORIGINS');
@@ -140,6 +147,7 @@ export function validateEnv() {
   check('STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE', !!env.stripeIdentityWebhookSecret);
   check('METRICS_TOKEN');
   if (!env.trustProxy) missing.push('TRUST_PROXY');
+  if (!env.hstsEnabled) missing.push('HSTS_ENABLED');
   if (!env.hstsMaxAge || env.hstsMaxAge < 31536000) missing.push('HSTS_MAX_AGE');
 
   if (env.emailEnabled) {
@@ -147,9 +155,7 @@ export function validateEnv() {
       check(k)
     );
   }
-  if (env.dbDialect === 'postgres') {
-    check('DATABASE_URL');
-  }
+
   if (!env.mockRedis) {
     check('REDIS_URL');
   }
