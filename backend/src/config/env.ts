@@ -5,10 +5,14 @@ if (
   process.env.PRISMA_CLIENT_ENGINE_TYPE = 'library';
 }
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+
 export const env = {
+  nodeEnv,
   port: parseInt(process.env.PORT || '3000', 10),
   frontendUrl: process.env.FRONTEND_URL || '*',
-  backendBaseUrl: process.env.BACKEND_BASE_URL || '',
+  backendBaseUrl: process.env.BACKEND_URL || process.env.BACKEND_BASE_URL || '',
+  appBaseUrl: process.env.APP_BASE_URL || '',
   databaseUrl: process.env.DATABASE_URL || '',
   shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL || '',
   jwtSecret: process.env.JWT_SECRET || '',
@@ -38,17 +42,20 @@ export const env = {
   stripeIdentityWebhookSecret:
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE ||
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
-  adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || "",
-  trustProxy: process.env.TRUST_PROXY === "true",
+  adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || '',
+  trustProxy: Number.parseInt(process.env.TRUST_PROXY || '0', 10) || 0,
   hstsEnabled: process.env.HSTS_ENABLED === 'true',
-  hstsMaxAge: parseInt(process.env.HSTS_MAX_AGE || "0",10),
-  cookieSecure: process.env.COOKIE_SECURE === 'true',
-  cookieSameSite: (process.env.COOKIE_SAMESITE || 'lax') as 'lax' | 'strict' | 'none',
+  hstsMaxAge: Number.parseInt(process.env.HSTS_MAX_AGE || '0', 10) || 0,
+  cookieSecure: nodeEnv === 'production',
+  cookieSameSite: (nodeEnv === 'production' ? 'strict' : 'lax') as 'lax' | 'strict' | 'none',
   cookieDomain: process.env.COOKIE_DOMAIN || '',
   corsOrigins: (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((v) => v.trim())
     .filter((v) => v),
+  uploadAntivirus: process.env.UPLOAD_ANTIVIRUS === 'true',
+  clamavHost: process.env.CLAMAV_HOST || '',
+  clamavPort: Number.parseInt(process.env.CLAMAV_PORT || '0', 10) || 0,
   smsQuietStart: process.env.SMS_QUIET_START || '21:00',
   smsQuietEnd: process.env.SMS_QUIET_END || '08:00',
   smsMaxRetries: parseInt(process.env.SMS_MAX_RETRIES || '3', 10),
@@ -78,13 +85,13 @@ export const env = {
   notifDefaultSms: (process.env.NOTIF_DEFAULT_SMS ?? 'true') === 'true',
   notifDefaultPush: (process.env.NOTIF_DEFAULT_PUSH ?? 'false') === 'true',
   smtpHost: process.env.SMTP_HOST || '',
-  smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
+  smtpPort: Number.parseInt(process.env.SMTP_PORT || '0', 10) || 0,
   smtpUser: process.env.SMTP_USER || '',
   smtpPass: process.env.SMTP_PASS || '',
   smtpSecure: process.env.SMTP_SECURE === 'true',
-  smtpFrom: process.env.SMTP_FROM || 'Khadamat <no-reply@khadamat.ma>',
-    emailEnabled: (process.env.EMAIL_ENABLED ?? 'true') === 'true',
-    backupEnabled: (process.env.BACKUP_ENABLE ?? process.env.BACKUP_ENABLED ?? 'true') === 'true',
+  smtpFrom: process.env.SMTP_FROM || '',
+  emailEnabled: (process.env.EMAIL_ENABLED ?? 'true') === 'true',
+  backupEnabled: (process.env.BACKUP_ENABLE ?? process.env.BACKUP_ENABLED ?? 'true') === 'true',
   backupDir: process.env.BACKUP_OUTPUT_DIR || process.env.BACKUP_DIR || './backups',
   backupRetentionDays: parseInt(process.env.BACKUP_RETENTION_DAYS || '14', 10),
   backupDriver: process.env.BACKUP_DRIVER || 'sqlite',
@@ -114,66 +121,115 @@ export const env = {
 };
 
 export function validateEnv() {
-  const envType = process.env.NODE_ENV;
-  const prodLike = envType === 'production' || envType === 'staging';
-  if (!prodLike) {
-    if (env.hstsMaxAge && env.hstsMaxAge < 31536000) {
-      console.warn('WARN HSTS_MAX_AGE too low');
+  const currentEnv = env.nodeEnv;
+  const isProd = currentEnv === 'production';
+  const missing: string[] = [];
+  const invalid: string[] = [];
+
+  const hasValue = (value?: string | null) =>
+    value !== undefined && value !== null && value.trim() !== '';
+
+  const requireKey = (key: string, predicate?: (value: string) => boolean) => {
+    const value = process.env[key];
+    if (!hasValue(value)) {
+      missing.push(key);
+      return;
+    }
+    if (predicate && !predicate(value!)) {
+      invalid.push(key);
+    }
+  };
+
+  const requirePositiveInt = (key: string) =>
+    requireKey(key, (value) => {
+      const parsed = Number.parseInt(value, 10);
+      return !Number.isNaN(parsed) && parsed > 0;
+    });
+
+  const requireOrigins = () => {
+    const raw = process.env.CORS_ORIGINS;
+    if (!hasValue(raw)) {
+      missing.push('CORS_ORIGINS');
+      return;
+    }
+    const origins = raw!
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v);
+    if (!origins.length) {
+      invalid.push('CORS_ORIGINS');
+    }
+  };
+
+  if (!isProd) {
+    if (process.env.UPLOAD_ANTIVIRUS === 'true') {
+      requireKey('CLAMAV_HOST');
+      requirePositiveInt('CLAMAV_PORT');
     }
     return;
   }
-  const missing: string[] = [];
 
-  if (process.env.FORCE_ONLINE !== 'true') missing.push('FORCE_ONLINE');
-  if (process.env.OFFLINE_MODE !== 'false') missing.push('OFFLINE_MODE');
-  if (process.env.PRODUCTION_OFFLINE_ALLOWED !== 'false')
-    missing.push('PRODUCTION_OFFLINE_ALLOWED');
+  requireKey('DATABASE_URL');
+  requireKey('SHADOW_DATABASE_URL');
+  requireKey('MOCK_REDIS', (value) => value === 'false');
+  if (process.env.MOCK_REDIS === 'false') {
+    requireKey('REDIS_URL');
+  }
+  requireKey('UPLOAD_ANTIVIRUS', (value) => value === 'true');
+  requireKey('CLAMAV_HOST');
+  requirePositiveInt('CLAMAV_PORT');
 
-  const check = (key: string, valid = true) => {
-    if (!process.env[key] || !valid) missing.push(key);
-  };
+  requireKey('SMTP_HOST');
+  requirePositiveInt('SMTP_PORT');
+  requireKey('SMTP_USER');
+  requireKey('SMTP_PASS');
+  requireKey('SMTP_FROM');
 
-  check('JWT_SECRET');
-  check('FRONTEND_URL', process.env.FRONTEND_URL !== '*');
-  check('BACKEND_BASE_URL');
-  check('DATABASE_URL');
-  const origins = env.corsOrigins;
-  if (!origins.length || origins.some((o) => o === '*' || o === ''))
-    missing.push('CORS_ORIGINS');
-  check('COOKIE_DOMAIN');
-
-  check('STRIPE_SECRET_KEY_LIVE', !!env.stripeSecretKey);
-  check('STRIPE_WEBHOOK_SECRET_LIVE', !!env.stripeWebhookSecret);
-  check('STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE', !!env.stripeIdentityWebhookSecret);
-  check('METRICS_TOKEN');
-  if (!env.trustProxy) missing.push('TRUST_PROXY');
-  if (!env.hstsEnabled) missing.push('HSTS_ENABLED');
-  if (!env.hstsMaxAge || env.hstsMaxAge < 31536000) missing.push('HSTS_MAX_AGE');
-
-  if (env.emailEnabled) {
-    ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS'].forEach((k) =>
-      check(k)
-    );
+  requireKey('SMS_PROVIDER', (value) => {
+    const normalized = value.toLowerCase();
+    return normalized === 'twilio' || normalized === 'vonage';
+  });
+  const smsProvider = (process.env.SMS_PROVIDER || '').toLowerCase();
+  if (smsProvider === 'twilio') {
+    requireKey('TWILIO_ACCOUNT_SID');
+    requireKey('TWILIO_AUTH_TOKEN');
+    requireKey('TWILIO_FROM');
+  } else if (smsProvider === 'vonage') {
+    requireKey('VONAGE_API_KEY');
+    requireKey('VONAGE_API_SECRET');
+    requireKey('VONAGE_FROM');
   }
 
-  if (!env.mockRedis) {
-    check('REDIS_URL');
-  }
-  if (env.mockEmail) missing.push('MOCK_EMAIL');
-  if (env.mockSms) missing.push('MOCK_SMS');
-  if (env.mockRedis) missing.push('MOCK_REDIS');
-  if (env.mockStripe) missing.push('MOCK_STRIPE');
-  if (process.env.DEMO_ENABLE === 'true') missing.push('DEMO_ENABLE');
-  if (!env.cookieSecure || env.cookieSameSite !== 'strict') {
-    missing.push('COOKIE_SECURE/SAMESITE');
-  }
+  requireKey('STRIPE_SECRET_KEY');
+  requireKey('STRIPE_WEBHOOK_SECRET');
+  requireKey('KYC_PROVIDER');
+  requireKey('KYC_API_KEY');
 
-  if (missing.length) {
-    console.error('Missing env vars: ' + missing.join(', '));
+  requireKey('JWT_SECRET');
+  requireKey('COOKIE_SECRET');
+  requirePositiveInt('TRUST_PROXY');
+  requireKey('HSTS_ENABLED', (value) => value === 'true');
+  requirePositiveInt('HSTS_MAX_AGE');
+  requireKey('COOKIE_DOMAIN');
+  requireOrigins();
+
+  requireKey('APP_BASE_URL');
+  requireKey('FRONTEND_URL');
+  requireKey('BACKEND_URL');
+
+  requireKey('SENTRY_DSN');
+  requireKey('METRICS_TOKEN');
+  requireKey('ADMIN_IP_ALLOWLIST');
+
+  if (missing.length || invalid.length) {
+    if (missing.length) {
+      console.error('Missing env vars: ' + missing.join(', '));
+    }
+    if (invalid.length) {
+      console.error('Invalid env vars: ' + invalid.join(', '));
+    }
     process.exit(1);
   }
 }
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
-  validateEnv();
-}
+validateEnv();
