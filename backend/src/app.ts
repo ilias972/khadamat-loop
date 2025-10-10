@@ -127,8 +127,8 @@ const compressionReady = import('compression')
   .catch(() => {
     logger.warn('compression module not available');
   });
-if (env.trustProxy) {
-  app.set('trust proxy', 1);
+if (env.trustProxy > 0) {
+  app.set('trust proxy', env.trustProxy);
 }
 
 let getJobsStatus: () => any = () => ({ enabled: env.jobsEnable, lastRun: { retention: null, backup: null, heartbeat: null } });

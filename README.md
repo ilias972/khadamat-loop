@@ -29,7 +29,7 @@ Une plateforme moderne de mise en relation entre clients et prestataires de serv
 
 ## 📋 Prérequis
 
-- **Node.js** (version 16 ou supérieure)
+- **Node.js** (version 18 ou supérieure, idéalement 20 LTS)
 - **npm** ou **yarn**
 - **Git** (optionnel)
 
@@ -101,11 +101,15 @@ khadamat-platform/
 ## 🔧 Configuration
 
 ### **Variables d'environnement**
-Créez un fichier `.env` à la racine :
-```env
-NODE_ENV=development
-PORT=3000
-```
+
+Des fichiers d'exemple sont fournis pour couvrir chaque brique :
+
+- `.env.example` : pile monolithique / démo locale.
+- `backend/.env.local.example` : exécution locale du backend Prisma.
+- `backend/.env.production.example` : configuration de production réelle.
+- `client/.env.production.example` : frontend statique pointant vers l'API.
+
+Copiez le fichier approprié (ex. `cp .env.example .env`) puis adaptez les valeurs sensibles avant de lancer les services.
 
 ### Options Prisma (optionnel)
 En cas de blocage du CDN Prisma, vous pouvez définir ces variables d'environnement (non commitées) :
