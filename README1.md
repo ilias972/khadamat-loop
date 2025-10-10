@@ -6,6 +6,8 @@ Une application web fullstack moderne qui connecte les clients aux prestataires 
 
 **Technologies**: React + TypeScript (Frontend) • Node.js + Express + Prisma (Backend) • PostgreSQL/SQLite • JWT Auth • PWA Ready
 
+> ℹ️ **Architecture** — le monorepo utilise maintenant `npm workspaces` avec trois piles : `client/` (React/Vite), `server/` (Express démo qui sert le SPA) et `backend/` (API production complète). Les commandes racine `npm run dev`, `npm run dev:frontend` et `npm run dev:backend` permettent de cibler chaque pile. Voir `docs/fullstack-audit.md`.
+
 ---
 
 ## 🎯 Vue d'Ensemble

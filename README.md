@@ -49,32 +49,41 @@ npm install
 
 ### 3. **Lancer le serveur de développement**
 ```bash
-# Pour le frontend (React)
-npm run frontend
-
-# Pour le backend (si nécessaire)
+# Pour la pile démo (Express + Vite)
 npm run dev
+
+# Pour lancer uniquement le frontend React
+npm run dev:frontend
+
+# Pour le backend de production
+npm run dev:backend
 ```
 
 ### 4. **Accéder à l'application**
 - Ouvrir votre navigateur
-- Aller sur `http://localhost:5173`
+- Aller sur `http://localhost:5000` (pile démo)
+- Ou sur `http://localhost:5173` si vous lancez seulement `npm run dev:frontend`
 
 ## 📁 Structure du Projet
 
 ```
-KhadamatPlatform/
-├── client/                 # Frontend React
-│   ├── src/
-│   │   ├── components/     # Composants réutilisables
-│   │   ├── pages/         # Pages de l'application
-│   │   ├── contexts/      # Contextes React
-│   │   ├── hooks/         # Hooks personnalisés
-│   │   └── lib/           # Utilitaires et configurations
-│   └── index.html
-├── server/                # Backend Node.js
-├── shared/                # Code partagé
-└── package.json
+khadamat-platform/
+├── package.json              # Orchestration npm workspaces (client, server, backend)
+├── client/                   # Frontend React/Vite
+│   ├── package.json          # Dépendances UI
+│   ├── vite.config.ts        # Config Vite spécifique au client
+│   ├── tailwind.config.ts    # Config Tailwind CSS
+│   ├── postcss.config.js     # Config PostCSS
+│   └── src/                  # Code React
+├── server/                   # Serveur Express de démonstration
+│   ├── package.json          # Dépendances API mock + scripts esbuild/tsx
+│   ├── index.ts              # Entrée Express
+│   ├── routes.ts             # Routes REST mockées
+│   └── vite.ts               # Intégration Vite côté serveur
+├── backend/                  # Backend complet (Prisma, scripts ops)
+│   └── package.json          # Dépendances production
+├── shared/                   # Schémas & utilitaires partagés (Drizzle + Zod)
+└── docs/fullstack-audit.md   # Documentation architecture
 ```
 
 ## 🎯 Utilisation
@@ -109,7 +118,7 @@ PRISMA_CLI_QUERY_ENGINE_TYPE=binary
 Ces variables sont lues par le `postinstall` et `scripts/check-prisma.js`.
 
 ### **Personnalisation**
-- **Couleurs** : Modifiez `tailwind.config.ts`
+- **Couleurs** : Modifiez `client/tailwind.config.ts`
 - **Traductions** : Éditez `client/src/contexts/LanguageContext.tsx`
 - **Données** : Modifiez les fichiers de données mockées
 
@@ -125,12 +134,12 @@ L'application est entièrement responsive et optimisée pour :
 ### **Frontend (Vercel/Netlify)**
 ```bash
 npm run build
-# Déployer le dossier dist/
+# Déployer le dossier dist/public
 ```
 
 ### **Backend (Heroku/Railway)**
 ```bash
-npm start
+npm run start:backend
 ```
 
 ## 🧪 Tests
@@ -147,7 +156,7 @@ cd client && npm test
 
 1. **Port déjà utilisé**
    ```bash
-   # Changer le port dans vite.config.ts
+   # Changer le port dans client/vite.config.ts
    server: { port: 3001 }
    ```
 
