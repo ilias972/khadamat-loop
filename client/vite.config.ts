@@ -20,6 +20,7 @@ export default defineConfig(async () => {
         "@": path.resolve(import.meta.dirname, "src"),
         "@shared": path.resolve(projectRoot, "shared"),
         "@assets": path.resolve(projectRoot, "attached_assets"),
+        wouter: path.resolve(projectRoot, "shared", "vendor", "wouter.tsx"),
       },
     },
     root: import.meta.dirname,

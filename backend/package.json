@@ -92,6 +92,7 @@
     "online:payments:staging": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run online:payments",
     "online:kyc:staging": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run online:kyc",
     "online:all:staging": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run online:all",
+    "staging:postdeploy": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run postdeploy:staging",
     "postdeploy:staging": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run ops:wait && npm run ops:verify && npm run smoke:all",
     "postdeploy:staging:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run ops:wait && npm run online:all",
     "profiles:check:prod": "node scripts/env/require.prod.cjs",

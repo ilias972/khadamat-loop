@@ -20,3 +20,4 @@ shared/*.js
 backend/.env.online.*
 !backend/.env.online.*.example
 backend/.env.tokens.*
+!backend/.env.tokens.*.example

@@ -18,6 +18,7 @@
     "build:client": "npm run build --workspace client",
     "build:server": "npm run build --workspace server",
     "start": "npm run start --workspace server",
+    "start:prod": "npm run start --workspace server",
     "start:backend": "npm run start --workspace backend",
     "smoke:all": "npm run smoke:all --workspace backend",
     "test": "npm run test --workspace client",
@@ -26,6 +27,8 @@
     "check:services": "npm run check:services --workspace client",
     "check:services:online": "npm run check:services:online --workspace client",
     "db:push": "npm run db:push --workspace server",
-    "backend:ops:verify": "npm run ops:verify --workspace backend"
+    "backend:ops:verify": "npm run ops:verify --workspace backend",
+    "online:check": "node backend/scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run ops:verify --workspace backend",
+    "online:smoke": "node backend/scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:all --workspace backend"
   }
 }
