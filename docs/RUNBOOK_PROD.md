@@ -1,48 +1,64 @@
 # Runbook de Production
 
-**Vérif pré-déploiement :** `npm run ci:check`
+## 1. Préparation et contrôles préalables
 
-## URLs & Webhooks
-- API: https://api.example.com
-- Frontend: https://app.example.com
-- Webhooks Stripe: secret via `STRIPE_WEBHOOK_SECRET`
-- Webhooks KYC: secret via `STRIPE_IDENTITY_WEBHOOK_SECRET`
-- Procédure de rotation: mettre à jour le secret dans l'outil distant puis dans l'environnement, redéployer.
+- Lancer la batterie de vérification continue :
+  ```bash
+  npm run ci:check --workspace backend
+  ```
+- Vérifier que `npm run build` a produit `dist/` et que les artefacts sont archivés.
+- Confirmer la disponibilité de l'environnement (CPU, mémoire, certificats TLS).
 
-## Sauvegarde / Restauration
-- Sauvegarde quotidienne conseillée via cron/PM2 : `npm run db:backup` puis `npm run db:backup:cleanup` selon `BACKUP_RETENTION_DAYS`.
-- Dump manuel : `npm run db:backup` puis `sha256sum <dump> > <dump>.sha256`.
-- Restauration :
-  - **SQLite** : `sha256sum -c <dump>.sha256` puis `cp <dump>.db ./dev.db && npx prisma migrate deploy`.
-  - **Postgres** : `sha256sum -c <dump>.sha256` puis `psql $PG_URL < <dump>.sql && npx prisma migrate deploy`.
+## 2. Gestion des sauvegardes
 
-### Plan & test de restauration
-- Générer un dump manuel : `npm run db:backup` puis `sha256sum <dump> > <dump>.sha256`.
-- Purger les anciens dumps : `npm run db:backup:cleanup`.
-- Vérifier l'intégrité : `sha256sum -c <dump>.sha256` avant restauration.
-- Tester la restauration sur une base isolée puis lancer `npm run smoke:all` avant mise en prod.
+- **Sauvegarde récurrente** : planifier `npm run db:backup --workspace backend` suivi de `npm run db:backup:cleanup --workspace backend` (cron/PM2) en respectant `BACKUP_RETENTION_DAYS`.
+- **Sauvegarde manuelle** :
+  ```bash
+  npm run db:backup --workspace backend
+  sha256sum <dump> > <dump>.sha256
+  ```
+- **Tests de restauration** :
+  - Vérifier l’intégrité : `sha256sum -c <dump>.sha256`.
+  - Restaurer sur une base isolée (Postgres : `psql $PG_URL < dump.sql`, SQLite : copie du `.db`).
+  - Exécuter `npx prisma migrate deploy` puis `npm run smoke:all --workspace backend` avant tout go-live.
 
-## Rollback applicatif
-- Conserver au moins un déploiement précédent.
-- Pour revenir en arrière: redeployer l'image/commit précédent après restauration de la base si nécessaire.
+## 3. Déploiement & migrations
 
-## Monitoring & Alerting
-- Vérifier Sentry pour les erreurs.
-- Utiliser les métriques système (CPU, mémoire) et base de données.
-- Alertes critiques par email ou Slack.
+1. Appliquer les migrations de schéma :
+   ```bash
+   npx prisma migrate deploy
+   ```
+2. Purger ou réchauffer les caches (`npm run ops:wait --workspace backend`, invalidation Redis si nécessaire).
+3. Lancer l’application : `npm run start:prod` (ou via le PaaS/Docker correspondant).
 
-## Checklist de démarrage
-1. Vérifier les variables d'environnement nécessaires (secrets, URLs).
-2. Exécuter `prisma migrate deploy` avant le démarrage de l'application.
-3. Confirmer la configuration des webhooks Stripe et KYC.
-4. Purger/initialiser les caches si nécessaire.
-5. Vérifier les pages légales et les paramètres de maintenance.
+## 4. Rotation des webhooks Stripe
 
-## Post-déploiement
-- Après chaque déploiement en production, le pipeline doit appeler `npm run postdeploy:prod`.
-- Ce script exécute la vérification GO-LIVE et doit faire échouer le pipeline en cas de `NO-GO`.
+1. Générer un nouveau secret depuis le dashboard Stripe (Events + Identity si utilisé).
+2. Mettre à jour les variables `STRIPE_WEBHOOK_SECRET` et `STRIPE_IDENTITY_WEBHOOK_SECRET` dans l’outil de gestion des secrets.
+3. Déployer l’application ou recharger la configuration.
+4. Vérifier la réception des webhooks via `npm run ops:webhooks:verify --workspace backend`.
 
-## Post-déploiement Staging
-1. `npm run tokens:get:staging` (définir `ADMIN_TOTP` ou `ADMIN_RECOVERY_CODE` si nécessaire)
-2. `npm run postdeploy:staging`
-3. `npm run postdeploy:staging:online`
+## 5. Checklist Go-Live
+
+1. Variables d’environnement validées (API, frontend, Stripe, SMTP, Redis, ClamAV).
+2. Base à jour (`npx prisma migrate deploy`).
+3. Sauvegarde la plus récente horodatée et testée.
+4. Webhooks Stripe actifs (test via `npm run online:payments --workspace backend`).
+5. Comptes d’administration opérationnels (TOTP ou codes de récupération).
+6. Tests fumée en ligne :
+   ```bash
+   npm run online:all:staging --workspace backend
+   ```
+
+## 6. Monitoring & rollback
+
+- Monitoring : suivre Sentry, logs applicatifs (`winston`), métriques infra (CPU, RAM, I/O) et base (locks, connexions).
+- Rollback : conserver l’image/commit N-1. En cas d’échec, restaurer la base (si modifiée) puis redéployer l’artefact précédent.
+
+## 7. Post-déploiement
+
+- Pipeline production : exécuter `npm run postdeploy:prod --workspace backend` après chaque mise en production.
+- Staging :
+  1. `npm run tokens:get:staging --workspace backend`
+  2. `npm run postdeploy:staging --workspace backend`
+  3. `npm run postdeploy:staging:online --workspace backend`
