@@ -6,11 +6,15 @@ if (
 }
 
 const nodeEnv = process.env.NODE_ENV || 'development';
+const frontendUrlDefault =
+  process.env.FRONTEND_URL || (nodeEnv === 'development' ? 'http://localhost:5173' : '');
+const corsOriginsRaw =
+  process.env.CORS_ORIGINS ?? (nodeEnv === 'development' ? 'http://localhost:5173' : '');
 
 export const env = {
   nodeEnv,
   port: parseInt(process.env.PORT || '3000', 10),
-  frontendUrl: process.env.FRONTEND_URL || '*',
+  frontendUrl: frontendUrlDefault,
   backendBaseUrl: process.env.BACKEND_URL || process.env.BACKEND_BASE_URL || '',
   appBaseUrl: process.env.APP_BASE_URL || '',
   databaseUrl: process.env.DATABASE_URL || '',
@@ -49,7 +53,7 @@ export const env = {
   cookieSecure: nodeEnv === 'production',
   cookieSameSite: (nodeEnv === 'production' ? 'strict' : 'lax') as 'lax' | 'strict' | 'none',
   cookieDomain: process.env.COOKIE_DOMAIN || '',
-  corsOrigins: (process.env.CORS_ORIGINS || '')
+  corsOrigins: corsOriginsRaw
     .split(',')
     .map((v) => v.trim())
     .filter((v) => v),
@@ -158,8 +162,33 @@ export function validateEnv() {
       .filter((v) => v);
     if (!origins.length) {
       invalid.push('CORS_ORIGINS');
+      return;
+    }
+    const invalidOrigins = origins.filter((origin) => {
+      if (!origin || origin === '*' || origin.includes('*')) {
+        return true;
+      }
+      try {
+        const parsed = new URL(origin);
+        return parsed.protocol !== 'https:';
+      } catch {
+        return true;
+      }
+    });
+    if (invalidOrigins.length) {
+      invalid.push('CORS_ORIGINS');
     }
   };
+
+  const requireHttpsUrl = (key: string) =>
+    requireKey(key, (value) => {
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    });
 
   if (!isProd) {
     if (process.env.UPLOAD_ANTIVIRUS === 'true') {
@@ -213,9 +242,9 @@ export function validateEnv() {
   requireKey('COOKIE_DOMAIN');
   requireOrigins();
 
-  requireKey('APP_BASE_URL');
-  requireKey('FRONTEND_URL');
-  requireKey('BACKEND_URL');
+  requireHttpsUrl('APP_BASE_URL');
+  requireHttpsUrl('FRONTEND_URL');
+  requireHttpsUrl('BACKEND_URL');
 
   requireKey('SENTRY_DSN');
   requireKey('METRICS_TOKEN');

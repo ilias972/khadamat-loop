@@ -1,2 +1,1 @@
--- CreateIndex
-CREATE INDEX "Subscription_userId_status_idx" ON "Subscription"("userId", "status");
+-- No-op: couvert par la migration 20240901000000_init.

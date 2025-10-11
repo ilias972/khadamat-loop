@@ -29,7 +29,7 @@ Une plateforme moderne de mise en relation entre clients et prestataires de serv
 
 ## 📋 Prérequis
 
-- **Node.js** (version 18 ou supérieure, idéalement 20 LTS)
+- **Node.js ≥ 18** (20 LTS recommandé)
 - **npm** ou **yarn**
 - **Git** (optionnel)
 
@@ -47,15 +47,18 @@ Une plateforme moderne de mise en relation entre clients et prestataires de serv
 npm install
 ```
 
-### 3. **Lancer le serveur de développement**
+### 3. **Choisir la pile backend**
 ```bash
-# Pour la pile démo (Express + Vite)
-npm run dev
+# Mode production / pré-production (Express + Prisma + Stripe + Redis + Sentry)
+npm run dev            # lance client + backend/
 
-# Pour lancer uniquement le frontend React
+# Mode démo uniquement (ne jamais utiliser en production)
+npm run dev:demo       # client + server/
+
+# Frontend seul
 npm run dev:frontend
 
-# Pour le backend de production
+# Backend de production isolé
 npm run dev:backend
 ```
 
@@ -68,23 +71,27 @@ npm run dev:backend
 
 ```
 khadamat-platform/
-├── package.json              # Orchestration npm workspaces (client, server, backend)
+├── package.json              # Workspaces npm (client, server, backend)
 ├── client/                   # Frontend React/Vite
 │   ├── package.json          # Dépendances UI
 │   ├── vite.config.ts        # Config Vite spécifique au client
 │   ├── tailwind.config.ts    # Config Tailwind CSS
 │   ├── postcss.config.js     # Config PostCSS
 │   └── src/                  # Code React
-├── server/                   # Serveur Express de démonstration
-│   ├── package.json          # Dépendances API mock + scripts esbuild/tsx
-│   ├── index.ts              # Entrée Express
-│   ├── routes.ts             # Routes REST mockées
-│   └── vite.ts               # Intégration Vite côté serveur
-├── backend/                  # Backend complet (Prisma, scripts ops)
-│   └── package.json          # Dépendances production
+├── backend/                  # Backend production (Express + Prisma + Stripe + Redis + Sentry)
+│   ├── package.json          # Scripts build/deploy + ops
+│   ├── src/                  # Code TypeScript production
+│   └── prisma/               # Schémas & migrations Postgres
+├── server/                   # Backend DEMO (mode hors-production uniquement)
+│   └── index.ts              # Quitte immédiatement si NODE_ENV=production
 ├── shared/                   # Schémas & utilitaires partagés (Drizzle + Zod)
-└── docs/fullstack-audit.md   # Documentation architecture
+└── docs/                     # Documentation détaillée
 ```
+
+### 🧱 Piles backend
+
+- **`backend/`** : pile officielle pour la production (Express + Prisma + Stripe + Redis + Sentry). Toutes les procédures de build, d'environnement et de déploiement sont documentées dans `backend/package.json` et `docs/`.
+- **`server/`** : backend historique de démonstration. Il reste utilisable uniquement en local (`npm run dev:demo`). Un garde-fou bloque tout lancement si `NODE_ENV=production`.
 
 ## 🎯 Utilisation
 
@@ -110,6 +117,34 @@ Des fichiers d'exemple sont fournis pour couvrir chaque brique :
 - `client/.env.production.example` : frontend statique pointant vers l'API.
 
 Copiez le fichier approprié (ex. `cp .env.example .env`) puis adaptez les valeurs sensibles avant de lancer les services.
+
+#### Secrets obligatoires côté production (`backend/.env.production.example`)
+
+Les variables suivantes doivent être renseignées : `DATABASE_URL`, `SHADOW_DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SMTP_*`, `SMS_PROVIDER` + clés (`TWILIO_*` ou `VONAGE_*`), `REDIS_URL`, `SENTRY_DSN`, `METRICS_TOKEN`, `ADMIN_IP_ALLOWLIST`, `TRUST_PROXY=1`, `HSTS_ENABLED=true`, `UPLOAD_ANTIVIRUS=true`. Le validateur `validateEnv()` stoppe immédiatement le backend si l'une d'elles manque.
+
+#### Postgres managé & migrations
+
+Configurez `DATABASE_URL` et `SHADOW_DATABASE_URL` vers votre instance Postgres (primary + shadow). Déployez les migrations via :
+
+```bash
+cd backend
+npx prisma migrate deploy
+```
+
+Une fois la base initialisée, un backup peut être lancé à tout moment :
+
+```bash
+cd backend
+npm run db:backup
+```
+
+#### Monitoring & observabilité
+
+Activez Sentry (`SENTRY_DSN`) et le monitoring custom (`METRICS_TOKEN`). Les vérifications d'observabilité sont regroupées dans :
+
+```bash
+npm run backend:ops:verify
+```
 
 ### Options Prisma (optionnel)
 En cas de blocage du CDN Prisma, vous pouvez définir ces variables d'environnement (non commitées) :
@@ -141,8 +176,9 @@ npm run build
 # Déployer le dossier dist/public
 ```
 
-### **Backend (Heroku/Railway)**
+### **Backend (Railway/Fly.io/Render)**
 ```bash
+npm run build --workspace backend
 npm run start:backend
 ```
 

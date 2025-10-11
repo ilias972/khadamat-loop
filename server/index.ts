@@ -3,6 +3,13 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { bootstrapCache } from "./cache";
 
+if (process.env.NODE_ENV === "production") {
+  const message =
+    "Le serveur demo (server/) est désactivé en production. Utilisez backend/ pour les déploiements réels.";
+  console.error(message);
+  process.exit(1);
+}
+
 const app = express();
 
 // Configure Express trust proxy for Replit environment
