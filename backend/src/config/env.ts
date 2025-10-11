@@ -47,11 +47,11 @@ export const env = {
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET_LIVE ||
     process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || '',
   adminIpAllowlist: process.env.ADMIN_IP_ALLOWLIST || '',
-  trustProxy: Number.parseInt(process.env.TRUST_PROXY || '0', 10) || 0,
+  trustProxy: process.env.TRUST_PROXY === '1',
   hstsEnabled: process.env.HSTS_ENABLED === 'true',
-  hstsMaxAge: Number.parseInt(process.env.HSTS_MAX_AGE || '0', 10) || 0,
+  hstsMaxAge: Number.parseInt(process.env.HSTS_MAX_AGE || '15552000', 10) || 15552000,
   cookieSecure: nodeEnv === 'production',
-  cookieSameSite: (nodeEnv === 'production' ? 'strict' : 'lax') as 'lax' | 'strict' | 'none',
+  cookieSameSite: 'strict' as const,
   cookieDomain: process.env.COOKIE_DOMAIN || '',
   corsOrigins: corsOriginsRaw
     .split(',')
@@ -190,6 +190,13 @@ export function validateEnv() {
       }
     });
 
+  requireKey('COOKIE_SECRET');
+  requireKey('JWT_SECRET');
+
+  if (process.env.HSTS_ENABLED === 'true') {
+    requirePositiveInt('HSTS_MAX_AGE');
+  }
+
   if (!isProd) {
     if (process.env.UPLOAD_ANTIVIRUS === 'true') {
       requireKey('CLAMAV_HOST');
@@ -201,10 +208,11 @@ export function validateEnv() {
   requireKey('DATABASE_URL');
   requireKey('SHADOW_DATABASE_URL');
   requireKey('MOCK_REDIS', (value) => value === 'false');
-  if (process.env.MOCK_REDIS === 'false') {
-    requireKey('REDIS_URL');
+  requireKey('REDIS_URL');
+  requireKey('UPLOAD_ANTIVIRUS');
+  if (process.env.UPLOAD_ANTIVIRUS !== 'true') {
+    invalid.push('UPLOAD_ANTIVIRUS');
   }
-  requireKey('UPLOAD_ANTIVIRUS', (value) => value === 'true');
   requireKey('CLAMAV_HOST');
   requirePositiveInt('CLAMAV_PORT');
 
@@ -234,13 +242,18 @@ export function validateEnv() {
   requireKey('KYC_PROVIDER');
   requireKey('KYC_API_KEY');
 
-  requireKey('JWT_SECRET');
-  requireKey('COOKIE_SECRET');
-  requirePositiveInt('TRUST_PROXY');
-  requireKey('HSTS_ENABLED', (value) => value === 'true');
-  requirePositiveInt('HSTS_MAX_AGE');
+  requireKey('HSTS_ENABLED');
+  if (process.env.HSTS_ENABLED && !['true', 'false'].includes(process.env.HSTS_ENABLED)) {
+    invalid.push('HSTS_ENABLED');
+  }
   requireKey('COOKIE_DOMAIN');
   requireOrigins();
+  if (process.env.CORS_ORIGINS) {
+    const values = process.env.CORS_ORIGINS.split(',').map((v) => v.trim()).filter(Boolean);
+    if (!values.length) {
+      invalid.push('CORS_ORIGINS');
+    }
+  }
 
   requireHttpsUrl('APP_BASE_URL');
   requireHttpsUrl('FRONTEND_URL');
