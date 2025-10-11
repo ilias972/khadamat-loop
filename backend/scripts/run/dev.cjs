@@ -6,7 +6,7 @@ const path = require('path');
 const root = path.resolve(__dirname, '..', '..');
 
 function loadEnv() {
-  const candidates = ['.env', '.env.local', '.env.local.example'];
+  const candidates = ['.env', '.env.local', '.env.sample.local', '.env.local.example'];
   for (const file of candidates) {
     if (file === '.env.local.example' && fs.existsSync(path.join(root, '.env.local'))) {
       console.log(`SKIPPED ${file}`);

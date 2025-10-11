@@ -67,6 +67,10 @@ npm run dev:backend
 - Aller sur `http://localhost:5000` (pile démo)
 - Ou sur `http://localhost:5173` si vous lancez seulement `npm run dev:frontend`
 
+## 📚 Documentation & Structure
+
+- [Guide des environnements](docs/environments.md) — configurations local/staging/production, variables actives et procédures communes.
+
 ## 📁 Structure du Projet
 
 ```
@@ -112,11 +116,12 @@ khadamat-platform/
 Des fichiers d'exemple sont fournis pour couvrir chaque brique :
 
 - `.env.example` : pile monolithique / démo locale.
-- `backend/.env.local.example` : exécution locale du backend Prisma.
-- `backend/.env.production.example` : configuration de production réelle.
+- `backend/.env.sample.local` : configuration locale de référence pour Prisma.
+- `backend/.env.sample.staging` : base staging (Postgres, Redis, ClamAV, Stripe test).
+- `backend/.env.sample.production` : gabarit production (toutes les sécurités activées).
 - `client/.env.production.example` : frontend statique pointant vers l'API.
 
-Copiez le fichier approprié (ex. `cp .env.example .env`) puis adaptez les valeurs sensibles avant de lancer les services.
+Copiez le fichier approprié (ex. `cp backend/.env.sample.local backend/.env`) puis adaptez les valeurs sensibles avant de lancer les services. Les validations sont effectuées automatiquement par `validateEnv()` (`backend/src/config/env.ts`) au démarrage pour bloquer toute omission critique.
 
 #### Secrets obligatoires côté production (`backend/.env.production.example`)
 
@@ -129,6 +134,7 @@ Configurez `DATABASE_URL` et `SHADOW_DATABASE_URL` vers votre instance Postgres 
 ```bash
 cd backend
 npx prisma migrate deploy
+npm run seed     # provisionne services/providers (catalogue partagé)
 ```
 
 Une fois la base initialisée, un backup peut être lancé à tout moment :
@@ -145,6 +151,27 @@ Activez Sentry (`SENTRY_DSN`) et le monitoring custom (`METRICS_TOKEN`). Les vé
 ```bash
 npm run backend:ops:verify
 ```
+
+### **Seeds Prisma**
+
+Un catalogue de services/providers issu de `server/storage.ts` est désormais disponible côté Prisma. Pour l'insérer :
+
+```bash
+npm run seed
+```
+
+Ce script est également déclenché par `prisma migrate deploy` via `npx prisma db seed`.
+
+### **CI & contrôles pré-déploiement**
+
+Avant toute montée en staging/production, exécutez la même pipeline que GitHub Actions :
+
+```bash
+npm run ci:check
+npm run smoke:all
+```
+
+La CI échoue dès qu'un des deux scripts retourne une erreur, garantissant l'alignement local/remote.
 
 ### Options Prisma (optionnel)
 En cas de blocage du CDN Prisma, vous pouvez définir ces variables d'environnement (non commitées) :
