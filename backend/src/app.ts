@@ -1,6 +1,7 @@
 import express from 'express';
-import helmet from 'helmet';
+import helmet, { HelmetOptions } from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
 import { localizeError } from './middlewares/localizeError';
@@ -39,6 +40,7 @@ import { ipAllowList } from './middlewares/ipAllowList';
 import { rateGlobal } from './middlewares/rateGlobal';
 import { requestId } from './middlewares/requestId';
 import { requestLogger } from './middlewares/requestLogger';
+import { auditLogger } from './middlewares/auditLogger';
 import { cacheControl } from './middlewares/cacheControl';
 import { setupMetrics, metricsRequestTimer, metricsReady } from './metrics';
 import { getCacheStatus, stopCache } from './utils/cache';
@@ -114,7 +116,18 @@ hardenForTests()
   });
 
 const app = express();
+app.set('trust proxy', process.env.TRUST_PROXY === '1');
 const adminIpAllowList = ipAllowList();
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+const allow = (process.env.ADMIN_IP_ALLOWLIST || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use('/admin', (req, res, next) => {
+  if (process.env.NODE_ENV !== 'production') return next();
+  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+  return allow.includes(ip) ? next() : res.status(403).send('Forbidden');
+});
 if (Sentry) {
   app.use(Sentry.Handlers.requestHandler());
 }
@@ -127,9 +140,6 @@ const compressionReady = import('compression')
   .catch(() => {
     logger.warn('compression module not available');
   });
-if (env.trustProxy > 0) {
-  app.set('trust proxy', env.trustProxy);
-}
 
 let getJobsStatus: () => any = () => ({ enabled: env.jobsEnable, lastRun: { retention: null, backup: null, heartbeat: null } });
 app.post('/api/payments/webhook', express.raw({ type: '*/*' }), handleStripeWebhook);
@@ -141,7 +151,9 @@ logger.info('WEBHOOKS_READY', {
 });
 
 app.use(express.json());
+app.use(limiter);
 app.use(requestId);
+app.use(auditLogger);
 app.use((req, res, next) => {
   const orig = res.json.bind(res);
   res.json = (body: any) => {
@@ -154,7 +166,18 @@ app.use((req, res, next) => {
 });
 app.use(requestLogger);
 app.use(cacheControl);
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    hsts: env.hstsEnabled
+      ? {
+          maxAge: env.hstsMaxAge,
+          includeSubDomains: true,
+          preload: true,
+        }
+      : false,
+  } as HelmetOptions)
+);
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -170,14 +193,22 @@ app.use(
 );
 app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
 app.use(helmet.xContentTypeOptions());
-if (env.hstsEnabled) {
-  app.use(helmet.hsts({ maxAge: env.hstsMaxAge }));
-}
+
+const corsOrigins = env.corsOrigins;
 app.use(
   cors({
-    origin: env.corsOrigins,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (env.nodeEnv !== 'production' && /^http:\/\/localhost(?::\d+)?$/i.test(origin)) {
+        return callback(null, true);
+      }
+      if (corsOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    credentials: false,
+    credentials: true,
   })
 );
 
