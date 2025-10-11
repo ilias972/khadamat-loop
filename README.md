@@ -162,6 +162,10 @@ npm run seed
 
 Ce script est également déclenché par `prisma migrate deploy` via `npx prisma db seed`.
 
+**Initialisation des données**
+Pour insérer les données de base (services, providers, catégories) :
+`npm run seed --workspace backend`
+
 ### **CI & contrôles pré-déploiement**
 
 Avant toute montée en staging/production, exécutez la même pipeline que GitHub Actions :

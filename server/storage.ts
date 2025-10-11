@@ -24,7 +24,17 @@ import {
   type Review,
   type InsertReview,
 } from "@shared/schema";
+import { readFileSync } from "node:fs";
 import { normalizeString } from "@shared/normalize";
+
+type UserSeed = Omit<User, "createdAt"> & { createdAt?: string | null };
+type ProviderSeed = Provider;
+type ServiceSeed = Service;
+
+function loadJson<T>(relativePath: string): T {
+  const data = readFileSync(new URL(relativePath, import.meta.url), "utf-8");
+  return JSON.parse(data) as T;
+}
 
 export interface IStorage {
   // Users
@@ -96,149 +106,24 @@ export class MemStorage implements IStorage {
   }
 
   private seedData() {
-    // Seed services
-    const defaultServices: Service[] = [
-      {
-        id: 1,
-        name: "Plomberie",
-        nameAr: "السباكة",
-        description: "Réparations, installations et dépannages d'urgence 24/7",
-        descriptionAr: "إصلاحات وتركيبات وخدمات طوارئ على مدار الساعة",
-        category: "home_maintenance",
-        icon: "wrench",
-        isPopular: true,
-      },
-      {
-        id: 2,
-        name: "Électricité",
-        nameAr: "الكهرباء",
-        description: "Installation électrique, dépannage et mise aux normes",
-        descriptionAr: "تركيب كهربائي وإصلاحات وتحديث المعايير",
-        category: "home_maintenance",
-        icon: "bolt",
-        isPopular: true,
-      },
-      {
-        id: 3,
-        name: "Ménage",
-        nameAr: "التنظيف",
-        description: "Services de nettoyage pour particuliers et entreprises",
-        descriptionAr: "خدمات التنظيف للأفراد والشركات",
-        category: "cleaning",
-        icon: "broom",
-        isPopular: true,
-      },
-      {
-        id: 4,
-        name: "Jardinage",
-        nameAr: "البستنة",
-        description: "Entretien d'espaces verts et aménagement paysager",
-        descriptionAr: "صيانة المساحات الخضراء وتنسيق الحدائق",
-        category: "outdoor",
-        icon: "seedling",
-        isPopular: true,
-      },
-    ];
+    const defaultServices = loadJson<ServiceSeed[]>("../backend/prisma/data/services.json");
 
     defaultServices.forEach(service => {
       this.services.set(service.id, service);
     });
 
-    // Seed users
-    const defaultUsers: User[] = [
-      {
-        id: 1,
-        username: "ahmed_electricien",
-        email: "ahmed@example.com",
-        password: "hashed_password",
-        firstName: "Ahmed",
-        lastName: "Benali",
-        displayNameNormalized: normalizeString("Ahmed Benali"),
-        phone: "+212612345678",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        userType: "provider",
-        isClubPro: true,
-        isVerified: true,
-        location: "Casablanca",
-        createdAt: new Date(),
-      },
-      {
-        id: 2,
-        username: "fatima_menage",
-        email: "fatima@example.com",
-        password: "hashed_password",
-        firstName: "Fatima",
-        lastName: "Zahra",
-        displayNameNormalized: normalizeString("Fatima Zahra"),
-        phone: "+212623456789",
-        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        userType: "provider",
-        isClubPro: true,
-        isVerified: true,
-        location: "Rabat",
-        createdAt: new Date(),
-      },
-      {
-        id: 3,
-        username: "omar_plombier",
-        email: "omar@example.com",
-        password: "hashed_password",
-        firstName: "Omar",
-        lastName: "Alaoui",
-        displayNameNormalized: normalizeString("Omar Alaoui"),
-        phone: "+212634567890",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        userType: "provider",
-        isClubPro: false,
-        isVerified: true,
-        location: "Marrakech",
-        createdAt: new Date(),
-      },
-    ];
+    const defaultUsersSeed = loadJson<UserSeed[]>("../backend/prisma/data/users.json");
+    const defaultUsers: User[] = defaultUsersSeed.map(user => ({
+      ...user,
+      displayNameNormalized: user.displayNameNormalized ?? normalizeString(`${user.firstName} ${user.lastName}`),
+      createdAt: user.createdAt ? new Date(user.createdAt) : new Date(),
+    }));
 
     defaultUsers.forEach(user => {
       this.users.set(user.id, user);
     });
 
-    // Seed providers
-    const defaultProviders: Provider[] = [
-      {
-        id: 1,
-        userId: 1,
-        specialties: ["Électricité", "Domotique"],
-        experience: 8,
-        rating: "4.9",
-        reviewCount: 127,
-        isOnline: true,
-        hourlyRate: "150.00",
-        bio: "Électricien professionnel avec 8 ans d'expérience",
-        bioAr: "كهربائي محترف مع 8 سنوات من الخبرة",
-      },
-      {
-        id: 2,
-        userId: 2,
-        specialties: ["Ménage", "Repassage"],
-        experience: 5,
-        rating: "4.8",
-        reviewCount: 89,
-        isOnline: true,
-        hourlyRate: "80.00",
-        bio: "Spécialiste du ménage et du repassage",
-        bioAr: "متخصصة في التنظيف والكي",
-      },
-      {
-        id: 3,
-        userId: 3,
-        specialties: ["Plomberie", "Urgence 24/7"],
-        experience: 12,
-        rating: "4.7",
-        reviewCount: 64,
-        isOnline: false,
-        hourlyRate: "120.00",
-        bio: "Plombier expert disponible en urgence",
-        bioAr: "سباك خبير متاح للطوارئ",
-      },
-    ];
+    const defaultProviders = loadJson<ProviderSeed[]>("../backend/prisma/data/providers.json");
 
     defaultProviders.forEach(provider => {
       this.providers.set(provider.id, provider);

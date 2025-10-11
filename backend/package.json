@@ -98,7 +98,7 @@
     "postdeploy:staging:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run ops:wait && npm run online:all",
     "profiles:check:prod": "node scripts/env/require.prod.cjs",
     "ci:build": "npm run build",
-    "ci:migrate": "node scripts/prisma/selfheal.cjs && npx prisma migrate deploy",
+    "ci:migrate": "node scripts/prisma/selfheal.cjs && npx prisma migrate deploy && npm run seed",
     "ci:seed:min": "node scripts/seed/min.cjs",
     "ci:postdeploy": "npm run postdeploy:prod",
     "demo:purge:prod": "node scripts/env/load.js -- node scripts/demo/purge.cjs",
@@ -120,7 +120,7 @@
     "setup:mirror": "npm config set registry https://registry.npmmirror.com/ && npm config set @prisma:registry https://registry.npmmirror.com/ && npm config set strict-ssl true && (npm ci || npm install) && npm run build",
     "setup:windows": "npm run registry:public && npm ci || npm install",
     "setup:mac": "npm run registry:public && npm ci || npm install",
-    "seed": "node scripts/env/load.js ./.env ./.env.local ./.env.sample.local -- ts-node --transpile-only prisma/seed/index.ts",
+    "seed": "node scripts/env/load.js ./.env ./.env.local ./.env.sample.local -- ts-node --transpile-only prisma/seed.ts",
     "doctor": "npm run registry:show && node scripts/check-prisma.js",
     "tests:setup": "npm run registry:auto && (npm ci || npm install) && npm run test:prepare || (echo \"[tests] install bloquée → exécutez OFFLINE_SKIP_TESTS=true npm test\" && exit 0)",
     "tests:online": "node -e \"process.env.OFFLINE_SKIP_TESTS='false'; process.env.FORCE_ONLINE='true'; require('child_process').spawn('npm', ['run','test'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
@@ -179,6 +179,6 @@
     "ts-node": "^10.9.2"
   },
   "prisma": {
-    "seed": "ts-node --transpile-only prisma/seed/index.ts"
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   }
 }

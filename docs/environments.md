@@ -107,4 +107,8 @@ Ce guide unifie les pratiques pour chaque environnement de la plateforme. Il cou
 4. Déployer uniquement si les deux commandes passent.
 5. Après migrations Prisma (`prisma migrate deploy`), exécuter `npm run seed` pour provisionner les catalogues.
 
+**Initialisation des données**
+Pour insérer les données de base (services, providers, catégories) :
+`npm run seed --workspace backend`
+
 Ce document sert de référence unique pour les équipes produit, QA et Ops.

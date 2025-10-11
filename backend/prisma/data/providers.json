@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "specialties": ["Électricité", "Domotique"],
+    "experience": 8,
+    "rating": "4.9",
+    "reviewCount": 127,
+    "isOnline": true,
+    "hourlyRate": "150.00",
+    "bio": "Électricien professionnel avec 8 ans d'expérience",
+    "bioAr": "كهربائي محترف مع 8 سنوات من الخبرة"
+  },
+  {
+    "id": 2,
+    "userId": 2,
+    "specialties": ["Ménage", "Repassage"],
+    "experience": 5,
+    "rating": "4.8",
+    "reviewCount": 89,
+    "isOnline": true,
+    "hourlyRate": "80.00",
+    "bio": "Spécialiste du ménage et du repassage",
+    "bioAr": "متخصصة في التنظيف والكي"
+  },
+  {
+    "id": 3,
+    "userId": 3,
+    "specialties": ["Plomberie", "Urgence 24/7"],
+    "experience": 12,
+    "rating": "4.7",
+    "reviewCount": 64,
+    "isOnline": false,
+    "hourlyRate": "120.00",
+    "bio": "Plombier expert disponible en urgence",
+    "bioAr": "سباك خبير متاح للطوارئ"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Plomberie",
+    "nameAr": "السباكة",
+    "description": "Réparations, installations et dépannages d'urgence 24/7",
+    "descriptionAr": "إصلاحات وتركيبات وخدمات طوارئ على مدار الساعة",
+    "category": "home_maintenance",
+    "icon": "wrench",
+    "isPopular": true
+  },
+  {
+    "id": 2,
+    "name": "Électricité",
+    "nameAr": "الكهرباء",
+    "description": "Installation électrique, dépannage et mise aux normes",
+    "descriptionAr": "تركيب كهربائي وإصلاحات وتحديث المعايير",
+    "category": "home_maintenance",
+    "icon": "bolt",
+    "isPopular": true
+  },
+  {
+    "id": 3,
+    "name": "Ménage",
+    "nameAr": "التنظيف",
+    "description": "Services de nettoyage pour particuliers et entreprises",
+    "descriptionAr": "خدمات التنظيف للأفراد والشركات",
+    "category": "cleaning",
+    "icon": "broom",
+    "isPopular": true
+  },
+  {
+    "id": 4,
+    "name": "Jardinage",
+    "nameAr": "البستنة",
+    "description": "Entretien d'espaces verts et aménagement paysager",
+    "descriptionAr": "صيانة المساحات الخضراء وتنسيق الحدائق",
+    "category": "outdoor",
+    "icon": "seedling",
+    "isPopular": true
+  }
+]
