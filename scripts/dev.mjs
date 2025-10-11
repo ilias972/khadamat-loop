@@ -70,5 +70,5 @@ process.on("SIGTERM", () => {
 });
 
 spawnCommand("client", ["run", "dev", "--workspace", "client"]);
-spawnCommand("server", ["run", "dev", "--workspace", "server"]);
+spawnCommand("backend", ["run", "dev", "--workspace", "backend"]);
 

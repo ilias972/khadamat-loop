@@ -1,3 +1,1 @@
--- Add failedLoginCount and lockedUntil fields to User
-ALTER TABLE "User" ADD COLUMN "failedLoginCount" INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE "User" ADD COLUMN "lockedUntil" DATETIME;
+-- No-op: columns 'failedLoginCount' and 'lockedUntil' sont inclus dans la migration initiale.
