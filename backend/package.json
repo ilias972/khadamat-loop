@@ -22,7 +22,7 @@
     "db:init": "node scripts/prisma/init.cjs",
     "db:migrate:prod": "prisma migrate deploy",
     "db:seed:prod": "node scripts/prisma/seed-prod.cjs",
-    "db:seed": "echo \"db seed not implemented\"",
+    "db:seed": "npm run seed",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:test:reset": "prisma db push --force-reset --accept-data-loss",
@@ -55,6 +55,7 @@
     "smoke:cache": "node scripts/smoke/cache.invalidate.smoke.cjs",
     "smoke:upload": "node scripts/smoke/upload.normalize.smoke.cjs",
     "smoke:all": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:metrics && npm run smoke:prefs && npm run smoke:subs && npm run smoke:i18n && npm run smoke:cache || true",
+    "smoke:all:strict": "npm run smoke:webhooks && npm run smoke:search && npm run smoke:pii && npm run smoke:metrics && npm run smoke:prefs && npm run smoke:subs && npm run smoke:i18n && npm run smoke:cache",
     "test:spawn:api": "node scripts/ops/spawn.cjs --env ./.env.online.staging --wait /health --timeout 30000",
     "test:wait:api": "node scripts/ops/wait.cjs --url $BACKEND_BASE_URL/health --timeout 30000",
     "test:online": "node scripts/env/load.js ./.env.online.staging ./.env.tokens.staging -- npm run test:smart",
@@ -119,6 +120,7 @@
     "setup:mirror": "npm config set registry https://registry.npmmirror.com/ && npm config set @prisma:registry https://registry.npmmirror.com/ && npm config set strict-ssl true && (npm ci || npm install) && npm run build",
     "setup:windows": "npm run registry:public && npm ci || npm install",
     "setup:mac": "npm run registry:public && npm ci || npm install",
+    "seed": "node scripts/env/load.js ./.env ./.env.local ./.env.sample.local -- ts-node --transpile-only prisma/seed/index.ts",
     "doctor": "npm run registry:show && node scripts/check-prisma.js",
     "tests:setup": "npm run registry:auto && (npm ci || npm install) && npm run test:prepare || (echo \"[tests] install bloquée → exécutez OFFLINE_SKIP_TESTS=true npm test\" && exit 0)",
     "tests:online": "node -e \"process.env.OFFLINE_SKIP_TESTS='false'; process.env.FORCE_ONLINE='true'; require('child_process').spawn('npm', ['run','test'], {stdio:'inherit', shell:true}).on('exit', c=>process.exit(c||0))\"",
@@ -175,5 +177,8 @@
     "supertest": "^6.3.4",
     "@types/supertest": "^2.0.16",
     "ts-node": "^10.9.2"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed/index.ts"
   }
 }

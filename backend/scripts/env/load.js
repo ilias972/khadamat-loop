@@ -49,7 +49,7 @@ for (const f of files) {
 }
 
 if (!loaded) {
-  const fallbacks = ['./.env', './.env.local', './.env.local.example'];
+  const fallbacks = ['./.env', './.env.local', './.env.sample.local', './.env.local.example'];
   for (const f of fallbacks) {
     if (f === './.env.local.example' && fs.existsSync(path.resolve('./.env.local'))) {
       console.log(`SKIPPED ${f}`);
