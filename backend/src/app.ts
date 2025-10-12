@@ -61,6 +61,29 @@ logger.info('SERVER_PUBLIC', {
 const cacheInfoBoot = getCacheStatus();
 logger.info('CACHE_DRIVER', { driver: cacheInfoBoot.driver });
 
+async function ensureDatabaseResponsive() {
+  if (!dbAvailable) {
+    throw new Error('Database client not initialised');
+  }
+  if (!dbConnected) {
+    await prisma
+      .$connect()
+      .then(() => {
+        dbConnected = true;
+      })
+      .catch((error: any) => {
+        dbConnected = false;
+        throw error;
+      });
+  }
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error: any) {
+    dbConnected = false;
+    throw error;
+  }
+}
+
 if (dbAvailable) {
   prisma
     .$connect()
@@ -138,13 +161,19 @@ app.use('/admin', (req, res, next) => {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   return allow.includes(ip) ? next() : res.status(403).send('Forbidden');
 });
-app.get('/healthz', (_req, res) => {
-  res.json({ ok: true, uptime: process.uptime(), version: process.env.COMMIT_SHA || 'dev' });
+app.get('/healthz', async (_req, res) => {
+  try {
+    await ensureDatabaseResponsive();
+    res.json({ ok: true, uptime: process.uptime(), version: process.env.COMMIT_SHA || 'dev' });
+  } catch (error: any) {
+    logger.error('healthz check failed', { error: String(error?.message || error) });
+    res.status(503).json({ ok: false });
+  }
 });
 
 app.get('/readyz', async (_req, res) => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await ensureDatabaseResponsive();
     res.json({ ok: true });
   } catch {
     res.status(503).json({ ok: false });

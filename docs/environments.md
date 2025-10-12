@@ -1,114 +1,80 @@
 # Environnements KhadamatPlatform
 
-Ce guide unifie les pratiques pour chaque environnement de la plateforme. Il couvre les variables actives, les services annexes et les commandes incontournables pour développer, tester et déployer en toute cohérence.
+Ce guide décrit les attentes Ops pour chaque environnement ainsi que les commandes obligatoires. Toutes les étapes ci-dessous s'exécutent avec **Node.js ≥ 18** et `npm ci --ignore-scripts` pour garantir des builds reproductibles.
 
-## Vue d'ensemble
+## Fichiers d'exemple & commandes rapides
 
-| Environnement | Fichier d'exemple | Services clefs | Commandes prioritaires |
-| ------------- | ----------------- | --------------- | ---------------------- |
-| Local         | `.env.example`, `backend/.env.sample.local` | SQLite, Redis mock (optionnel), ClamAV désactivé | `npm run dev`, `npm run smoke:all`, `npm run ci:check` |
-| Staging       | `backend/.env.sample.staging`               | Postgres managé, Redis, ClamAV actif, Stripe sandbox, SMTP sandbox | `npm run build`, `npm run smoke:all`, `npm run ci:check`, `npm run deploy` (pipeline) |
-| Production    | `backend/.env.sample.production`            | Postgres HA, Redis, ClamAV actif, Stripe live, SMTP live, Observabilité complète | `npm run build`, `npm run start`, `npm run smoke:all`, `npm run ci:check`, `npm run deploy` |
+| Environnement | Fichier(s) d'exemple | Commandes principales |
+| ------------- | -------------------- | --------------------- |
+| Local         | `.env.example`, `backend/.env.sample.local` | `npm run dev` (client + serveur mémoire), `npm --prefix backend run dev`, `npx prisma migrate dev --schema backend/prisma/schema.prisma`, `npm --prefix backend run seed`, `npm run ops:verify` |
+| Staging       | `backend/.env.sample.staging` | `npm run build`, `npm run start:prod`, `npm run ci:check`, `npm run smoke:all`, `npm run ops:verify` |
+| Production    | `backend/.env.sample.production` | `npm run build`, `npm run start:prod`, `npm run ci:check`, `npm run smoke:all`, `npm run ops:verify` |
 
-### Services par environnement
+> `server/` reste une pile de démonstration en mémoire. Il n'est lancé qu'en local via `npm run dev` et refuse tout démarrage si `NODE_ENV=production`. La pile **production** repose exclusivement sur `backend/` (Express + Prisma).
 
-- **Base de données**
-  - Local : SQLite via `DATABASE_URL="file:./dev.db"`.
-  - Staging : Postgres managé (`DATABASE_URL` & `SHADOW_DATABASE_URL`).
-  - Production : Postgres HA avec sauvegardes (`DATABASE_URL`, `SHADOW_DATABASE_URL`, `BACKUP_*`).
-- **Redis**
-  - Local : optionnel via `MOCK_REDIS=true` ou `REDIS_URL` vers une instance docker.
-  - Staging & Production : Redis obligatoire (`REDIS_URL`).
-- **Antivirus / ClamAV**
-  - Local : désactivé (`UPLOAD_ANTIVIRUS=false`).
-  - Staging & Production : activé (`UPLOAD_ANTIVIRUS=true`, `CLAMAV_HOST`, `CLAMAV_PORT`).
-- **Notifications**
-  - SMTP/SMS facultatifs en local, sandbox en staging, comptes live en production.
-- **Observabilité**
-  - Sentry et métriques optionnels en local, obligatoires en staging/production (`SENTRY_DSN`, `METRICS_TOKEN`).
+## Commandes communes
 
-## Environnement local
+| Commande | Rôle |
+| --- | --- |
+| `npm run dev` | Lance Vite (`client/`) + serveur mémoire (`server/`). Garde-fou production intégré. |
+| `npm run build` | Build monolithique : frontend Vite + backend Prisma. |
+| `npm run start:prod` | Démarrage Express en mode production depuis `backend/dist`. |
+| `npm run ci:check` | Lint/tests rapides de l'API. |
+| `npm run smoke:all` | Campagne smoke stricte de `backend/`. |
+| `npm run ops:verify` | Vérifie `/healthz` & `/readyz` (utilise `OPS_BACKEND_URL`, défaut `http://localhost:8080`). |
+| `npm --prefix backend run dev` | API Prisma en développement. |
+| `npm --prefix backend run seed` | Seed du catalogue Prisma (lit `.env`, `.env.local`, `.env.sample.local`). |
+| `npx prisma migrate dev --schema backend/prisma/schema.prisma` | Migrations locales avant le seed. |
 
-- **Variables actives** : voir `.env.example` et `backend/.env.sample.local`. Elles couvrent l'API locale, Stripe test, Redis mock, ClamAV désactivé, secrets de développement.
-- **Services associés** :
-  - SQLite embarquée.
-  - Redis mock ou conteneur local.
-  - Aucun antivirus requis.
-- **Commandes clefs** :
-  - `npm run dev` – lance client + backend Prisma.
-  - `npm run dev:frontend`, `npm run dev:backend` – exécutions indépendantes.
-  - `npm run smoke:all` – vérifications fonctionnelles sur la pile locale.
-  - `npm run ci:check` – lint/tests rapides alignés avec la CI.
-  - `npm run seed` – insère les données Prisma de référence.
+## Séquence de provisionnement (tous environnements)
 
-## Environnement staging
+1. Copier le gabarit `.env` adapté (`backend/.env.sample.*`).
+2. Compléter **toutes** les variables critiques.
+3. Exécuter `npx prisma migrate dev --schema backend/prisma/schema.prisma` (ou `prisma migrate deploy` en Postgres).
+4. Lancer `npm --prefix backend run seed`.
+5. Builder puis démarrer : `npm run build` → `npm run start:prod`.
+6. Vérifier la santé : `npm run ops:verify` + requête `/metrics` avec le token.
 
-- **Variables actives** : utiliser `backend/.env.sample.staging` comme point de départ. Activer Postgres, Redis, ClamAV, Stripe test, SMTP sandbox, tokens d'administration (`ADMIN_*`, `SMOKE_*`).
-- **Services associés** :
-  - Postgres managé + `SHADOW_DATABASE_URL`.
-  - Redis managé.
-  - ClamAV (Docker ou service managé) avec `UPLOAD_ANTIVIRUS=true`.
-  - Stripe test + KYC sandbox.
-  - Sentry + métriques personnalisées.
-- **Commandes clefs** :
-  - `npm run build` – build client + backend.
-  - `npm run ci:check` – vérifications pré-déploiement.
-  - `npm run smoke:all` – campagne smoke obligatoire avant `deploy`.
-  - `npm run seed` – déclenche `prisma db seed` pour provisionner staging.
-  - Pipelines de déploiement : déclenchés sur `main` après succès des checks CI.
+## Variables critiques & validation
 
-## Environnement production
+`backend/src/config/env.ts` exécute `validateEnv()` au démarrage. Résultat attendu :
 
-- **Variables actives** : basées sur `backend/.env.sample.production` (toutes les variables critiques sont obligatoires : base de données, Redis, ClamAV, Stripe live, SMTP live, observabilité, sécurité réseau).
-- **Services associés** :
-  - Postgres HA + sauvegardes (`BACKUP_*`).
-  - Redis haute dispo.
-  - ClamAV actif et supervisé.
-  - Stripe live + KYC.
-  - Observabilité complète (Sentry, métriques, alertes).
-- **Commandes clefs** :
-  - `npm run build` puis `npm run start` pour lancer l'API.
-  - `npm run ci:check` et `npm run smoke:all` – obligatoires avant tout go-live.
-  - `npm run seed` – pour provisionner les données catalogues en cas de réinstallation.
-  - `npm run deploy` (selon orchestrateur) après validation CI.
+- **Local** (`.env.sample.local`) : validation OK.
+- **Production** : arrêt immédiat si une variable suivante manque ou est invalide :
+  - Secrets : `JWT_SECRET`, `COOKIE_SECRET`.
+  - Sécurité web : `CORS_ORIGINS` (HTTPS), `TRUST_PROXY=1`, `HSTS_ENABLED=true`, `HSTS_MAX_AGE`, `COOKIE_DOMAIN`.
+  - Observabilité : `METRICS_TOKEN`, `SENTRY_DSN`.
+  - Stockage/cache : `DATABASE_URL`, `SHADOW_DATABASE_URL`, `REDIS_URL`, `MOCK_REDIS=false`.
+  - Antivirus : `UPLOAD_ANTIVIRUS=true`, `CLAMAV_HOST`, `CLAMAV_PORT`.
+  - Paiement & KYC : `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `KYC_PROVIDER`, `KYC_API_KEY`.
+  - Notification : `SMTP_*`, `SMS_PROVIDER` + (`TWILIO_*` ou `VONAGE_*`).
+  - Gouvernance : `ADMIN_IP_ALLOWLIST`.
 
-## Matrice des variables
+Tout manquement génère un log explicite puis `process.exit(1)`.
 
-| Variable | Local | Staging | Production |
-| -------- | ----- | ------- | ---------- |
-| `NODE_ENV` | `development` | `staging` | `production` |
-| `DATABASE_URL` | SQLite locale | Postgres staging | Postgres production |
-| `SHADOW_DATABASE_URL` | SQLite shadow | Postgres shadow | Postgres shadow |
-| `REDIS_URL` | vide ou mock | Redis staging | Redis production |
-| `UPLOAD_ANTIVIRUS` | `false` | `true` | `true` |
-| `CLAMAV_HOST` / `CLAMAV_PORT` | non requis | requis | requis |
-| `STRIPE_SECRET_KEY` | clé test | clé test | clé live |
-| `STRIPE_WEBHOOK_SECRET` | optionnel | requis | requis |
-| `SMTP_*` | optionnel | sandbox | live |
-| `SMS_PROVIDER` + clés | optionnel | sandbox | live |
-| `SENTRY_DSN` | optionnel | requis | requis |
-| `METRICS_TOKEN` | optionnel | requis | requis |
-| `TRUST_PROXY` | `0` | `1` | `1` |
-| `HSTS_ENABLED` | `false` | `true` | `true` |
-| `UPLOAD_STORAGE_DIR` | `./uploads` | stockage partagé | stockage durable |
-| `BACKUP_*` | optionnel | activé (tests) | activé (critique) |
-| `SMOKE_ROUTES_ENABLE` | `true` (local) | `false` | `false` |
-| `ADMIN_IP_ALLOWLIST` | optionnel | restreint | obligatoire |
-| `KYC_PROVIDER` & clés | optionnel | sandbox | production |
-| `APP_BASE_URL` / `FRONTEND_URL` | `localhost` | staging | production |
+## Santé & observabilité
 
-> Toutes les variables sont validées au démarrage via `validateEnv()` dans `backend/src/config/env.ts`. Toute omission critique bloque l'application en staging/production.
+- `/readyz` et `/healthz` retournent **200** uniquement si la base répond à `SELECT 1`.
+- `npm run ops:verify` appelle automatiquement ces endpoints (`OPS_BACKEND_URL` configurable).
+- `/metrics` retourne **200** seulement si l'en-tête `Authorization: Bearer ${METRICS_TOKEN}` est fourni ; sinon la route renvoie `401/403`.
+- Définir `METRICS_TOKEN`, `SENTRY_DSN`, Redis, antivirus et HSTS en staging/production.
 
-## Procédures communes
+## Pipeline CI
 
-1. Copier le fichier `.env.sample.<env>` adapté dans `backend/.env` (ou `backend/.env.production`).
-2. Compléter toutes les variables sensibles.
-3. Lancer `npm run ci:check` puis `npm run smoke:all`.
-4. Déployer uniquement si les deux commandes passent.
-5. Après migrations Prisma (`prisma migrate deploy`), exécuter `npm run seed` pour provisionner les catalogues.
+Le workflow `.github/workflows/ci.yml` s'exécute sur chaque PR :
 
-**Initialisation des données**
-Pour insérer les données de base (services, providers, catégories) :
-`npm run seed --workspace backend`
+1. `npm ci --ignore-scripts`.
+2. `npm run ci:check`.
+3. `npm run smoke:all`.
+4. `npx prisma migrate dev --schema backend/prisma/schema.prisma` + `npm --prefix backend run seed`.
+5. `npm --prefix backend run build` puis `npm --prefix backend run start:prod` (en tâche de fond).
+6. `npm run ops:verify` avec `OPS_BACKEND_URL` défini.
+7. Requête `/metrics` avec le jeton.
 
-Ce document sert de référence unique pour les équipes produit, QA et Ops.
+Le job échoue dès qu'une étape retourne un code ≠ 0.
+
+## Notes par environnement
+
+- **Local** : SQLite, Redis mock (`MOCK_REDIS=true` par défaut), antivirus désactivé. `npm run dev` démarre client + serveur mémoire ; l'API réelle se lance via `npm --prefix backend run dev`.
+- **Staging** : Postgres managé (`DATABASE_URL`, `SHADOW_DATABASE_URL`), Redis, ClamAV, Stripe test, SMTP sandbox, observabilité active. `METRICS_TOKEN` et `SENTRY_DSN` obligatoires.
+- **Production** : Postgres HA, Redis haute dispo, ClamAV, Stripe live, SMTP live, alerting complet. `npm run build` → `npm run start:prod` suivis de `npm run ops:verify` et d'une requête `/metrics` avec le token sont requis avant tout go-live.
