@@ -359,7 +359,7 @@ export async function startServer() {
     'metrics.enabled': env.metricsEnabled,
     'backups.enabled': env.backupEnabled,
   });
-  const srv = app.listen(env.port, () => {
+  const srv = app.listen(Number(process.env.PORT) || 8080, '0.0.0.0', () => {
     logger.info(`Server running on port ${env.port}`);
   });
   const shutdown = () => {

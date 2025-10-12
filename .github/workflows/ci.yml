@@ -39,5 +39,75 @@ jobs:
       - name: Run smoke suite
         run: npm run smoke:all
 
-      - name: Verify ops endpoints
+  ops:
+    name: Ops / Health checks
+    runs-on: ubuntu-latest
+    needs: [quality]
+    env:
+      NODE_ENV: development
+      PORT: 8080
+      DATABASE_URL: file:./backend/prisma/dev.ci.db
+      SHADOW_DATABASE_URL: file:./backend/prisma/dev.shadow.ci.db
+      MOCK_REDIS: 'true'
+      UPLOAD_ANTIVIRUS: 'false'
+      TRUST_PROXY: '0'
+      HSTS_ENABLED: 'false'
+      COOKIE_DOMAIN: localhost
+      CORS_ORIGINS: http://localhost:5173
+      JWT_SECRET: ci-secret
+      COOKIE_SECRET: ci-cookie
+      APP_BASE_URL: http://127.0.0.1:8080
+      FRONTEND_URL: http://localhost:5173
+      BACKEND_URL: http://127.0.0.1:8080
+      SENTRY_DSN: ''
+      METRICS_TOKEN: test-metrics-token
+      OPS_BACKEND_URL: http://127.0.0.1:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      # Registre public + install reproductible
+      - run: npm config set registry https://registry.npmjs.org/
+      - run: npm cache clean --force
+      - run: npm ci --ignore-scripts
+
+      # Prisma: generate + migrate + seed (SQLite éphémère)
+      - run: npm --workspace backend run prisma:generate
+      - run: npx prisma migrate dev --schema backend/prisma/schema.prisma --name ci
+      - run: npm --workspace backend run seed
+
+      # Build backend (pour start:prod)
+      - run: npm --workspace backend run build
+
+      # Démarrer le backend en arrière-plan (prod-like)
+      - name: Start backend (background)
+        run: |
+          npm --workspace backend run start:prod &
+          echo $! > backend.pid
+          sleep 2
+
+      # Attendre la disponibilité: /readyz puis /healthz (timeout ~60s)
+      - name: Wait for readiness
+        run: |
+          n=0
+          until curl -sf "http://127.0.0.1:8080/readyz"; do
+            n=$((n+1))
+            if [ $n -gt 30 ]; then echo "Backend not ready"; exit 1; fi
+            sleep 2
+          done
+          curl -sf "http://127.0.0.1:8080/healthz"
+
+      # Vérification observabilité
+      - name: Ops verify
         run: npm run ops:verify
+
+      # Test /metrics protégé par token
+      - name: Metrics endpoint
+        run: curl -sf -H "Authorization: Bearer ${METRICS_TOKEN}" "http://127.0.0.1:8080/metrics"
+
+      # Arrêt propre
+      - name: Teardown
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then kill $(cat backend.pid) || true; fi
