@@ -14,6 +14,10 @@ FROM base AS build
 COPY . .
 ARG VITE_API_BASE_URL=http://localhost:5000
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
+# Installation de ripgrep avant build
+RUN apt-get update && apt-get install -y --no-install-recommends ripgrep && rm -rf /var/lib/apt/lists/*
+
 RUN npm run build
 RUN npm prune --omit=dev
 
