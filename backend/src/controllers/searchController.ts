@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma';
 import { providerSearchDurationMs } from '../metrics';
 import { env } from '../config/env';
 import { cacheGet, cacheSet } from '../utils/cache';
-import { normalizeText } from '@shared/normalize';
+import { normalizeText } from '../lib/normalize';
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // km

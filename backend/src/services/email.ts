@@ -1,13 +1,20 @@
-import { createTransport } from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
 
+let createTransport: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  createTransport = require('nodemailer').createTransport;
+} catch {
+  createTransport = null;
+}
+
 let transport: any = null;
 const mock = env.mockEmail || !env.emailEnabled;
 
-if (!mock && env.smtpHost && env.smtpUser && env.smtpPass) {
+if (!mock && createTransport && env.smtpHost && env.smtpUser && env.smtpPass) {
   transport = createTransport({
     host: env.smtpHost,
     port: env.smtpPort,

@@ -1,28 +1,24 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "rootDir": ".",
     "strict": true,
     "noImplicitAny": false,
     "useUnknownInCatchVariables": false,
-    "skipLibCheck": true,
+    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "outDir": "dist",
-    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+      "@prisma/client": ["../node_modules/.prisma/client"]
+    },
+    "types": ["node", "express", "cors", "cookie-parser", "jsonwebtoken"],
+    "typeRoots": ["./src/types", "./node_modules/@types", "../node_modules/@types"]
   },
-  "include": [
-    "src",
-    "src/shims",
-    "../shared"
-  ],
-  "exclude": [
-    "src/__tests__"
-  ]
+  "include": ["src/**/*", "prisma/**/*"],
+  "exclude": ["../client", "../server", "src/__tests__", "**/*.test.ts", "**/*.spec.ts"]
 }

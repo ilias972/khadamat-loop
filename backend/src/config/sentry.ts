@@ -1,8 +1,8 @@
-import type * as SentryType from '@sentry/node';
+type SentryModule = typeof import('@sentry/node');
 
-let Sentry: SentryType | null = null;
+let Sentry: SentryModule | null = null;
 
-const setSentryInstance = (instance: SentryType | null) => {
+const setSentryInstance = (instance: SentryModule | null) => {
   Sentry = instance;
 };
 
