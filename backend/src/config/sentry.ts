@@ -1,17 +1,9 @@
-import { env } from './env';
-import { logger } from './logger';
+import type * as SentryType from '@sentry/node';
 
-let Sentry: any = null;
-if (env.sentryDsn) {
-  import('@sentry/node')
-    .then((m) => {
-      Sentry = (m as any).default || m;
-      Sentry.init({ dsn: env.sentryDsn, tracesSampleRate: 0.1 });
-    })
-    .catch(() => {
-      logger.warn('SENTRY_DISABLED');
-      Sentry = null;
-    });
-}
+let Sentry: SentryType | null = null;
 
-export { Sentry };
+const setSentryInstance = (instance: SentryType | null) => {
+  Sentry = instance;
+};
+
+export { Sentry, setSentryInstance };

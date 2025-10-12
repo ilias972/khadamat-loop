@@ -2,10 +2,11 @@ import express from 'express';
 import helmet, { HelmetOptions } from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import * as SentryNode from '@sentry/node';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
 import { localizeError } from './middlewares/localizeError';
-import { Sentry } from './config/sentry';
+import { setSentryInstance } from './config/sentry';
 import authRoutes from './routes/auth';
 import subscriptionRoutes from './routes/subscriptions';
 import paymentRoutes from './routes/payments';
@@ -116,6 +117,15 @@ hardenForTests()
   });
 
 const app = express();
+let sentryEnabled = false;
+if (process.env.SENTRY_DSN) {
+  SentryNode.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 1.0 });
+  setSentryInstance(SentryNode);
+  app.use(SentryNode.Handlers.requestHandler());
+  sentryEnabled = true;
+} else {
+  setSentryInstance(null);
+}
 app.set('trust proxy', process.env.TRUST_PROXY === '1');
 const adminIpAllowList = ipAllowList();
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
@@ -128,8 +138,29 @@ app.use('/admin', (req, res, next) => {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   return allow.includes(ip) ? next() : res.status(403).send('Forbidden');
 });
-if (Sentry) {
-  app.use(Sentry.Handlers.requestHandler());
+app.get('/healthz', (_req, res) => {
+  res.json({ ok: true, uptime: process.uptime(), version: process.env.COMMIT_SHA || 'dev' });
+});
+
+app.get('/readyz', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ ok: true });
+  } catch {
+    res.status(503).json({ ok: false });
+  }
+});
+
+if (process.env.METRICS_TOKEN) {
+  app.get('/metrics', (req, res) => {
+    const auth = req.headers.authorization === `Bearer ${process.env.METRICS_TOKEN}`;
+    if (!auth) return res.status(403).end();
+    res
+      .type('text/plain')
+      .send(
+        `# uptime_seconds ${process.uptime()}\n# memory_mb ${Math.round(process.memoryUsage().rss / 1024 / 1024)}`
+      );
+  });
 }
 app.set('etag', 'strong');
 const compressionReady = import('compression')
@@ -289,8 +320,8 @@ app.use('/api/admin', adminIpAllowList, authenticate, requireRole('admin'), requ
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);
 
-if (Sentry) {
-  app.use(Sentry.Handlers.errorHandler());
+if (sentryEnabled) {
+  app.use(SentryNode.Handlers.errorHandler());
 }
 app.use(localizeError);
 app.use(errorHandler);

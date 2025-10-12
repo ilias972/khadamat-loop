@@ -38,3 +38,6 @@ jobs:
 
       - name: Run smoke suite
         run: npm run smoke:all
+
+      - name: Verify ops endpoints
+        run: npm run ops:verify
