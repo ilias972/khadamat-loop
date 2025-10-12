@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient() as any;
 
 const cities = [
   { name: "Casablanca", slug: "casablanca", lat: 33.57311, lng: -7.589843 },

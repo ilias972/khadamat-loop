@@ -3,7 +3,7 @@ import { env } from '../config/env';
 import { Sentry } from '../config/sentry';
 import { logger } from '../config/logger';
 
-const audit = logger.child ? logger.child({ source: 'audit' }) : logger;
+const audit = (logger.child ? logger.child({ source: 'audit' }) : logger) as any;
 
 export function auditLogger(req: Request, res: Response, next: NextFunction) {
   const started = process.hrtime.bigint();

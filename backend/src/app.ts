@@ -2,7 +2,7 @@ import express from 'express';
 import helmet, { HelmetOptions } from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import * as SentryNode from '@sentry/node';
+import { SentryNode, sentryAvailable } from './shims/sentry';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler';
 import { localizeError } from './middlewares/localizeError';
@@ -141,7 +141,7 @@ hardenForTests()
 
 const app = express();
 let sentryEnabled = false;
-if (process.env.SENTRY_DSN) {
+if (process.env.SENTRY_DSN && sentryAvailable && SentryNode) {
   SentryNode.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 1.0 });
   setSentryInstance(SentryNode);
   app.use(SentryNode.Handlers.requestHandler());
@@ -349,7 +349,7 @@ app.use('/api/admin', adminIpAllowList, authenticate, requireRole('admin'), requ
 app.use('/api/stats', statsRouter);
 app.use('/api', searchRoutes);
 
-if (sentryEnabled) {
+if (sentryEnabled && sentryAvailable && SentryNode) {
   app.use(SentryNode.Handlers.errorHandler());
 }
 app.use(localizeError);
@@ -396,6 +396,13 @@ export async function startServer() {
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
+}
+
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
 
 process.on('unhandledRejection', (r: any) =>
