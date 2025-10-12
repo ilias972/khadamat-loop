@@ -33,39 +33,99 @@ Une plateforme moderne de mise en relation entre clients et prestataires de serv
 - **npm** ou **yarn**
 - **Git** (optionnel)
 
-## 🛠️ Installation
+## 🛠️ Installation rapide
 
-### 1. **Extraire le projet**
 ```bash
-# Décompresser le fichier KhadamatPlatform.zip
-# Ou cloner depuis Git si disponible
+# 1. Installer les dépendances (Node ≥ 18 requis)
+npm ci
+
+# 2. Copier un fichier d'exemple pour l'environnement souhaité
+cp backend/.env.sample.local backend/.env
+
+# 3. Lancer la pile de démonstration (client + serveur mémoire)
+npm run dev
 ```
 
-### 2. **Installer les dépendances**
+La pile Prisma/Express (réelle) se lance séparément via `npm --prefix backend run dev`.
+
+## 🔧 Commandes essentielles
+
+| Commande | Description |
+| --- | --- |
+| `npm run dev` | Lance Vite (`client/`) + serveur mémoire (`server/`). Refusé si `NODE_ENV=production`. |
+| `npm run build` | Build monolithique : frontend Vite + backend Prisma (`backend/`). |
+| `npm run start:prod` | Démarrage production (utilise `backend/dist` après build). |
+| `npm run ci:check` | Lint + tests rapides (via `backend/scripts/ci`). |
+| `npm run smoke:all` | Campagne smoke stricte de l'API (`backend`). |
+| `npm run ops:verify` | Vérifie `/healthz` et `/readyz` (défaut : `http://localhost:8080`, override via `OPS_BACKEND_URL`). |
+| `npm --prefix backend run dev` | API Prisma en mode développement (hot reload + SQLite). |
+| `npm --prefix backend run seed` | Injection du jeu de données Prisma (utilise `.env`, `.env.local`, `.env.sample.local`). |
+| `npx prisma migrate dev --schema backend/prisma/schema.prisma` | Migrations locales (SQLite ou Postgres) avant `seed`. |
+
+Tous les scripts racine s'exécutent également dans la CI GitHub Actions (`npm ci --ignore-scripts`).
+
+## 🔐 Variables d'environnement
+
+Des fichiers d'exemple couvrent chaque scénario :
+
+- `.env.example` : pile monolithique / démonstration (client + serveur mémoire).
+- `backend/.env.sample.local` : configuration locale de référence pour Prisma (SQLite). Validée par `validateEnv()`.
+- `backend/.env.sample.staging` : base staging (Postgres, Redis, ClamAV, Stripe test).
+- `backend/.env.sample.production` : gabarit production (toutes les sécurités activées).
+- `client/.env.production.example` : frontend statique pointant vers l'API.
+
+Copiez le modèle adapté (`cp backend/.env.sample.local backend/.env`) puis complétez les secrets. `validateEnv()` (`backend/src/config/env.ts`) bloque tout démarrage si une variable critique manque en staging/production (`JWT_SECRET`, `COOKIE_SECRET`, CORS/HSTS, Redis, Stripe, SMTP, Sentry, métriques, antivirus...).
+
+## 🚦 Démarrage & données locales
+
 ```bash
-# Dans le dossier racine du projet
-npm install
+# Lancer le client + serveur mémoire (mode démo uniquement)
+npm run dev
+
+# Lancer l'API Prisma réelle (port 3000 par défaut)
+npm --prefix backend run dev
+
+# Exécuter les migrations et le seed (SQLite par défaut)
+npx prisma migrate dev --schema backend/prisma/schema.prisma
+npm --prefix backend run seed
 ```
 
-### 3. **Choisir la pile backend**
+Le serveur mémoire (`server/`) reste une pile de démonstration : il quitte immédiatement avec un code d'erreur si `NODE_ENV=production`.
+
+## 🚀 Déploiement & exploitation
+
 ```bash
-# Mode production / pré-production (Express + Prisma + Stripe + Redis + Sentry)
-npm run dev            # lance client + backend/
+# Build monolithique
+npm run build
 
-# Mode démo uniquement (ne jamais utiliser en production)
-npm run dev:demo       # client + server/
+# Démarrage production après build (Express + Prisma)
+npm run start:prod
 
-# Frontend seul
-npm run dev:frontend
-
-# Backend de production isolé
-npm run dev:backend
+# Vérification automatique des endpoints de santé
+npm run ops:verify           # (OPS_BACKEND_URL=http://127.0.0.1:8080 par défaut)
 ```
 
-### 4. **Accéder à l'application**
-- Ouvrir votre navigateur
-- Aller sur `http://localhost:5000` (pile démo)
-- Ou sur `http://localhost:5173` si vous lancez seulement `npm run dev:frontend`
+Séquence recommandée : **migrate → seed → start:prod**. En production, utilisez Postgres (`DATABASE_URL`, `SHADOW_DATABASE_URL`) puis `npm --prefix backend run seed` pour provisionner les catalogues.
+
+## 🩺 Santé & observabilité
+
+- `/readyz` & `/healthz` retournent `200` uniquement lorsque la base est accessible (`SELECT 1`). `npm run ops:verify` s'appuie dessus.
+- `/metrics` est protégé : répondre `200` nécessite `Authorization: Bearer ${METRICS_TOKEN}`. Toute requête sans jeton reçoit `401/403`.
+- `METRICS_TOKEN`, `SENTRY_DSN`, Redis, antivirus et HSTS sont obligatoires en production (`backend/.env.sample.production`).
+
+## 🤖 CI & contrôles
+
+Le workflow `.github/workflows/ci.yml` exécute :
+
+1. `npm ci --ignore-scripts`
+2. `npm run ci:check`
+3. `npm run smoke:all`
+4. Provision éphémère (`prisma migrate dev` + `seed`)
+5. `npm run build` puis `npm run start:prod`
+6. `npm run ops:verify` avec `OPS_BACKEND_URL`
+7. Vérification `/metrics` (token requis)
+
+La pipeline échoue dès qu'une étape retourne un code ≠ 0.
 
 ## 📚 Documentation & Structure
 
@@ -95,7 +155,7 @@ khadamat-platform/
 ### 🧱 Piles backend
 
 - **`backend/`** : pile officielle pour la production (Express + Prisma + Stripe + Redis + Sentry). Toutes les procédures de build, d'environnement et de déploiement sont documentées dans `backend/package.json` et `docs/`.
-- **`server/`** : backend historique de démonstration. Il reste utilisable uniquement en local (`npm run dev:demo`). Un garde-fou bloque tout lancement si `NODE_ENV=production`.
+- **`server/`** : backend de démonstration en mémoire. Il n'est démarré que via `npm run dev` en local et refuse tout lancement si `NODE_ENV=production`.
 
 ## 🎯 Utilisation
 
@@ -111,86 +171,7 @@ khadamat-platform/
 
 ## 🔧 Configuration
 
-### **Variables d'environnement**
-
-Des fichiers d'exemple sont fournis pour couvrir chaque brique :
-
-- `.env.example` : pile monolithique / démo locale.
-- `backend/.env.sample.local` : configuration locale de référence pour Prisma.
-- `backend/.env.sample.staging` : base staging (Postgres, Redis, ClamAV, Stripe test).
-- `backend/.env.sample.production` : gabarit production (toutes les sécurités activées).
-- `client/.env.production.example` : frontend statique pointant vers l'API.
-
-Copiez le fichier approprié (ex. `cp backend/.env.sample.local backend/.env`) puis adaptez les valeurs sensibles avant de lancer les services. Les validations sont effectuées automatiquement par `validateEnv()` (`backend/src/config/env.ts`) au démarrage pour bloquer toute omission critique.
-
-#### Secrets obligatoires côté production (`backend/.env.production.example`)
-
-Les variables suivantes doivent être renseignées : `DATABASE_URL`, `SHADOW_DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SMTP_*`, `SMS_PROVIDER` + clés (`TWILIO_*` ou `VONAGE_*`), `REDIS_URL`, `SENTRY_DSN`, `METRICS_TOKEN`, `ADMIN_IP_ALLOWLIST`, `TRUST_PROXY=1`, `HSTS_ENABLED=true`, `UPLOAD_ANTIVIRUS=true`. Le validateur `validateEnv()` stoppe immédiatement le backend si l'une d'elles manque.
-
-#### Postgres managé & migrations
-
-Configurez `DATABASE_URL` et `SHADOW_DATABASE_URL` vers votre instance Postgres (primary + shadow). Déployez les migrations via :
-
-```bash
-cd backend
-npx prisma migrate deploy
-npm run seed     # provisionne services/providers (catalogue partagé)
-```
-
-Une fois la base initialisée, un backup peut être lancé à tout moment :
-
-```bash
-cd backend
-npm run db:backup
-```
-
-#### Monitoring & observabilité
-
-Activez Sentry (`SENTRY_DSN`) et le monitoring custom (`METRICS_TOKEN`). Les vérifications d'observabilité sont regroupées dans :
-
-```bash
-npm run backend:ops:verify
-```
-
-### **Seeds Prisma**
-
-Un catalogue de services/providers issu de `server/storage.ts` est désormais disponible côté Prisma. Pour l'insérer :
-
-```bash
-npm run seed
-```
-
-Ce script est également déclenché par `prisma migrate deploy` via `npx prisma db seed`.
-
-**Initialisation des données**
-Pour insérer les données de base (services, providers, catégories) :
-`npm run seed --workspace backend`
-
-### **CI & contrôles pré-déploiement**
-
-Avant toute montée en staging/production, exécutez la même pipeline que GitHub Actions :
-
-```bash
-npm run ci:check
-npm run smoke:all
-```
-
-La CI échoue dès qu'un des deux scripts retourne une erreur, garantissant l'alignement local/remote.
-
-### Options Prisma (optionnel)
-En cas de blocage du CDN Prisma, vous pouvez définir ces variables d'environnement (non commitées) :
-
-```bash
-PRISMA_ENGINES_MIRROR=https://prisma-builds.s3.us-east-2.amazonaws.com
-PRISMA_CLI_QUERY_ENGINE_TYPE=binary
-```
-
-Ces variables sont lues par le `postinstall` et `scripts/check-prisma.js`.
-
-### **Personnalisation**
-- **Couleurs** : Modifiez `client/tailwind.config.ts`
-- **Traductions** : Éditez `client/src/contexts/LanguageContext.tsx`
-- **Données** : Modifiez les fichiers de données mockées
+Les commandes et fichiers décrits plus haut constituent la référence unique pour configurer les environnements. Complétez systématiquement un fichier `.env` issu des gabarits `backend/.env.sample.*`, puis exécutez **migrate → seed → start:prod**. Pour plus de détails (modes local, staging, production, variables critiques), consultez `docs/environments.md`.
 
 ## 📱 Responsive Design
 
