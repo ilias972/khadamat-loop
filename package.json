@@ -4,6 +4,9 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+  "imports": {
+    "axios": "./scripts/ops-axios.js"
+  },
   "workspaces": [
     "client",
     "server",
@@ -32,6 +35,7 @@
     "check:services:online": "npm run check:services:online --workspace client",
     "db:push": "npm run db:push --workspace server",
     "backend:ops:verify": "npm run ops:verify --workspace backend",
+    "ops:verify": "node scripts/ops-verify.js",
     "online:check": "node backend/scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run ops:verify --workspace backend",
     "online:smoke": "node backend/scripts/env/load.js backend/.env.online.staging backend/.env.tokens.staging -- npm run online:all --workspace backend"
   }
