@@ -1,0 +1,4 @@
+# nixpacks.toml
+# Instruct Railway's Nixpacks builder to install the ripgrep binary (required by scripts/check-services.js)
+[phases.setup]
+nixPkgs = ["ripgrep"]
