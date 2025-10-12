@@ -127,6 +127,12 @@ Le workflow `.github/workflows/ci.yml` exécute :
 
 La pipeline échoue dès qu'une étape retourne un code ≠ 0.
 
+### 🔍 Vérification des services côté client
+
+- `scripts/check-services.js` contrôle automatiquement l'absence de noms de services codés en dur dans `client/` lors du `prebuild`.
+- Le contrôle est déclenché localement si `rg` (ripgrep) est disponible ; il est ignoré lorsque `CI=true` ou si l'outil est absent.
+- Positionnez `CHECK_SERVICES=0` pour désactiver temporairement cette vérification.
+
 ## 📚 Documentation & Structure
 
 - [Guide des environnements](docs/environments.md) — configurations local/staging/production, variables actives et procédures communes.
