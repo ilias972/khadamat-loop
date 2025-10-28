@@ -1,17 +1,25 @@
-# build stage
-FROM node:lts AS build
+# syntax=docker/dockerfile:1
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build && npx prisma generate
-RUN npm prune --omit=dev
 
-# runtime stage
-FROM node:lts-alpine AS runtime
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+COPY prisma ./prisma
+COPY tsconfig.json tsconfig.build.json ./
+COPY src ./src
+RUN npx prisma generate
+RUN npm run build
+
+FROM node:20-alpine AS runner
 WORKDIR /app
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
-EXPOSE 5000
-CMD ["node","dist/server.js"]
+ENV NODE_ENV=production
+
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
