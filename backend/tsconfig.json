@@ -5,20 +5,24 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "strict": true,
-    "noImplicitAny": false,
-    "useUnknownInCatchVariables": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
-      "@prisma/client": ["../node_modules/.prisma/client"]
+      "@config/*": ["config/*"],
+      "@controllers/*": ["controllers/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"],
+      "@repositories/*": ["repositories/*"],
+      "@utils/*": ["utils/*"]
     },
-    "types": ["node", "express", "cors", "cookie-parser", "jsonwebtoken"],
+    "types": ["node", "express"],
     "typeRoots": ["./src/types", "./node_modules/@types", "../node_modules/@types"]
   },
-  "include": ["src/**/*", "prisma/**/*"],
-  "exclude": ["../client", "../server", "src/__tests__", "**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src", "prisma"],
+  "exclude": ["dist", "node_modules"]
 }
