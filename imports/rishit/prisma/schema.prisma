@@ -1,0 +1,41 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model ApiMetadata {
+    id      Int      @id @default(autoincrement())
+    key     String   @unique
+    value   String
+    created DateTime @default(now())
+    updated DateTime @updatedAt
+}
+
+model User {
+    id             Int       @id @default(autoincrement())
+    uuid           String    @default(uuid()) @db.Uuid
+    email          String    @unique
+    password       String
+    username       String    @unique
+    role           String    @default("user")
+    activityStatus String    @default("active")
+    name           String?   @db.VarChar(255)
+    notes          Note[]
+    created        DateTime  @default(now())
+    updated        DateTime  @updatedAt
+    signedOut      DateTime?
+}
+
+model Note {
+    id      Int      @id @default(autoincrement())
+    userId  Int
+    user    User     @relation(fields: [userId], references: [id])
+    uuid    String   @default(uuid()) @db.Uuid
+    content String   @db.VarChar(255)
+    created DateTime @default(now())
+    updated DateTime @updatedAt
+}
